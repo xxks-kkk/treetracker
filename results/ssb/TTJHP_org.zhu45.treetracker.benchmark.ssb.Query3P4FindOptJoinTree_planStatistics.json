@@ -1,0 +1,48 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb",
+      "tableName" : "q3p4_customer"
+    }, {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q3p4_supplier"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q3p4_date"
+    } ]
+  },
+  "optimalJoinTree" : "ssb.q3p4_customer(custkey)\n|ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n||ssb.q3p4_supplier(suppkey)\n||ssb.q3p4_date(datekey)",
+  "cost" : 6045917.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb",
+        "tableName" : "q3p4_customer"
+      }, {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q3p4_supplier"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q3p4_date"
+      } ]
+    },
+    "optimalJoinTree" : "ssb.q3p4_customer(custkey)\n|ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n||ssb.q3p4_supplier(suppkey)\n||ssb.q3p4_date(datekey)",
+    "cost" : 6045917.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 6,
+        "numSQLsGen" : 43
+      }
+    }
+  } ]
+}

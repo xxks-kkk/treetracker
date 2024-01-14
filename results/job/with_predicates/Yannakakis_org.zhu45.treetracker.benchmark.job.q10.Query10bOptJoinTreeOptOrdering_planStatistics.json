@@ -1,0 +1,177 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q10b_company_name"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q10b_title"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "company_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q10b_cast_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q10b_role_type"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "char_name"
+    } ]
+  },
+  "optimalJoinTree" : "imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|imdb.q10b_company_name(company_id)\n|imdb.q10b_title(movie_id,kind_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q10b_cast_info(person_id,movie_id,person_role_id,role_id)\n||imdb.q10b_role_type(role_id)\n||imdb_int.char_name(person_role_id)",
+  "cost" : 180102.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q10b_company_name"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q10b_title"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "company_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q10b_cast_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q10b_role_type"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "char_name"
+      } ]
+    },
+    "optimalJoinTree" : "imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|imdb.q10b_company_name(company_id)\n|imdb.q10b_title(movie_id,kind_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q10b_cast_info(person_id,movie_id,person_role_id,role_id)\n||imdb.q10b_role_type(role_id)\n||imdb_int.char_name(person_role_id)",
+    "cost" : 180102.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 53,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 133,
+        "numSQLsGen" : 706,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "imdb.q10b_cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q10b_cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q10b_role_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q10b_role_type"
+          },
+          "attributes" : [ "role_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q10b_cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q10b_cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.char_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "char_name"
+          },
+          "attributes" : [ "person_role_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q10b_company_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q10b_company_name"
+          },
+          "attributes" : [ "company_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q10b_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q10b_title"
+          },
+          "attributes" : [ "movie_id", "kind_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q10b_cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q10b_cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.company_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "company_type"
+          },
+          "attributes" : [ "company_type_id" ]
+        }
+      } ]
+    }
+  } ]
+}

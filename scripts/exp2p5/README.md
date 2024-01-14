@@ -1,0 +1,1 @@
+Exp 2.5: Impact of No-good Tuples at R_k

@@ -1,0 +1,1 @@
+VM options: `-ea -Dconfig=etc/config.properties`

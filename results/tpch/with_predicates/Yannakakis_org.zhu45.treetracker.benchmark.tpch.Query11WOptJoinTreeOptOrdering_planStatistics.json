@@ -1,0 +1,85 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "supplier"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q11w_nation"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "partsupp"
+    } ]
+  },
+  "optimalJoinTree" : "tpch_int.supplier(suppkey,nationkey)\n|tpch.q11w_nation(nationkey,regionkey)\n|tpch_int.partsupp(partkey,suppkey)",
+  "cost" : 1202.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "supplier"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q11w_nation"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "partsupp"
+      } ]
+    },
+    "optimalJoinTree" : "tpch_int.supplier(suppkey,nationkey)\n|tpch.q11w_nation(nationkey,regionkey)\n|tpch_int.partsupp(partkey,suppkey)",
+    "cost" : 1202.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 6,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 1,
+        "numSQLsGen" : 20,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch_int.supplier",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "supplier"
+          },
+          "attributes" : [ "suppkey", "nationkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q11w_nation",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q11w_nation"
+          },
+          "attributes" : [ "nationkey", "regionkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch_int.supplier",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "supplier"
+          },
+          "attributes" : [ "suppkey", "nationkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch_int.partsupp",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "partsupp"
+          },
+          "attributes" : [ "partkey", "suppkey" ]
+        }
+      } ]
+    }
+  } ]
+}

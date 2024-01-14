@@ -1,0 +1,56 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_keyword"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q2d_keyword"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "title"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q2d_company_name"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "imdb_int.movie_keyword(movie_id,keyword_id)\n|imdb.q2d_keyword(keyword_id)\n|imdb_int.title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q2d_company_name(company_id)" : 5238470.0,
+    "imdb_int.movie_keyword(movie_id,keyword_id)\n|imdb.q2d_keyword(keyword_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q2d_company_name(company_id)" : 5238012.0
+  },
+  "optimalJoinTree" : "imdb_int.movie_keyword(movie_id,keyword_id)\n|imdb.q2d_keyword(keyword_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q2d_company_name(company_id)",
+  "cost" : 5238012.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_keyword"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q2d_keyword"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "title"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q2d_company_name"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "imdb_int.movie_keyword(movie_id,keyword_id)\n|imdb.q2d_keyword(keyword_id)\n|imdb_int.title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q2d_company_name(company_id)" : 5238470.0,
+      "imdb_int.movie_keyword(movie_id,keyword_id)\n|imdb.q2d_keyword(keyword_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q2d_company_name(company_id)" : 5238012.0
+    },
+    "optimalJoinTree" : "imdb_int.movie_keyword(movie_id,keyword_id)\n|imdb.q2d_keyword(keyword_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q2d_company_name(company_id)",
+    "cost" : 5238012.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0
+  } ]
+}

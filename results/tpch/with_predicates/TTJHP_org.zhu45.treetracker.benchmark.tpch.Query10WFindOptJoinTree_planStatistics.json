@@ -1,0 +1,50 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "customer"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q10w_orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "nation"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q10w_lineitem"
+    } ]
+  },
+  "optimalJoinTree" : "tpch_int.customer(custkey,nationkey)\n|tpch.q10w_orders(orderkey,custkey)\n||tpch.q10w_lineitem(orderkey,partkey,suppkey)\n|tpch_int.nation(nationkey,regionkey)",
+  "cost" : 268344.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "customer"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q10w_orders"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "nation"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q10w_lineitem"
+      } ]
+    },
+    "optimalJoinTree" : "tpch_int.customer(custkey,nationkey)\n|tpch.q10w_orders(orderkey,custkey)\n||tpch.q10w_lineitem(orderkey,partkey,suppkey)\n|tpch_int.nation(nationkey,regionkey)",
+    "cost" : 268344.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 10,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 9,
+        "numSQLsGen" : 36,
+        "numJoinTreeCosted" : 6
+      }
+    }
+  } ]
+}

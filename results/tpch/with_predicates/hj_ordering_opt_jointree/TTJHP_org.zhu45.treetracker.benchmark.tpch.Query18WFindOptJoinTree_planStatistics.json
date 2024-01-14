@@ -1,0 +1,20 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "customer"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q18w_orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "lineitem"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch_int.customer(custkey,nationkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.lineitem(orderkey,partkey,suppkey)\n" : 1.3030816E9
+  },
+  "optimalJoinTree" : "tpch_int.customer(custkey,nationkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.lineitem(orderkey,partkey,suppkey)\n",
+  "cost" : 1.3030816E9,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ]
+}

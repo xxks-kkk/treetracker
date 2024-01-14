@@ -1,0 +1,57 @@
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.duckdb</groupId>
+  <artifactId>duckdb_jdbc</artifactId>
+  <version>0.8.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>DuckDB JDBC Driver</name>
+  <description>A JDBC-Compliant driver for the DuckDB data management system</description>
+  <url>https://www.duckdb.org</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://raw.githubusercontent.com/duckdb/duckdb/master/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+      <developer>
+      <name>Mark Raasveldt</name>
+      <email>mark@duckdblabs.com</email>
+      <organization>DuckDB Labs</organization>
+      <organizationUrl>https://www.duckdblabs.com</organizationUrl>
+    </developer>
+    <developer>
+      <name>Hannes Muehleisen</name>
+      <email>hannes@duckdblabs.com</email>
+      <organization>DuckDB Labs</organization>
+      <organizationUrl>https://www.duckdblabs.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/duckdb/duckdb.git</connection>
+    <developerConnection>scm:git:ssh://github.com:duckdb/duckdb.git</developerConnection>
+    <url>http://github.com/duckdb/duckdb/tree/master</url>
+  </scm>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.13</version>
+        <extensions>true</extensions>
+        <configuration>
+         <serverId>ossrh</serverId>
+         <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+       </configuration>
+     </plugin>
+   </plugins>
+ </build>
+
+</project>
+<!-- Note: this cannot be used to build the JDBC driver, we only use it to deploy -->

@@ -1,0 +1,75 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "cast_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_person_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_movie_link"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_info_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_link_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_name"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7a_aka_name"
+    } ]
+  },
+  "optimalJoinTree" : "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb.q7a_person_info(person_id,info_type_id)\n||imdb.q7a_info_type(info_type_id)\n||imdb.q7a_name(person_id)\n|||imdb.q7a_aka_name(person_id)\n|imdb.q7a_movie_link(movie_id,link_type_id)\n||imdb.q7a_link_type(link_type_id)\n|imdb.q7a_title(movie_id,kind_id)",
+  "cost" : 1103718.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "cast_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_person_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_movie_link"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_info_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_link_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_name"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7a_aka_name"
+      } ]
+    },
+    "optimalJoinTree" : "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb.q7a_person_info(person_id,info_type_id)\n||imdb.q7a_info_type(info_type_id)\n||imdb.q7a_name(person_id)\n|||imdb.q7a_aka_name(person_id)\n|imdb.q7a_movie_link(movie_id,link_type_id)\n||imdb.q7a_link_type(link_type_id)\n|imdb.q7a_title(movie_id,kind_id)",
+    "cost" : 1103718.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 90,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 880,
+        "numSQLsGen" : 1773,
+        "numJoinTreeCosted" : 147
+      }
+    }
+  } ]
+}

@@ -1,0 +1,20 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "supplier"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q11w_nation"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "partsupp"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch_int.supplier(suppkey,nationkey)\n|tpch.q11w_nation(nationkey,regionkey)\n|tpch_int.partsupp(partkey,suppkey)\n" : 2.52759456E8
+  },
+  "optimalJoinTree" : "tpch_int.supplier(suppkey,nationkey)\n|tpch.q11w_nation(nationkey,regionkey)\n|tpch_int.partsupp(partkey,suppkey)\n",
+  "cost" : 2.52759456E8,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ]
+}

@@ -1,0 +1,81 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q13d_movie_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q13d_info_type2"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q13d_kind_type"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_info_idx"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q13d_info_type1"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q13d_company_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q13d_company_name"
+    } ]
+  },
+  "optimalJoinTree" : "imdb.q13d_movie_info(movie_id,info_type_id2)\n|imdb.q13d_info_type2(info_type_id2)\n|imdb_int.title(movie_id,kind_id)\n||imdb.q13d_kind_type(kind_id)\n|imdb_int.movie_info_idx(movie_id,info_type_id)\n||imdb.q13d_info_type1(info_type_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q13d_company_type(company_type_id)\n||imdb.q13d_company_name(company_id)",
+  "cost" : 6610601.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb",
+        "tableName" : "q13d_movie_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q13d_info_type2"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q13d_kind_type"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_info_idx"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q13d_info_type1"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q13d_company_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q13d_company_name"
+      } ]
+    },
+    "optimalJoinTree" : "imdb.q13d_movie_info(movie_id,info_type_id2)\n|imdb.q13d_info_type2(info_type_id2)\n|imdb_int.title(movie_id,kind_id)\n||imdb.q13d_kind_type(kind_id)\n|imdb_int.movie_info_idx(movie_id,info_type_id)\n||imdb.q13d_info_type1(info_type_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q13d_company_type(company_type_id)\n||imdb.q13d_company_name(company_id)",
+    "cost" : 6610601.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 139,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 1560,
+        "numSQLsGen" : 3120,
+        "numJoinTreeCosted" : 234
+      }
+    }
+  } ]
+}

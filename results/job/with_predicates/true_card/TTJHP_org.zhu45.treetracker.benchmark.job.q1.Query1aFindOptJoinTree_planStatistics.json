@@ -1,0 +1,23 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q1a_info_type"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_info_idx"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1a_movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1a_company_type"
+    } ]
+  },
+  "optimalJoinTree" : "imdb.q1a_info_type(info_type_id)\n|imdb_int.movie_info_idx(movie_id,info_type_id)\n||imdb_int.title(movie_id,kind_id)\n||imdb.q1a_movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q1a_company_type(company_type_id)",
+  "cost" : 284.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ]
+}

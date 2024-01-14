@@ -1,0 +1,200 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "cast_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_movie_link"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_name"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_aka_name"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_person_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_info_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q7c_link_type"
+    } ]
+  },
+  "optimalJoinTree" : "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb.q7c_movie_link(movie_id,link_type_id)\n||imdb.q7c_link_type(link_type_id)\n|imdb.q7c_name(person_id)\n||imdb.q7c_aka_name(person_id)\n||imdb.q7c_person_info(person_id,info_type_id)\n|||imdb.q7c_info_type(info_type_id)\n|imdb.q7c_title(movie_id,kind_id)",
+  "cost" : 892.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "cast_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_movie_link"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_name"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_aka_name"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_person_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_info_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q7c_link_type"
+      } ]
+    },
+    "optimalJoinTree" : "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb.q7c_movie_link(movie_id,link_type_id)\n||imdb.q7c_link_type(link_type_id)\n|imdb.q7c_name(person_id)\n||imdb.q7c_aka_name(person_id)\n||imdb.q7c_person_info(person_id,info_type_id)\n|||imdb.q7c_info_type(info_type_id)\n|imdb.q7c_title(movie_id,kind_id)",
+    "cost" : 892.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 90,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 256,
+        "numSQLsGen" : 1774,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "imdb.q7c_person_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_person_info"
+          },
+          "attributes" : [ "person_id", "info_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_info_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_info_type"
+          },
+          "attributes" : [ "info_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q7c_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_name"
+          },
+          "attributes" : [ "person_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_person_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_person_info"
+          },
+          "attributes" : [ "person_id", "info_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q7c_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_name"
+          },
+          "attributes" : [ "person_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_aka_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_aka_name"
+          },
+          "attributes" : [ "person_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q7c_movie_link",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_movie_link"
+          },
+          "attributes" : [ "movie_id", "link_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_link_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_link_type"
+          },
+          "attributes" : [ "link_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_name"
+          },
+          "attributes" : [ "person_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_movie_link",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_movie_link"
+          },
+          "attributes" : [ "movie_id", "link_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q7c_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q7c_title"
+          },
+          "attributes" : [ "movie_id", "kind_id" ]
+        }
+      } ]
+    }
+  } ]
+}

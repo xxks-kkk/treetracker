@@ -1,0 +1,57 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_info_idx"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1c_info_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1c_movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1c_company_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1c_title"
+    } ]
+  },
+  "optimalJoinTree" : "imdb_int.movie_info_idx(movie_id,info_type_id)\n|imdb.q1c_info_type(info_type_id)\n|imdb.q1c_movie_companies(movie_id,company_id,company_type_id)\n||imdb.q1c_company_type(company_type_id)\n||imdb.q1c_title(movie_id,kind_id)",
+  "cost" : 9318.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_info_idx"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1c_info_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1c_movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1c_company_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1c_title"
+      } ]
+    },
+    "optimalJoinTree" : "imdb_int.movie_info_idx(movie_id,info_type_id)\n|imdb.q1c_info_type(info_type_id)\n|imdb.q1c_movie_companies(movie_id,company_id,company_type_id)\n||imdb.q1c_company_type(company_type_id)\n||imdb.q1c_title(movie_id,kind_id)",
+    "cost" : 9318.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 19,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 51,
+        "numSQLsGen" : 138,
+        "numJoinTreeCosted" : 18
+      }
+    }
+  } ]
+}

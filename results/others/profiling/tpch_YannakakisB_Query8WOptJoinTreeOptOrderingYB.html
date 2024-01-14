@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<title>Tree view</title>
+<meta charset='utf-8'/>
+<style>
+body {
+	font-family: Arial;
+}
+ul.tree li {
+	list-style-type: none;
+	position: relative;
+}
+ul.tree ul {
+	margin-left: 20px; padding-left: 0;
+}
+ul.tree li ul {
+	display: none;
+}
+ul.tree li.open > ul {
+	display: block;
+}
+ul.tree li div:before {
+	height: 1em;
+	padding:0 .1em;
+	font-size: .8em;
+	display: block;
+	position: absolute;
+	left: -1.3em;
+	top: .2em;
+}
+ul.tree li > div {
+	display: inline;
+	cursor: pointer;
+	color: black;
+	text-decoration: none;
+}
+ul.tree li > div:not(:nth-last-child(2)):before {
+	content: '+';
+}
+ul.tree li.open > div:not(:nth-last-child(2)):before {
+	content: '-';
+}
+.sc {
+	text-decoration: underline;
+	text-decoration-color: black;
+	font-weight: bold;
+	background-color: #D9D9D9;
+}
+.t0 {color: #8eb48e;}
+.t1 {color: #30b430;}
+.t2 {color: #30b4b4;}
+.t3 {color: #b43030;}
+.t4 {color: #aaaa00;}
+.t5 {color: #cc8000;}
+.t6 {color: #a3ba66;}
+</style>
+<script>
+function treeView(opt) {
+	var tree = document.querySelectorAll('ul.tree div:not(:last-child)');
+	for(var i = 0; i < tree.length; i++){
+		var parent = tree[i].parentElement;
+		var classList = parent.classList;
+		if(opt == 0) {
+			classList.add('open');
+		} else {
+			classList.remove('open');
+		}
+	}
+}
+function openParent(p,t) {
+	if(p.parentElement.classList.contains('tree')) {
+		return;
+	}
+	p.parentElement.classList.add('open');
+	openParent(p.parentElement,t);
+}
+function search() {
+	var tree = document.querySelectorAll('ul.tree span');
+	var check = document.getElementById('check');
+	for(var i = 0; i < tree.length; i++){
+		tree[i].classList.remove('sc');
+		if(tree[i].innerHTML.includes(document.getElementById('search').value)) {
+			tree[i].classList.add('sc');
+			openParent(tree[i].parentElement,tree);
+		}
+	}
+}
+function openUL(n) {
+	var children = n.children;
+	if(children.length == 1) {
+		openNode(children[0]);
+	}
+}
+function openNode(n) {
+	var children = n.children;
+	for(var i = 0; i < children.length; i++){
+		if(children[i].nodeName == 'UL') {
+			n.classList.add('open');
+			openUL(children[i]);
+		}
+	}
+}
+function addClickActions() {
+var tree = document.querySelectorAll('ul.tree div:not(:last-child)');
+for(var i = 0; i < tree.length; i++){
+	tree[i].addEventListener('click', function(e) {
+		var parent = e.target.parentElement;
+		var classList = parent.classList;
+		if(classList.contains('open')) {
+			classList.remove('open');
+			var opensubs = parent.querySelectorAll(':scope .open');
+			for(var i = 0; i < opensubs.length; i++){
+				opensubs[i].classList.remove('open');
+			}
+		} else {
+			if(e.altKey) {
+				classList.add('open');
+				var opensubs = parent.querySelectorAll('li');
+				for(var i = 0; i < opensubs.length; i++){
+					opensubs[i].classList.add('open');
+				}
+			} else {
+				openNode(parent);
+			}
+		}
+	});
+}
+}
+</script>
+</head>
+<body>
+<div style='padding-left: 25px;'>Call tree view, total samples: 26,334 </div>
+<div style='padding-left: 25px;'><button type='button' onclick='treeView(0)'>++</button><button type='button' onclick='treeView(1)'>--</button>
+<input type='text' id='search' value='' size='35' onkeypress='if(event.keyCode == 13) document.getElementById('searchBtn').click()'>
+<button type='button' id='searchBtn' onclick='search()'>search</button></div>
+<ul class='tree'>
+<li><div>[0] 73.33% 19,311 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/YannakakisBtpchReductionTimeProfiling.main</span>
+<ul>
+<li><div>[1] 73.33% 19,311 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/YannakakisBtpchReductionTimeProfiling.run</span>
+<ul>
+<li><div>[2] 69.55% 18,314 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/JoinFragment.eval</span>
+<ul>
+<li><div>[3] 69.55% 18,314 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.evalForBenchmark</span>
+<ul>
+<li><div>[4] 69.06% 18,186 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.open</span>
+<ul>
+<li><div>[5] 69.06% 18,186 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/FullReducerOperator.open</span>
+<ul>
+<li><div>[6] 68.82% 18,123 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/FullReducerOperator.executeSemiJoins</span>
+<ul>
+<li><div>[7] 66.73% 17,572 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.eval</span>
+<ul>
+<li><div>[8] 56.32% 14,830 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.getNext</span>
+<ul>
+<li><div>[9] 56.32% 14,830 self: 1.67% 440</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedLeftSemiBloomJoinOperator.getNext</span>
+<ul>
+<li><div>[10] 49.51% 13,037 self: 0.25% 66</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedLeftSemiBloomJoinOperator.getNext</span>
+<ul>
+<li><div>[11] 48.96% 12,893 self: 2.08% 548</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedLeftSemiBloomJoinOperator.getNext</span>
+<ul>
+<li><div>[12] 27.23% 7,170 self: 1.69% 444</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li><div>[13] 24.34% 6,410 self: 0.11% 30</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.getVals</span>
+<ul>
+<li><div>[14] 19.47% 5,126 self: 0.33% 86</div><span class="t1"> java/util/stream/ReferencePipeline.collect</span>
+<ul>
+<li><div>[15] 18.56% 4,887 self: 0.77% 203</div><span class="t1"> java/util/stream/AbstractPipeline.evaluate</span>
+<ul>
+<li><div>[16] 16.83% 4,433 self: 0.30% 80</div><span class="t1"> java/util/stream/ReduceOps$ReduceOp.evaluateSequential</span>
+<ul>
+<li><div>[17] 15.84% 4,171 self: 0.15% 39</div><span class="t1"> java/util/stream/AbstractPipeline.wrapAndCopyInto</span>
+<ul>
+<li><div>[18] 14.34% 3,777 self: 0.27% 72</div><span class="t1"> java/util/stream/AbstractPipeline.copyInto</span>
+<ul>
+<li><div>[19] 12.06% 3,175 self: 0.30% 80</div><span class="t1"> java/util/Spliterator$OfInt.forEachRemaining</span>
+<ul>
+<li><div>[20] 11.75% 3,095 self: 0.83% 219</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.forEachRemaining</span>
+<ul>
+<li><div>[21] 10.92% 2,876 self: 1.84% 485</div><span class="t1"> java/util/stream/IntPipeline$1$1.accept</span>
+<ul>
+<li><div>[22] 8.59% 2,262 self: 0.46% 121</div><span class="t1"> java/util/stream/ReduceOps$3ReducingSink.accept</span>
+<ul>
+<li><div>[23] 8.13% 2,141 self: 0.32% 85</div><span class="t1"> java/util/stream/Collectors$$Lambda$47/1216590855.accept</span>
+<ul>
+<li><div>[24] 7.81% 2,056 self: 0.77% 204</div><span class="t1"> java/util/ArrayList.add</span>
+<ul>
+<li><div>[25] 7.03% 1,852 self: 4.31% 1,135</div><span class="t1"> java/util/ArrayList.add</span>
+<ul>
+<li><div>[26] 2.72% 717 self: 0.00% 0</div><span class="t1"> java/util/ArrayList.grow</span>
+<ul>
+<li><div>[27] 2.72% 717 self: 0.64% 169</div><span class="t1"> java/util/ArrayList.grow</span>
+<ul>
+<li><div>[28] 1.72% 452 self: 0.39% 102</div><span class="t1"> java/util/Arrays.copyOf</span>
+<ul>
+<li><div>[29] 1.18% 310 self: 0.77% 203</div><span class="t1"> java/util/Arrays.copyOf</span>
+<ul>
+<li><div>[30] 0.40% 106 self: 0.40% 106</div><span class="t1"> java/lang/System.arraycopy</span>
+<li><div>[30] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/lang/Math.min</span>
+</ul>
+<li><div>[29] 0.15% 40 self: 0.15% 40</div><span class="t1"> java/lang/Object.getClass</span>
+</ul>
+<li><div>[28] 0.36% 96 self: 0.34% 89</div><span class="t1"> java/util/ArrayList.newCapacity</span>
+<ul>
+<li><div>[29] 0.03% 7 self: 0.03% 7</div><span class="t1"> java/lang/Math.max</span>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[22] 0.49% 129 self: 0.49% 129</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow$$Lambda$162/782228073.apply</span>
+</ul>
+</ul>
+</ul>
+<li><div>[19] 1.18% 310 self: 0.34% 89</div><span class="t1"> java/util/stream/Sink$ChainedInt.begin</span>
+<ul>
+<li><div>[20] 0.84% 221 self: 0.58% 153</div><span class="t1"> java/util/stream/ReduceOps$3ReducingSink.begin</span>
+<ul>
+<li><div>[21] 0.26% 68 self: 0.26% 68</div><span class="t1"> java/util/stream/Collectors$$Lambda$46/90320863.get</span>
+</ul>
+</ul>
+<li><div>[19] 0.53% 139 self: 0.22% 59</div><span class="t1"> java/util/Spliterator.getExactSizeIfKnown</span>
+<ul>
+<li><div>[20] 0.20% 52 self: 0.20% 52</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.characteristics</span>
+<li><div>[20] 0.11% 28 self: 0.11% 28</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.estimateSize</span>
+</ul>
+<li><div>[19] 0.31% 81 self: 0.31% 81</div><span class="t1"> java/util/stream/StreamOpFlag.isKnown</span>
+</ul>
+<li><div>[18] 1.35% 355 self: 0.47% 124</div><span class="t1"> java/util/stream/AbstractPipeline.wrapSink</span>
+<ul>
+<li><div>[19] 0.70% 184 self: 0.39% 103</div><span class="t1"> java/util/stream/IntPipeline$1.opWrapSink</span>
+<ul>
+<li><div>[20] 0.31% 81 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline$1$1.&lt;init&gt;</span>
+<ul>
+<li><div>[21] 0.31% 81 self: 0.31% 81</div><span class="t1"> java/util/stream/Sink$ChainedInt.&lt;init&gt;</span>
+</ul>
+</ul>
+<li><div>[19] 0.18% 47 self: 0.18% 47</div><span class="t1"> java/util/stream/ReferencePipeline$3.opWrapSink</span>
+</ul>
+</ul>
+<li><div>[17] 0.57% 150 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$3.makeSink</span>
+<ul>
+<li><div>[18] 0.57% 150 self: 0.57% 150</div><span class="t1"> java/util/stream/ReduceOps$3.makeSink</span>
+</ul>
+<li><div>[17] 0.12% 32 self: 0.12% 32</div><span class="t1"> java/util/stream/ReduceOps$Box.get</span>
+</ul>
+<li><div>[16] 0.52% 137 self: 0.52% 137</div><span class="t1"> java/util/stream/AbstractPipeline.sourceSpliterator</span>
+<li><div>[16] 0.43% 114 self: 0.13% 35</div><span class="t1"> java/util/stream/ReduceOps$3.getOpFlags</span>
+<ul>
+<li><div>[17] 0.30% 79 self: 0.00% 0</div><span class="t1"> java/util/Collections$UnmodifiableCollection.contains</span>
+<ul>
+<li><div>[18] 0.30% 79 self: 0.30% 79</div><span class="t1"> java/util/RegularEnumSet.contains</span>
+</ul>
+</ul>
+</ul>
+<li><div>[15] 0.39% 103 self: 0.27% 72</div><span class="t1"> java/util/stream/ReduceOps.makeRef</span>
+<ul>
+<li><div>[16] 0.08% 22 self: 0.08% 22</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.supplier</span>
+<li><div>[16] 0.03% 8 self: 0.03% 8</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.accumulator</span>
+<li><div>[16] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.combiner</span>
+</ul>
+<li><div>[15] 0.19% 50 self: 0.00% 0</div><span class="t1"> java/util/Collections$UnmodifiableCollection.contains</span>
+<ul>
+<li><div>[16] 0.19% 50 self: 0.19% 50</div><span class="t1"> java/util/RegularEnumSet.contains</span>
+</ul>
+</ul>
+<li><div>[14] 1.74% 459 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline.mapToObj</span>
+<ul>
+<li><div>[15] 1.74% 459 self: 0.47% 125</div><span class="t1"> java/util/stream/IntPipeline.mapToObj</span>
+<ul>
+<li><div>[16] 1.27% 334 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline$1.&lt;init&gt;</span>
+<ul>
+<li><div>[17] 1.27% 334 self: 0.00% 0</div><span class="t1"> java/util/stream/ReferencePipeline$StatelessOp.&lt;init&gt;</span>
+<ul>
+<li><div>[18] 1.27% 334 self: 0.13% 33</div><span class="t1"> java/util/stream/ReferencePipeline.&lt;init&gt;</span>
+<ul>
+<li><div>[19] 1.14% 301 self: 1.06% 278</div><span class="t1"> java/util/stream/AbstractPipeline.&lt;init&gt;</span>
+<ul>
+<li><div>[20] 0.09% 23 self: 0.00% 0</div><span class="t1"> java/util/stream/StreamOpFlag.combineOpFlags</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[14] 1.56% 412 self: 0.26% 68</div><span class="t1"> java/util/stream/Collectors.toList</span>
+<ul>
+<li><div>[15] 1.31% 344 self: 0.32% 84</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.&lt;init&gt;</span>
+<ul>
+<li><div>[16] 0.99% 260 self: 0.99% 260</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.&lt;init&gt;</span>
+</ul>
+</ul>
+<li><div>[14] 1.45% 383 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li><div>[15] 1.45% 383 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li><div>[16] 0.88% 232 self: 0.88% 232</div><span class="t1"> java/util/stream/StreamSupport.intStream</span>
+<li><div>[16] 0.57% 151 self: 0.00% 0</div><span class="t1"> java/util/Arrays.spliterator</span>
+<ul>
+<li><div>[17] 0.57% 151 self: 0.57% 151</div><span class="t1"> java/util/Spliterators.spliterator</span>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[13] 0.55% 145 self: 0.30% 78</div><span class="t1"> org/eclipse/collections/impl/list/mutable/FastList.newList</span>
+<ul>
+<li><div>[14] 0.25% 67 self: 0.25% 67</div><span class="t1"> org/eclipse/collections/impl/list/mutable/FastList.&lt;init&gt;</span>
+</ul>
+<li><div>[13] 0.33% 86 self: 0.03% 7</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.getJoinAttributeIndex</span>
+<ul>
+<li><div>[14] 0.21% 56 self: 0.00% 0</div><span class="t1"> com/google/common/collect/SingletonImmutableSet.asList</span>
+<ul>
+<li><div>[15] 0.21% 56 self: 0.21% 56</div><span class="t1"> com/google/common/collect/ImmutableList.of</span>
+</ul>
+<li><div>[14] 0.09% 23 self: 0.09% 23</div><span class="t1"> com/google/common/collect/ImmutableMap.keySet</span>
+</ul>
+<li><div>[13] 0.19% 51 self: 0.10% 26</div><span class="t1"> java/util/ArrayList.get</span>
+<ul>
+<li><div>[14] 0.07% 18 self: 0.07% 18</div><span class="t1"> java/util/ArrayList.elementData</span>
+<li><div>[14] 0.03% 7 self: 0.00% 0</div><span class="t1"> java/util/Objects.checkIndex</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[13] 0.07% 19 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/JoinValueContainerKey.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.06% 15 self: 0.00% 0</div><span class="t1"> com/google/common/collect/SingletonImmutableList.iterator</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[12] 17.13% 4,511 self: 2.68% 707</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<ul>
+<li><div>[13] 14.45% 3,804 self: 0.21% 55</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNextRow</span>
+<ul>
+<li><div>[14] 14.24% 3,749 self: 0.08% 20</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.getNextRow</span>
+<ul>
+<li><div>[15] 14.16% 3,729 self: 4.96% 1,305</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.getNextRow</span>
+<ul>
+<li><div>[16] 4.50% 1,185 self: 0.92% 241</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.getLong</span>
+<ul>
+<li><div>[17] 3.58% 944 self: 0.24% 62</div><span class="t1"> org/zhu45/treetracker/jdbc/StandardReadMappings$$Lambda$133/1608633989.readLong</span>
+<ul>
+<li><div>[18] 3.35% 882 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBResultSet.getInt</span>
+<ul>
+<li><div>[19] 2.25% 593 self: 2.06% 543</div><span class="t1"> org/duckdb/DuckDBResultSet.check_and_null</span>
+<ul>
+<li><div>[20] 0.19% 50 self: 0.19% 50</div><span class="t1"> org/duckdb/DuckDBResultSet.check</span>
+</ul>
+<li><div>[19] 0.65% 171 self: 0.23% 60</div><span class="t1"> org/duckdb/DuckDBResultSet.getbuf</span>
+<ul>
+<li><div>[20] 0.32% 83 self: 0.00% 0</div><span class="t1"> java/nio/MappedByteBuffer.position</span>
+<ul>
+<li><div>[21] 0.32% 83 self: 0.00% 0</div><span class="t1"> java/nio/MappedByteBuffer.position</span>
+<ul>
+<li><div>[22] 0.32% 83 self: 0.00% 0</div><span class="t1"> java/nio/ByteBuffer.position</span>
+<ul>
+<li><div>[23] 0.32% 83 self: 0.32% 83</div><span class="t1"> java/nio/Buffer.position</span>
+</ul>
+</ul>
+</ul>
+<li><div>[20] 0.11% 28 self: 0.11% 28</div><span class="t1"> java/nio/ByteBuffer.order</span>
+</ul>
+<li><div>[19] 0.34% 89 self: 0.00% 0</div><span class="t1"> java/nio/DirectByteBuffer.getInt</span>
+<ul>
+<li><div>[20] 0.25% 66 self: 0.25% 66</div><span class="t1"> java/nio/Buffer.nextGetIndex</span>
+<li><div>[20] 0.05% 12 self: 0.05% 12</div><span class="t1"> java/nio/DirectByteBuffer.ix</span>
+<li><div>[20] 0.04% 11 self: 0.00% 0</div><span class="t1"> java/nio/DirectByteBuffer.getInt</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[19] 0.11% 29 self: 0.11% 29</div><span class="t1"> org/duckdb/DuckDBResultSet.isType</span>
+</ul>
+</ul>
+</ul>
+<li><div>[16] 4.31% 1,135 self: 0.09% 25</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.advanceNextPosition</span>
+<ul>
+<li><div>[17] 4.22% 1,110 self: 0.35% 92</div><span class="t1"> org/duckdb/DuckDBResultSet.next</span>
+<ul>
+<li><div>[18] 3.86% 1,017 self: 3.86% 1,017</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_fetch</span>
+<li><div>[18] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/duckdb/DuckDBResultSet.isClosed</span>
+</ul>
+</ul>
+<li><div>[16] 0.27% 72 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.&lt;init&gt;</span>
+<ul>
+<li><div>[17] 0.27% 71 self: 0.27% 71</div><span class="t1"> java/util/Collections.nCopies</span>
+</ul>
+<li><div>[16] 0.12% 31 self: 0.12% 31</div><span class="t1"> com/google/common/collect/RegularImmutableList.get</span>
+<li><div>[16] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/common/type/AbstractType.getJavaType</span>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[12] 2.52% 664 self: 0.77% 203</div><span class="t1"> org/zhu45/treetracker/common/BlockedBloom.mayContain</span>
+<ul>
+<li><div>[13] 1.25% 328 self: 1.25% 328</div><span class="t1"> org/fastfilter/utils/Hash.hash64</span>
+<li><div>[13] 0.51% 133 self: 0.51% 133</div><span class="t1"> org/fastfilter/utils/Hash.reduce</span>
+</ul>
+</ul>
+<li><div>[11] 0.27% 71 self: 0.02% 4</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li><div>[12] 0.23% 61 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.getVals</span>
+<ul>
+<li><div>[13] 0.20% 53 self: 0.00% 0</div><span class="t1"> java/util/stream/ReferencePipeline.collect</span>
+<ul>
+<li><div>[14] 0.20% 52 self: 0.01% 3</div><span class="t1"> java/util/stream/AbstractPipeline.evaluate</span>
+<ul>
+<li><div>[15] 0.17% 45 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$ReduceOp.evaluateSequential</span>
+<ul>
+<li><div>[16] 0.16% 42 self: 0.01% 2</div><span class="t1"> java/util/stream/AbstractPipeline.wrapAndCopyInto</span>
+<ul>
+<li><div>[17] 0.15% 39 self: 0.00% 1</div><span class="t1"> java/util/stream/AbstractPipeline.copyInto</span>
+<ul>
+<li><div>[18] 0.14% 36 self: 0.00% 1</div><span class="t1"> java/util/Spliterator$OfInt.forEachRemaining</span>
+<ul>
+<li><div>[19] 0.13% 35 self: 0.00% 0</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.forEachRemaining</span>
+<ul>
+<li><div>[20] 0.13% 35 self: 0.02% 5</div><span class="t1"> java/util/stream/IntPipeline$1$1.accept</span>
+<ul>
+<li><div>[21] 0.11% 28 self: 0.01% 2</div><span class="t1"> java/util/stream/ReduceOps$3ReducingSink.accept</span>
+<ul>
+<li><div>[22] 0.10% 26 self: 0.00% 0</div><span class="t1"> java/util/stream/Collectors$$Lambda$47/1216590855.accept</span>
+<ul>
+<li><div>[23] 0.10% 26 self: 0.01% 3</div><span class="t1"> java/util/ArrayList.add</span>
+<ul>
+<li><div>[24] 0.09% 23 self: 0.04% 11</div><span class="t1"> java/util/ArrayList.add</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[21] 0.01% 2 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow$$Lambda$162/782228073.apply</span>
+</ul>
+</ul>
+</ul>
+<li><div>[18] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/Spliterator.getExactSizeIfKnown</span>
+<li><div>[18] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/stream/Sink$ChainedInt.begin</span>
+</ul>
+<li><div>[17] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/stream/AbstractPipeline.wrapSink</span>
+</ul>
+<li><div>[16] 0.01% 2 self: 0.01% 2</div><span class="t1"> java/util/stream/ReduceOps$Box.get</span>
+<li><div>[16] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$3.makeSink</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[15] 0.02% 4 self: 0.02% 4</div><span class="t1"> java/util/stream/AbstractPipeline.sourceSpliterator</span>
+</ul>
+<li><div>[14] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/stream/ReduceOps.makeRef</span>
+</ul>
+<li><div>[13] 0.02% 5 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.01% 2 self: 0.00% 0</div><span class="t1"> java/util/stream/Collectors.toList</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[12] 0.02% 5 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.getJoinAttributeIndex</span>
+<ul>
+<li>...
+</ul>
+<li><div>[12] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/ArrayList.get</span>
+</ul>
+<li><div>[11] 0.03% 7 self: 0.02% 4</div><span class="t1"> org/zhu45/treetracker/common/BlockedBloom.mayContain</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[10] 3.25% 856 self: 0.21% 55</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li><div>[11] 2.85% 750 self: 0.02% 5</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.getVals</span>
+<ul>
+<li><div>[12] 2.24% 589 self: 0.02% 6</div><span class="t1"> java/util/stream/ReferencePipeline.collect</span>
+<ul>
+<li><div>[13] 2.13% 562 self: 0.08% 21</div><span class="t1"> java/util/stream/AbstractPipeline.evaluate</span>
+<ul>
+<li><div>[14] 1.97% 518 self: 0.04% 11</div><span class="t1"> java/util/stream/ReduceOps$ReduceOp.evaluateSequential</span>
+<ul>
+<li><div>[15] 1.83% 482 self: 0.04% 10</div><span class="t1"> java/util/stream/AbstractPipeline.wrapAndCopyInto</span>
+<ul>
+<li><div>[16] 1.56% 412 self: 0.02% 6</div><span class="t1"> java/util/stream/AbstractPipeline.copyInto</span>
+<ul>
+<li><div>[17] 1.26% 331 self: 0.06% 15</div><span class="t1"> java/util/Spliterator$OfInt.forEachRemaining</span>
+<ul>
+<li><div>[18] 1.20% 316 self: 0.09% 25</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.forEachRemaining</span>
+<ul>
+<li><div>[19] 1.11% 291 self: 0.18% 47</div><span class="t1"> java/util/stream/IntPipeline$1$1.accept</span>
+<ul>
+<li><div>[20] 0.86% 227 self: 0.04% 10</div><span class="t1"> java/util/stream/ReduceOps$3ReducingSink.accept</span>
+<ul>
+<li><div>[21] 0.82% 217 self: 0.03% 9</div><span class="t1"> java/util/stream/Collectors$$Lambda$47/1216590855.accept</span>
+<ul>
+<li><div>[22] 0.79% 208 self: 0.09% 23</div><span class="t1"> java/util/ArrayList.add</span>
+<ul>
+<li><div>[23] 0.70% 185 self: 0.36% 95</div><span class="t1"> java/util/ArrayList.add</span>
+<ul>
+<li><div>[24] 0.34% 90 self: 0.00% 0</div><span class="t1"> java/util/ArrayList.grow</span>
+<ul>
+<li><div>[25] 0.34% 90 self: 0.08% 21</div><span class="t1"> java/util/ArrayList.grow</span>
+<ul>
+<li><div>[26] 0.23% 61 self: 0.06% 15</div><span class="t1"> java/util/Arrays.copyOf</span>
+<ul>
+<li><div>[27] 0.15% 40 self: 0.08% 20</div><span class="t1"> java/util/Arrays.copyOf</span>
+<ul>
+<li><div>[28] 0.08% 20 self: 0.08% 20</div><span class="t1"> java/lang/System.arraycopy</span>
+</ul>
+<li><div>[27] 0.02% 6 self: 0.02% 6</div><span class="t1"> java/lang/Object.getClass</span>
+</ul>
+<li><div>[26] 0.03% 8 self: 0.03% 8</div><span class="t1"> java/util/ArrayList.newCapacity</span>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[20] 0.06% 17 self: 0.06% 17</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow$$Lambda$162/782228073.apply</span>
+</ul>
+</ul>
+</ul>
+<li><div>[17] 0.17% 46 self: 0.04% 11</div><span class="t1"> java/util/stream/Sink$ChainedInt.begin</span>
+<ul>
+<li><div>[18] 0.13% 35 self: 0.07% 18</div><span class="t1"> java/util/stream/ReduceOps$3ReducingSink.begin</span>
+<ul>
+<li><div>[19] 0.06% 17 self: 0.06% 17</div><span class="t1"> java/util/stream/Collectors$$Lambda$46/90320863.get</span>
+</ul>
+</ul>
+<li><div>[17] 0.09% 24 self: 0.03% 9</div><span class="t1"> java/util/Spliterator.getExactSizeIfKnown</span>
+<ul>
+<li>...
+</ul>
+<li><div>[17] 0.02% 5 self: 0.02% 5</div><span class="t1"> java/util/stream/StreamOpFlag.isKnown</span>
+</ul>
+<li><div>[16] 0.23% 60 self: 0.11% 28</div><span class="t1"> java/util/stream/AbstractPipeline.wrapSink</span>
+<ul>
+<li><div>[17] 0.08% 22 self: 0.04% 11</div><span class="t1"> java/util/stream/IntPipeline$1.opWrapSink</span>
+<ul>
+<li>...
+</ul>
+<li><div>[17] 0.04% 10 self: 0.04% 10</div><span class="t1"> java/util/stream/ReferencePipeline$3.opWrapSink</span>
+</ul>
+</ul>
+<li><div>[15] 0.08% 20 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$3.makeSink</span>
+<ul>
+<li>...
+</ul>
+<li><div>[15] 0.02% 5 self: 0.02% 5</div><span class="t1"> java/util/stream/ReduceOps$Box.get</span>
+</ul>
+<li><div>[14] 0.05% 14 self: 0.05% 14</div><span class="t1"> java/util/stream/AbstractPipeline.sourceSpliterator</span>
+<li><div>[14] 0.03% 9 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$3.getOpFlags</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[13] 0.06% 15 self: 0.05% 12</div><span class="t1"> java/util/stream/ReduceOps.makeRef</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.02% 6 self: 0.00% 0</div><span class="t1"> java/util/Collections$UnmodifiableCollection.contains</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[12] 0.24% 63 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline.mapToObj</span>
+<ul>
+<li><div>[13] 0.24% 63 self: 0.10% 26</div><span class="t1"> java/util/stream/IntPipeline.mapToObj</span>
+<ul>
+<li><div>[14] 0.14% 37 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline$1.&lt;init&gt;</span>
+<ul>
+<li><div>[15] 0.14% 37 self: 0.00% 0</div><span class="t1"> java/util/stream/ReferencePipeline$StatelessOp.&lt;init&gt;</span>
+<ul>
+<li><div>[16] 0.14% 37 self: 0.01% 3</div><span class="t1"> java/util/stream/ReferencePipeline.&lt;init&gt;</span>
+<ul>
+<li><div>[17] 0.13% 34 self: 0.12% 31</div><span class="t1"> java/util/stream/AbstractPipeline.&lt;init&gt;</span>
+<ul>
+<li><div>[18] 0.01% 3 self: 0.00% 0</div><span class="t1"> java/util/stream/StreamOpFlag.combineOpFlags</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[12] 0.20% 53 self: 0.04% 11</div><span class="t1"> java/util/stream/Collectors.toList</span>
+<ul>
+<li><div>[13] 0.16% 42 self: 0.07% 18</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.&lt;init&gt;</span>
+<ul>
+<li><div>[14] 0.09% 24 self: 0.09% 24</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.&lt;init&gt;</span>
+</ul>
+</ul>
+<li><div>[12] 0.15% 40 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li><div>[13] 0.15% 40 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li><div>[14] 0.09% 24 self: 0.09% 24</div><span class="t1"> java/util/stream/StreamSupport.intStream</span>
+<li><div>[14] 0.06% 16 self: 0.00% 0</div><span class="t1"> java/util/Arrays.spliterator</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[11] 0.08% 21 self: 0.05% 13</div><span class="t1"> org/eclipse/collections/impl/list/mutable/FastList.newList</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.06% 16 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.getJoinAttributeIndex</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.03% 9 self: 0.01% 2</div><span class="t1"> java/util/ArrayList.get</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.01% 3 self: 0.00% 0</div><span class="t1"> com/google/common/collect/SingletonImmutableList.iterator</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/JoinValueContainerKey.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[10] 1.55% 408 self: 0.29% 76</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<ul>
+<li><div>[11] 1.26% 332 self: 0.02% 4</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNextRow</span>
+<ul>
+<li><div>[12] 1.14% 300 self: 0.01% 3</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.getNextRow</span>
+<ul>
+<li><div>[13] 1.13% 297 self: 0.35% 91</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.getNextRow</span>
+<ul>
+<li><div>[14] 0.43% 113 self: 0.04% 11</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.advanceNextPosition</span>
+<ul>
+<li><div>[15] 0.39% 102 self: 0.03% 9</div><span class="t1"> org/duckdb/DuckDBResultSet.next</span>
+<ul>
+<li><div>[16] 0.35% 93 self: 0.35% 93</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_fetch</span>
+</ul>
+</ul>
+<li><div>[14] 0.29% 76 self: 0.06% 15</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.getLong</span>
+<ul>
+<li><div>[15] 0.23% 61 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/jdbc/StandardReadMappings$$Lambda$133/1608633989.readLong</span>
+<ul>
+<li><div>[16] 0.22% 59 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBResultSet.getInt</span>
+<ul>
+<li><div>[17] 0.15% 39 self: 0.14% 38</div><span class="t1"> org/duckdb/DuckDBResultSet.check_and_null</span>
+<ul>
+<li><div>[18] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/duckdb/DuckDBResultSet.check</span>
+</ul>
+<li><div>[17] 0.05% 13 self: 0.02% 6</div><span class="t1"> org/duckdb/DuckDBResultSet.getbuf</span>
+<ul>
+<li>...
+</ul>
+<li><div>[17] 0.02% 4 self: 0.00% 0</div><span class="t1"> java/nio/DirectByteBuffer.getInt</span>
+<ul>
+<li>...
+</ul>
+<li><div>[17] 0.01% 3 self: 0.01% 3</div><span class="t1"> org/duckdb/DuckDBResultSet.isType</span>
+</ul>
+</ul>
+</ul>
+<li><div>[14] 0.04% 11 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+<li><div>[14] 0.02% 5 self: 0.02% 5</div><span class="t1"> com/google/common/collect/RegularImmutableList.get</span>
+<li><div>[14] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/NoSuchElementException.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[12] 0.11% 28 self: 0.05% 13</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMapMultiSet$MapBasedMultiSetIterator.next</span>
+<ul>
+<li><div>[13] 0.05% 14 self: 0.01% 2</div><span class="t1"> java/util/HashMap$EntryIterator.next</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/HashMap$Node.getValue</span>
+</ul>
+</ul>
+</ul>
+<li><div>[10] 0.34% 89 self: 0.14% 38</div><span class="t1"> org/zhu45/treetracker/common/BlockedBloom.mayContain</span>
+<ul>
+<li><div>[11] 0.16% 42 self: 0.16% 42</div><span class="t1"> org/fastfilter/utils/Hash.hash64</span>
+<li><div>[11] 0.03% 9 self: 0.03% 9</div><span class="t1"> org/fastfilter/utils/Hash.reduce</span>
+</ul>
+</ul>
+</ul>
+<li><div>[8] 8.54% 2,248 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.open</span>
+<ul>
+<li><div>[9] 8.54% 2,248 self: 0.27% 71</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedLeftSemiBloomJoinOperator.open</span>
+<ul>
+<li><div>[10] 4.26% 1,122 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.open</span>
+<ul>
+<li><div>[11] 4.26% 1,122 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.reset</span>
+<ul>
+<li><div>[12] 4.26% 1,121 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/RecordIntTupleSourceProvider.createTupleSource</span>
+<ul>
+<li><div>[13] 4.26% 1,121 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/RecordIntTupleSourceProvider.createTupleSource</span>
+<ul>
+<li><div>[14] 4.25% 1,119 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.&lt;init&gt;</span>
+<ul>
+<li><div>[15] 4.25% 1,119 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseRecordTupleSource.&lt;init&gt;</span>
+<ul>
+<li><div>[16] 4.25% 1,119 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordSet.cursor</span>
+<ul>
+<li><div>[17] 4.25% 1,118 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.&lt;init&gt;</span>
+<ul>
+<li><div>[18] 3.44% 907 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getConnection</span>
+<ul>
+<li><div>[19] 3.44% 907 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[20] 3.44% 907 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[21] 3.43% 904 self: 0.00% 1</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[22] 3.43% 902 self: 3.43% 902</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+<li><div>[22] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/lang/String.replaceFirst</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[21] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+<li><div>[21] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/Properties.clone</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[18] 0.69% 182 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[19] 0.69% 182 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[20] 0.69% 181 self: 0.69% 181</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+<li><div>[20] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/duckdb/DuckDBResultSet.&lt;init&gt;</span>
+</ul>
+</ul>
+<li><div>[18] 0.10% 26 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.buildSql</span>
+<ul>
+<li><div>[19] 0.10% 26 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/QueryBuilder.buildSql</span>
+<ul>
+<li><div>[20] 0.08% 22 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getPreparedStatement</span>
+<ul>
+<li>...
+</ul>
+<li><div>[20] 0.01% 3 self: 0.00% 0</div><span class="t1"> java/util/stream/ReferencePipeline.collect</span>
+<ul>
+<li>...
+</ul>
+<li><div>[20] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/AbstractCollection.isEmpty</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[18] 0.00% 1 self: 0.00% 1</div><span class="t1"> com/google/common/collect/ImmutableCollection.toArray</span>
+<li><div>[18] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toTreeTrackerType</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[17] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/lang/ClassLoader.loadClass</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[14] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordSetProvider.getRecordSet</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[10] 3.14% 827 self: 0.81% 213</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedLeftSemiBloomJoinOperator.open</span>
+<ul>
+<li><div>[11] 1.58% 417 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedLeftSemiBloomJoinOperator.open</span>
+<ul>
+<li><div>[12] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.open</span>
+<ul>
+<li><div>[13] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.reset</span>
+<ul>
+<li><div>[14] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/RecordIntTupleSourceProvider.createTupleSource</span>
+<ul>
+<li><div>[15] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/RecordIntTupleSourceProvider.createTupleSource</span>
+<ul>
+<li><div>[16] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.&lt;init&gt;</span>
+<ul>
+<li><div>[17] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseRecordTupleSource.&lt;init&gt;</span>
+<ul>
+<li><div>[18] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordSet.cursor</span>
+<ul>
+<li><div>[19] 1.57% 414 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.&lt;init&gt;</span>
+<ul>
+<li><div>[20] 1.06% 278 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[21] 1.06% 278 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[22] 1.06% 278 self: 1.06% 278</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[20] 0.49% 128 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getConnection</span>
+<ul>
+<li><div>[21] 0.49% 128 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[22] 0.49% 128 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[23] 0.49% 128 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[24] 0.49% 128 self: 0.49% 128</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[20] 0.03% 7 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.buildSql</span>
+<ul>
+<li>...
+</ul>
+<li><div>[20] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toTreeTrackerType</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[12] 0.01% 3 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[11] 0.45% 119 self: 0.03% 9</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li><div>[12] 0.39% 102 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.getVals</span>
+<ul>
+<li><div>[13] 0.27% 71 self: 0.02% 4</div><span class="t1"> java/util/stream/ReferencePipeline.collect</span>
+<ul>
+<li><div>[14] 0.25% 66 self: 0.02% 4</div><span class="t1"> java/util/stream/AbstractPipeline.evaluate</span>
+<ul>
+<li><div>[15] 0.21% 56 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$ReduceOp.evaluateSequential</span>
+<ul>
+<li><div>[16] 0.21% 54 self: 0.00% 0</div><span class="t1"> java/util/stream/AbstractPipeline.wrapAndCopyInto</span>
+<ul>
+<li><div>[17] 0.18% 47 self: 0.00% 0</div><span class="t1"> java/util/stream/AbstractPipeline.copyInto</span>
+<ul>
+<li><div>[18] 0.14% 36 self: 0.01% 3</div><span class="t1"> java/util/Spliterator$OfInt.forEachRemaining</span>
+<ul>
+<li><div>[19] 0.13% 33 self: 0.02% 4</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.forEachRemaining</span>
+<ul>
+<li><div>[20] 0.11% 29 self: 0.03% 7</div><span class="t1"> java/util/stream/IntPipeline$1$1.accept</span>
+<ul>
+<li><div>[21] 0.08% 22 self: 0.00% 1</div><span class="t1"> java/util/stream/ReduceOps$3ReducingSink.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[18] 0.04% 10 self: 0.01% 3</div><span class="t1"> java/util/stream/Sink$ChainedInt.begin</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/Spliterator.getExactSizeIfKnown</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[17] 0.03% 7 self: 0.01% 2</div><span class="t1"> java/util/stream/AbstractPipeline.wrapSink</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[16] 0.01% 2 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$3.makeSink</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[15] 0.02% 4 self: 0.02% 4</div><span class="t1"> java/util/stream/AbstractPipeline.sourceSpliterator</span>
+<li><div>[15] 0.01% 2 self: 0.01% 2</div><span class="t1"> java/util/stream/ReduceOps$3.getOpFlags</span>
+</ul>
+<li><div>[14] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/stream/ReduceOps.makeRef</span>
+</ul>
+<li><div>[13] 0.08% 22 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline.mapToObj</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.02% 5 self: 0.00% 0</div><span class="t1"> java/util/stream/Collectors.toList</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.02% 4 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[12] 0.02% 5 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.getJoinAttributeIndex</span>
+<ul>
+<li>...
+</ul>
+<li><div>[12] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/ArrayList.get</span>
+<ul>
+<li>...
+</ul>
+<li><div>[12] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/eclipse/collections/impl/list/mutable/FastList.newList</span>
+<li><div>[12] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/JoinValueContainerKey.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[11] 0.22% 58 self: 0.20% 52</div><span class="t1"> org/zhu45/treetracker/common/BlockedBloom.add</span>
+<ul>
+<li><div>[12] 0.02% 4 self: 0.02% 4</div><span class="t1"> org/fastfilter/utils/Hash.hash64</span>
+<li><div>[12] 0.01% 2 self: 0.01% 2</div><span class="t1"> org/fastfilter/utils/Hash.reduce</span>
+</ul>
+<li><div>[11] 0.08% 20 self: 0.04% 10</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[10] 0.35% 92 self: 0.02% 5</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li><div>[11] 0.30% 80 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.getVals</span>
+<ul>
+<li><div>[12] 0.21% 55 self: 0.00% 1</div><span class="t1"> java/util/stream/ReferencePipeline.collect</span>
+<ul>
+<li><div>[13] 0.18% 48 self: 0.01% 2</div><span class="t1"> java/util/stream/AbstractPipeline.evaluate</span>
+<ul>
+<li><div>[14] 0.17% 45 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$ReduceOp.evaluateSequential</span>
+<ul>
+<li><div>[15] 0.15% 39 self: 0.00% 1</div><span class="t1"> java/util/stream/AbstractPipeline.wrapAndCopyInto</span>
+<ul>
+<li><div>[16] 0.12% 32 self: 0.00% 0</div><span class="t1"> java/util/stream/AbstractPipeline.copyInto</span>
+<ul>
+<li><div>[17] 0.10% 27 self: 0.00% 0</div><span class="t1"> java/util/Spliterator$OfInt.forEachRemaining</span>
+<ul>
+<li><div>[18] 0.10% 27 self: 0.01% 2</div><span class="t1"> java/util/Spliterators$IntArraySpliterator.forEachRemaining</span>
+<ul>
+<li><div>[19] 0.09% 25 self: 0.01% 3</div><span class="t1"> java/util/stream/IntPipeline$1$1.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[17] 0.02% 5 self: 0.01% 3</div><span class="t1"> java/util/stream/Sink$ChainedInt.begin</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[16] 0.02% 6 self: 0.00% 1</div><span class="t1"> java/util/stream/AbstractPipeline.wrapSink</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[15] 0.02% 6 self: 0.00% 0</div><span class="t1"> java/util/stream/ReduceOps$3.makeSink</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[14] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/stream/AbstractPipeline.sourceSpliterator</span>
+</ul>
+<li><div>[13] 0.02% 4 self: 0.01% 3</div><span class="t1"> java/util/stream/ReduceOps.makeRef</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.01% 2 self: 0.00% 0</div><span class="t1"> java/util/Collections$UnmodifiableCollection.contains</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[12] 0.07% 18 self: 0.00% 0</div><span class="t1"> java/util/stream/IntPipeline.mapToObj</span>
+<ul>
+<li>...
+</ul>
+<li><div>[12] 0.02% 4 self: 0.00% 1</div><span class="t1"> java/util/stream/Collectors.toList</span>
+<ul>
+<li>...
+</ul>
+<li><div>[12] 0.01% 3 self: 0.00% 0</div><span class="t1"> java/util/Arrays.stream</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[11] 0.01% 3 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.getJoinAttributeIndex</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.01% 2 self: 0.00% 1</div><span class="t1"> java/util/ArrayList.get</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/lang/Integer.intValue</span>
+<li><div>[11] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/JoinValueContainerKey.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[10] 0.27% 72 self: 0.02% 4</div><span class="t1"> org/zhu45/treetracker/common/BlockedBloom.&lt;init&gt;</span>
+<ul>
+<li><div>[11] 0.26% 68 self: 0.26% 68</div><span class="t1"> org/fastfilter/utils/Hash.randomSeed</span>
+</ul>
+<li><div>[10] 0.18% 47 self: 0.16% 43</div><span class="t1"> org/zhu45/treetracker/common/BlockedBloom.add</span>
+<ul>
+<li><div>[11] 0.01% 3 self: 0.01% 3</div><span class="t1"> org/fastfilter/utils/Hash.hash64</span>
+<li><div>[11] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/fastfilter/utils/Hash.reduce</span>
+</ul>
+<li><div>[10] 0.06% 17 self: 0.02% 5</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[8] 1.09% 287 self: 0.01% 2</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMultiSet.add</span>
+<ul>
+<li><div>[9] 1.08% 285 self: 0.02% 5</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMapMultiSet.add</span>
+<ul>
+<li><div>[10] 0.56% 148 self: 0.00% 0</div><span class="t1"> java/util/HashMap.put</span>
+<ul>
+<li><div>[11] 0.56% 147 self: 0.07% 18</div><span class="t1"> java/util/HashMap.putVal</span>
+<ul>
+<li><div>[12] 0.47% 125 self: 0.47% 125</div><span class="t1"> java/util/HashMap.resize</span>
+<li><div>[12] 0.01% 2 self: 0.01% 2</div><span class="t1"> java/util/HashMap.newNode</span>
+<li><div>[12] 0.01% 2 self: 0.00% 0</div><span class="t1"> java/util/LinkedHashMap.newNode</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[11] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/util/HashMap.hash</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[10] 0.50% 132 self: 0.02% 4</div><span class="t1"> java/util/HashMap.get</span>
+<ul>
+<li><div>[11] 0.46% 121 self: 0.46% 121</div><span class="t1"> java/util/HashMap.getNode</span>
+<li><div>[11] 0.03% 7 self: 0.01% 3</div><span class="t1"> java/util/HashMap.hash</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[8] 0.77% 204 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.close</span>
+<ul>
+<li><div>[9] 0.77% 203 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.close</span>
+<ul>
+<li><div>[10] 0.53% 140 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.close</span>
+<ul>
+<li><div>[11] 0.53% 140 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.finish</span>
+<ul>
+<li><div>[12] 0.53% 140 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseRecordTupleSource.close</span>
+<ul>
+<li><div>[13] 0.53% 140 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.close</span>
+<ul>
+<li><div>[14] 0.39% 104 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcClient.abortReadConnection</span>
+<ul>
+<li><div>[15] 0.39% 104 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.close</span>
+<ul>
+<li><div>[16] 0.39% 104 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.maybeShutdown</span>
+<ul>
+<li><div>[17] 0.39% 104 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.shutdown</span>
+<ul>
+<li><div>[18] 0.39% 104 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.finalize</span>
+<ul>
+<li><div>[19] 0.39% 104 self: 0.39% 104</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_shutdown</span>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[14] 0.14% 36 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.close</span>
+<ul>
+<li><div>[15] 0.14% 36 self: 0.14% 36</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_release</span>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[10] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.close</span>
+<ul>
+<li><div>[11] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.close</span>
+<ul>
+<li><div>[12] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.close</span>
+<ul>
+<li><div>[13] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.finish</span>
+<ul>
+<li><div>[14] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseRecordTupleSource.close</span>
+<ul>
+<li><div>[15] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcRecordCursor.close</span>
+<ul>
+<li><div>[16] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.close</span>
+<ul>
+<li><div>[17] 0.19% 50 self: 0.19% 50</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_release</span>
+<li><div>[17] 0.05% 13 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBResultSet.close</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[8] 0.01% 3 self: 0.00% 1</div><span class="t1"> org/apache/logging/log4j/spi/AbstractLogger.isTraceEnabled</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[7] 1.03% 271 self: 0.00% 0</div><span class="t1"> org/zhu45/treektracker/multiwayJoin/MultiwayJoinDomain.setRowSetAsDomain</span>
+<ul>
+<li><div>[8] 1.03% 271 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/common/BaseDomain.setDomainVals</span>
+<ul>
+<li><div>[9] 1.01% 266 self: 0.01% 2</div><span class="t1"> java/util/AbstractCollection.addAll</span>
+<ul>
+<li><div>[10] 1.00% 263 self: 0.00% 1</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMultiSet.add</span>
+<ul>
+<li><div>[11] 0.99% 262 self: 0.01% 3</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMapMultiSet.add</span>
+<ul>
+<li><div>[12] 0.91% 239 self: 0.00% 1</div><span class="t1"> java/util/HashMap.get</span>
+<ul>
+<li><div>[13] 0.86% 227 self: 0.04% 11</div><span class="t1"> java/util/HashMap.hash</span>
+<ul>
+<li><div>[14] 0.47% 123 self: 0.47% 123</div><span class="t1"> java/lang/String.hashCode</span>
+<li><div>[14] 0.35% 93 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.hashCode</span>
+<ul>
+<li><div>[15] 0.35% 92 self: 0.35% 92</div><span class="t1"> java/util/Arrays.hashCode</span>
+</ul>
+</ul>
+<li><div>[13] 0.04% 11 self: 0.04% 11</div><span class="t1"> java/util/HashMap.getNode</span>
+</ul>
+<li><div>[12] 0.08% 20 self: 0.00% 1</div><span class="t1"> java/util/HashMap.put</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[10] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/eclipse/collections/impl/list/mutable/MutableIterator.hasNext</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[9] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMapMultiSet.clear</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[7] 1.02% 269 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/common/row/RowSet.&lt;init&gt;</span>
+<ul>
+<li><div>[8] 1.02% 269 self: 0.00% 1</div><span class="t1"> java/lang/Iterable.forEach</span>
+<ul>
+<li><div>[9] 0.63% 165 self: 0.61% 161</div><span class="t1"> org/zhu45/treetracker/common/row/RowSet$$Lambda$163/1060703587.accept</span>
+<ul>
+<li><div>[10] 0.02% 4 self: 0.01% 3</div><span class="t1"> org/eclipse/collections/impl/list/mutable/FastList.add</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[9] 0.39% 103 self: 0.06% 16</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMapMultiSet$MapBasedMultiSetIterator.next</span>
+<ul>
+<li><div>[10] 0.33% 87 self: 0.00% 0</div><span class="t1"> java/util/HashMap$EntryIterator.next</span>
+<ul>
+<li><div>[11] 0.33% 87 self: 0.01% 2</div><span class="t1"> java/util/HashMap$EntryIterator.next</span>
+<ul>
+<li><div>[12] 0.32% 85 self: 0.32% 85</div><span class="t1"> java/util/HashMap$HashIterator.nextNode</span>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[7] 0.04% 10 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+<li><div>[7] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/HashMap.get</span>
+</ul>
+<li><div>[6] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li><div>[7] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.hashJoinOpen</span>
+<ul>
+<li><div>[8] 0.24% 63 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li><div>[9] 0.24% 63 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.hashJoinOpen</span>
+<ul>
+<li><div>[10] 0.21% 56 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li><div>[11] 0.21% 56 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.hashJoinOpen</span>
+<ul>
+<li><div>[12] 0.21% 56 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li><div>[13] 0.21% 56 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.hashJoinOpen</span>
+<ul>
+<li><div>[14] 0.21% 56 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li><div>[15] 0.21% 56 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.hashJoinOpen</span>
+<ul>
+<li><div>[16] 0.13% 35 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li><div>[17] 0.13% 35 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.hashJoinOpen</span>
+<ul>
+<li><div>[18] 0.04% 10 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.open</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.03% 8 self: 0.03% 8</div><span class="t1"> org/eclipse/collections/impl/map/mutable/UnifiedMap.containsKey</span>
+<li><div>[18] 0.03% 7 self: 0.01% 3</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/eclipse/collections/impl/map/mutable/UnifiedMap.newMap</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.01% 3 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[16] 0.02% 6 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<ul>
+<li>...
+</ul>
+<li><div>[16] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/eclipse/collections/impl/map/mutable/UnifiedMap.newMap</span>
+<ul>
+<li>...
+</ul>
+<li><div>[16] 0.02% 4 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li>...
+</ul>
+<li><div>[16] 0.01% 2 self: 0.01% 2</div><span class="t1"> org/eclipse/collections/impl/map/mutable/UnifiedMap.containsKey</span>
+<li><div>[16] 0.01% 2 self: 0.01% 2</div><span class="t1"> org/eclipse/collections/impl/map/mutable/UnifiedMap.put</span>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[10] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[4] 0.49% 128 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/execution/ExecutionNormal.getNext</span>
+<ul>
+<li><div>[5] 0.49% 128 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/FullReducerOperator.getNext</span>
+<ul>
+<li><div>[6] 0.48% 127 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[7] 0.43% 112 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[8] 0.37% 97 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[9] 0.33% 87 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[10] 0.29% 77 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[11] 0.21% 55 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[12] 0.11% 29 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.getNext</span>
+<ul>
+<li><div>[13] 0.09% 25 self: 0.02% 5</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.01% 2 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+</ul>
+<li><div>[12] 0.10% 26 self: 0.02% 4</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li><div>[13] 0.04% 11 self: 0.02% 4</div><span class="t1"> org/eclipse/collections/impl/map/mutable/UnifiedMap.get</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.04% 10 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.join</span>
+<ul>
+<li>...
+</ul>
+<li><div>[13] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[11] 0.08% 21 self: 0.01% 2</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[10] 0.03% 9 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[9] 0.04% 10 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[8] 0.06% 15 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[7] 0.05% 13 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[2] 3.57% 941 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/benchmark/QueryProvider.queryProvider</span>
+<ul>
+<li><div>[3] 3.49% 918 self: 0.00% 0</div><span class="t1"> java/lang/reflect/Constructor.newInstance</span>
+<ul>
+<li><div>[4] 3.49% 918 self: 0.00% 0</div><span class="t1"> jdk/internal/reflect/DelegatingConstructorAccessorImpl.newInstance</span>
+<ul>
+<li><div>[5] 3.49% 918 self: 0.00% 0</div><span class="t1"> jdk/internal/reflect/NativeConstructorAccessorImpl.newInstance</span>
+<ul>
+<li><div>[6] 3.49% 918 self: 0.00% 0</div><span class="t1"> jdk/internal/reflect/NativeConstructorAccessorImpl.newInstance0</span>
+<ul>
+<li><div>[7] 3.49% 918 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/Query8WOptJoinTreeOptOrderingYB.&lt;init&gt;</span>
+<ul>
+<li><div>[8] 3.49% 918 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/Query.&lt;init&gt;</span>
+<ul>
+<li><div>[9] 3.49% 918 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/Query.initializeQuery</span>
+<ul>
+<li><div>[10] 3.49% 918 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/Query8WOptJoinTreeOptOrderingYB.constructQuery</span>
+<ul>
+<li><div>[11] 3.02% 794 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/JoinFragment.createPhysicalPlanForYannakakis</span>
+<ul>
+<li><div>[12] 2.47% 651 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.build</span>
+<ul>
+<li><div>[13] 2.47% 651 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[14] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/FullReducerNode.accept</span>
+<ul>
+<li><div>[15] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitFullReducer</span>
+<ul>
+<li><div>[16] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitFullReducer</span>
+<ul>
+<li><div>[17] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitNode</span>
+<ul>
+<li><div>[18] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/rule/AttachFullReducer.applyToPhysicalPlan</span>
+<ul>
+<li><div>[19] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/rule/AttachFullReducer.generateFullReducer</span>
+<ul>
+<li><div>[20] 2.29% 602 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/rule/AttachFullReducer.createPlanFromMultiwayJoinNodes</span>
+<ul>
+<li><div>[21] 1.72% 452 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.&lt;init&gt;</span>
+<ul>
+<li><div>[22] 1.72% 452 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/PlanBuildContext.initializeCatalogGroup</span>
+<ul>
+<li><div>[23] 1.72% 452 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/CatalogGroup.initializeCatalogGroup</span>
+<ul>
+<li><div>[24] 1.72% 452 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/TableCatalog.initializeTableCatalog</span>
+<ul>
+<li><div>[25] 1.72% 452 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/TableCatalog.&lt;init&gt;</span>
+<ul>
+<li><div>[26] 0.69% 181 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/TableCatalog.initializeFractionOfUniquesInEachColumn</span>
+<ul>
+<li><div>[27] 0.69% 181 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.fractionOfUniqueValuesInColumn</span>
+<ul>
+<li><div>[28] 0.34% 90 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[29] 0.34% 90 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[30] 0.34% 90 self: 0.34% 90</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[28] 0.25% 66 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getConnection</span>
+<ul>
+<li><div>[29] 0.25% 66 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[30] 0.25% 66 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[31] 0.25% 66 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[32] 0.25% 66 self: 0.25% 66</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[28] 0.06% 15 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.close</span>
+<ul>
+<li>...
+</ul>
+<li><div>[28] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableSize</span>
+<ul>
+<li>...
+</ul>
+<li><div>[28] 0.01% 3 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/QueryBuilder.getNumUniqueForColumn</span>
+<ul>
+<li>...
+</ul>
+<li><div>[28] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.close</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[26] 0.58% 153 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableHandle</span>
+<ul>
+<li><div>[27] 0.33% 87 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteTableName</span>
+<ul>
+<li><div>[28] 0.33% 87 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.listTablesByLowerCase</span>
+<ul>
+<li><div>[29] 0.32% 85 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DuckDBSqlClient.getTables</span>
+<ul>
+<li><div>[30] 0.32% 85 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabaseMetaData.getTables</span>
+<ul>
+<li><div>[31] 0.31% 82 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[32] 0.31% 82 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[33] 0.31% 82 self: 0.31% 82</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[31] 0.01% 3 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.prepareStatement</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[29] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBResultSet.next</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[27] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DuckDBSqlClient.getTables</span>
+<ul>
+<li><div>[28] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabaseMetaData.getTables</span>
+<ul>
+<li><div>[29] 0.13% 33 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[30] 0.13% 33 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[31] 0.13% 33 self: 0.13% 33</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[29] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.prepareStatement</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[27] 0.11% 30 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[28] 0.11% 30 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[29] 0.11% 30 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[30] 0.11% 30 self: 0.11% 30</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+</ul>
+</ul>
+</ul>
+<li><div>[27] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteSchemaName</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[26] 0.45% 118 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getColumns</span>
+<ul>
+<li><div>[27] 0.33% 87 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getColumns</span>
+<ul>
+<li><div>[28] 0.33% 87 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabaseMetaData.getColumns</span>
+<ul>
+<li><div>[29] 0.30% 79 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[30] 0.24% 64 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[31] 0.24% 64 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[32] 0.24% 64 self: 0.24% 64</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[30] 0.05% 13 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li>...
+</ul>
+<li><div>[30] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.prepare</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[29] 0.03% 8 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.prepareStatement</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[27] 0.11% 30 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[28] 0.11% 30 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[29] 0.11% 30 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[30] 0.11% 30 self: 0.11% 30</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+</ul>
+</ul>
+</ul>
+<li><div>[27] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBResultSet.next</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[21] 0.57% 150 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.build</span>
+<ul>
+<li><div>[22] 0.57% 150 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[23] 0.57% 150 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[24] 0.50% 131 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/TableNode.accept</span>
+<ul>
+<li><div>[25] 0.50% 131 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitTable</span>
+<ul>
+<li><div>[26] 0.50% 131 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitTable</span>
+<ul>
+<li><div>[27] 0.50% 131 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitNode</span>
+<ul>
+<li><div>[28] 0.50% 131 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.createTableScanOperator</span>
+<ul>
+<li><div>[29] 0.50% 131 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.setOperatorAssociatedRelationSize</span>
+<ul>
+<li><div>[30] 0.36% 96 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableHandle</span>
+<ul>
+<li><div>[31] 0.27% 70 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteTableName</span>
+<ul>
+<li><div>[32] 0.27% 70 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.listTablesByLowerCase</span>
+<ul>
+<li><div>[33] 0.27% 70 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DuckDBSqlClient.getTables</span>
+<ul>
+<li><div>[34] 0.27% 70 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabaseMetaData.getTables</span>
+<ul>
+<li><div>[35] 0.25% 65 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[36] 0.25% 65 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[37] 0.25% 65 self: 0.25% 65</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[35] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.prepareStatement</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[31] 0.09% 25 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DuckDBSqlClient.getTables</span>
+<ul>
+<li>...
+</ul>
+<li><div>[31] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteSchemaName</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[30] 0.11% 29 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getConnection</span>
+<ul>
+<li><div>[31] 0.11% 29 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[32] 0.11% 29 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[33] 0.10% 27 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[34] 0.10% 27 self: 0.10% 27</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+</ul>
+<li><div>[33] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[30] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableSize</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[24] 0.07% 19 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[14] 0.19% 49 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[15] 0.19% 49 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[16] 0.17% 44 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[17] 0.14% 38 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[18] 0.13% 33 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[19] 0.11% 28 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li><div>[20] 0.08% 22 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.visitPlan</span>
+<ul>
+<li>...
+</ul>
+<li><div>[20] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/TableNode.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[19] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/TableNode.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[18] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/TableNode.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[17] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/TableNode.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[16] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/plan/TableNode.accept</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[12] 0.54% 142 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/RandomPhysicalPlanBuilder.&lt;init&gt;</span>
+<ul>
+<li><div>[13] 0.54% 142 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/PlanBuildContext.initializeCatalogGroup</span>
+<ul>
+<li><div>[14] 0.54% 142 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/CatalogGroup.initializeCatalogGroup</span>
+<ul>
+<li><div>[15] 0.54% 141 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/TableCatalog.initializeTableCatalog</span>
+<ul>
+<li><div>[16] 0.54% 141 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/TableCatalog.&lt;init&gt;</span>
+<ul>
+<li><div>[17] 0.22% 59 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/TableCatalog.initializeFractionOfUniquesInEachColumn</span>
+<ul>
+<li><div>[18] 0.22% 59 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.fractionOfUniqueValuesInColumn</span>
+<ul>
+<li><div>[19] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[20] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li><div>[21] 0.13% 34 self: 0.13% 34</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_execute</span>
+</ul>
+</ul>
+<li><div>[19] 0.07% 18 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getConnection</span>
+<ul>
+<li>...
+</ul>
+<li><div>[19] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBConnection.close</span>
+<ul>
+<li>...
+</ul>
+<li><div>[19] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableSize</span>
+<ul>
+<li>...
+</ul>
+<li><div>[19] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/QueryBuilder.getNumUniqueForColumn</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[17] 0.17% 44 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableHandle</span>
+<ul>
+<li><div>[18] 0.09% 23 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteTableName</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.04% 11 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DuckDBSqlClient.getTables</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.03% 9 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteSchemaName</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[17] 0.14% 38 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getColumns</span>
+<ul>
+<li><div>[18] 0.11% 28 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getColumns</span>
+<ul>
+<li><div>[19] 0.11% 28 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabaseMetaData.getColumns</span>
+<ul>
+<li><div>[20] 0.11% 28 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li><div>[21] 0.08% 21 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.executeQuery</span>
+<ul>
+<li>...
+</ul>
+<li><div>[21] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.execute</span>
+<ul>
+<li>...
+</ul>
+<li><div>[21] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.prepare</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[18] 0.03% 9 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li>...
+</ul>
+<li><div>[18] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/Optional.get</span>
+</ul>
+</ul>
+</ul>
+<li><div>[15] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/catalog/CatalogGroup.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[12] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/relational/planner/PlanBuilder.build</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[11] 0.23% 61 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getNation</span>
+<ul>
+<li><div>[12] 0.23% 60 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/Database.getTableNode</span>
+<ul>
+<li><div>[13] 0.23% 60 self: 0.00% 0</div><span class="t1"> org/zhu45/treektracker/multiwayJoin/MultiwayJoinNode.getTableNode</span>
+<ul>
+<li><div>[14] 0.18% 48 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getTableHandle</span>
+<ul>
+<li><div>[15] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.openConnection</span>
+<ul>
+<li><div>[16] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.connect</span>
+<ul>
+<li><div>[17] 0.13% 34 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDatabase.&lt;init&gt;</span>
+<ul>
+<li><div>[18] 0.12% 32 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBNative.&lt;clinit&gt;</span>
+<ul>
+<li><div>[19] 0.10% 26 self: 0.00% 0</div><span class="t1"> java/nio/file/Files.copy</span>
+<ul>
+<li><div>[20] 0.10% 26 self: 0.00% 0</div><span class="t1"> java/io/InputStream.transferTo</span>
+<ul>
+<li><div>[21] 0.07% 19 self: 0.00% 0</div><span class="t1"> java/io/FilterInputStream.read</span>
+<ul>
+<li>...
+</ul>
+<li><div>[21] 0.03% 7 self: 0.00% 0</div><span class="t1"> java/nio/channels/Channels$1.write</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[19] 0.02% 6 self: 0.00% 0</div><span class="t1"> java/lang/System.load</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[18] 0.01% 2 self: 0.01% 2</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_startup</span>
+</ul>
+</ul>
+</ul>
+<li><div>[15] 0.02% 6 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteTableName</span>
+<ul>
+<li>...
+</ul>
+<li><div>[15] 0.02% 4 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.toRemoteSchemaName</span>
+<ul>
+<li>...
+</ul>
+<li><div>[15] 0.02% 4 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DuckDBSqlClient.getTables</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[14] 0.04% 11 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/BaseJdbcClient.getColumns</span>
+<ul>
+<li>...
+</ul>
+<li><div>[14] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treektracker/multiwayJoin/MultiwayJoinDomain.&lt;init&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[12] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/lang/ClassLoader.loadClass</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[11] 0.04% 11 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getLineitem</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.04% 11 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getOrders</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.04% 11 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getRegion</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.04% 10 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getCustomer</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.04% 10 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getPart</span>
+<ul>
+<li>...
+</ul>
+<li><div>[11] 0.04% 10 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/tpch/TPCHDatabase.getSupplier</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[3] 0.08% 22 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/benchmark/JoinFragmentContext.&lt;clinit&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[2] 0.21% 54 self: 0.00% 0</div><span class="t1"> com/google/common/base/Suppliers$NonSerializableMemoizingSupplier.get</span>
+<ul>
+<li><div>[3] 0.21% 54 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcSupplier$$Lambda$17/1500056228.get</span>
+<ul>
+<li><div>[4] 0.21% 54 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcSupplier.lambda$static$2</span>
+<ul>
+<li><div>[5] 0.21% 54 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcSupplier.createTestSqlClient</span>
+<ul>
+<li><div>[6] 0.20% 53 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/DriverConnectionFactory.&lt;clinit&gt;</span>
+<ul>
+<li><div>[7] 0.20% 52 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/common/logging/LoggerProvider.getLogger</span>
+<ul>
+<li><div>[8] 0.20% 52 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/common/logging/LoggerProvider$TreeTrackerLogger.&lt;init&gt;</span>
+<ul>
+<li><div>[9] 0.18% 47 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/LogManager.getLogger</span>
+<ul>
+<li><div>[10] 0.18% 47 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/LogManager.getContext</span>
+<ul>
+<li><div>[11] 0.18% 47 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/impl/Log4jContextFactory.getContext</span>
+<ul>
+<li><div>[12] 0.18% 47 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/impl/Log4jContextFactory.getContext</span>
+<ul>
+<li><div>[13] 0.11% 29 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/LoggerContext.start</span>
+<ul>
+<li><div>[14] 0.11% 29 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/LoggerContext.reconfigure</span>
+<ul>
+<li><div>[15] 0.11% 29 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/LoggerContext.reconfigure</span>
+<ul>
+<li><div>[16] 0.06% 16 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/LoggerContext.setConfiguration</span>
+<ul>
+<li>...
+</ul>
+<li><div>[16] 0.04% 11 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/config/ConfigurationFactory.getConfiguration</span>
+<ul>
+<li>...
+</ul>
+<li><div>[16] 0.01% 2 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/config/ConfigurationFactory.getInstance</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[13] 0.07% 18 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/core/selector/ClassLoaderContextSelector.getContext</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[9] 0.02% 5 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/LogManager.&lt;clinit&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[7] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/apache/logging/log4j/LogManager.getLogger</span>
+<ul>
+<li>...
+</ul>
+</ul>
+<li><div>[6] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBDriver.&lt;clinit&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<li><div>[2] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/lang/invoke/MethodHandleNatives.linkCallSite</span>
+<ul>
+<li>...
+</ul>
+<li><div>[2] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/zhu45/treetracker/jdbc/JdbcSupplier.&lt;clinit&gt;</span>
+<ul>
+<li>...
+</ul>
+</ul>
+</ul>
+<li><div>[0] 24.85% 6,543 self: 24.85% 6,543</div><span class="t3"> [no_Java_frame]</span>
+<li><div>[0] 1.48% 390 self: 0.06% 15</div><span class="t3"> [unknown_Java]</span>
+<ul>
+<li><div>[1] 0.34% 89 self: 0.34% 89</div><span class="t1"> java/util/stream/IntPipeline$1$1.accept</span>
+<li><div>[1] 0.19% 49 self: 0.19% 49</div><span class="t1"> java/util/stream/AbstractPipeline.wrapSink</span>
+<li><div>[1] 0.16% 42 self: 0.16% 42</div><span class="t1"> org/zhu45/treetracker/jdbc/IntRecordTupleSource.getNextRow</span>
+<li><div>[1] 0.15% 39 self: 0.15% 39</div><span class="t1"> java/util/stream/ReduceOps$ReduceOp.evaluateSequential</span>
+<li><div>[1] 0.14% 38 self: 0.14% 38</div><span class="t1"> java/util/stream/Collectors$CollectorImpl.&lt;init&gt;</span>
+<li><div>[1] 0.11% 30 self: 0.11% 30</div><span class="t1"> org/zhu45/treetracker/common/row/IntRow.getVals</span>
+<li><div>[1] 0.09% 23 self: 0.09% 23</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedJoinOperator.extract</span>
+<li><div>[1] 0.08% 21 self: 0.08% 21</div><span class="t1"> java/util/ArrayList.newCapacity</span>
+<li><div>[1] 0.05% 14 self: 0.05% 14</div><span class="t1"> java/util/Arrays.copyOf</span>
+<li><div>[1] 0.03% 8 self: 0.03% 8</div><span class="t1"> java/util/stream/AbstractPipeline.&lt;init&gt;</span>
+<li><div>[1] 0.03% 7 self: 0.03% 7</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedTableScanOperator.getNext</span>
+<li><div>[1] 0.02% 5 self: 0.02% 5</div><span class="t1"> java/util/HashMap$HashIterator.nextNode</span>
+<li><div>[1] 0.01% 3 self: 0.01% 3</div><span class="t1"> java/util/Spliterator$OfInt.forEachRemaining</span>
+<li><div>[1] 0.01% 2 self: 0.01% 2</div><span class="t1"> java/util/HashMap.putVal</span>
+<li><div>[1] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMapMultiSet$MapBasedMultiSetIterator.next</span>
+<li><div>[1] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/apache/commons/collections4/multiset/AbstractMultiSet.add</span>
+<li><div>[1] 0.00% 1 self: 0.00% 1</div><span class="t1"> java/util/HashMap$EntryIterator.next</span>
+<li><div>[1] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/zhu45/treetracker/relational/operator/TupleBasedHashJoinOperator.lookUpH</span>
+<li><div>[1] 0.00% 1 self: 0.00% 1</div><span class="t1"> com/google/common/collect/SingletonImmutableSet.asList</span>
+</ul>
+<li><div>[0] 0.20% 53 self: 0.00% 0</div><span class="t1"> java/lang/ref/Finalizer$FinalizerThread.run</span>
+<ul>
+<li><div>[1] 0.20% 53 self: 0.00% 0</div><span class="t1"> java/lang/ref/Finalizer.runFinalizer</span>
+<ul>
+<li><div>[2] 0.20% 53 self: 0.00% 1</div><span class="t1"> java/lang/System$2.invokeFinalize</span>
+<ul>
+<li><div>[3] 0.19% 51 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.finalize</span>
+<ul>
+<li><div>[4] 0.19% 51 self: 0.00% 0</div><span class="t1"> org/duckdb/DuckDBPreparedStatement.close</span>
+<ul>
+<li><div>[5] 0.19% 51 self: 0.19% 51</div><span class="t1"> org/duckdb/DuckDBNative.duckdb_jdbc_release</span>
+</ul>
+</ul>
+<li><div>[3] 0.00% 1 self: 0.00% 1</div><span class="t1"> org/duckdb/DuckDBDatabase.finalize</span>
+</ul>
+</ul>
+</ul>
+<li><div>[0] 0.06% 15 self: 0.06% 15</div><span class="t3"> [not_walkable_Java]</span>
+<li><div>[0] 0.03% 8 self: 0.00% 0</div><span class="t1"> java/lang/invoke/DirectMethodHandle$Holder.invokeStatic</span>
+<ul>
+<li>...
+</ul>
+<li><div>[0] 0.02% 6 self: 0.02% 6</div><span class="t3"> [call_stub]</span>
+<li><div>[0] 0.01% 3 self: 0.00% 0</div><span class="t1"> org/graalvm/compiler/hotspot/management/JMXFromLibGraalEntryPoints.getFactory</span>
+<ul>
+<li>...
+</ul>
+<li><div>[0] 0.01% 2 self: 0.01% 2</div><span class="t3"> [GC_active]</span>
+<li><div>[0] 0.00% 1 self: 0.00% 1</div><span class="t3"> [deoptimization]</span>
+<li><div>[0] 0.00% 1 self: 0.00% 0</div><span class="t1"> java/lang/ref/Reference$ReferenceHandler.run</span>
+<ul>
+<li>...
+</ul>
+<li><div>[0] 0.00% 1 self: 0.00% 0</div><span class="t1"> org/graalvm/compiler/hotspot/management/Factory.run</span>
+<ul>
+<li>...
+</ul>
+
+<script>
+addClickActions();
+</script>
+</ul>
+</body>
+</html>

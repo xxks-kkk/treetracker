@@ -1,0 +1,85 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "customer"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q18w_orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "lineitem"
+    } ]
+  },
+  "optimalJoinTree" : "tpch_int.customer(custkey,nationkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.lineitem(orderkey,partkey,suppkey)",
+  "cost" : 1275140.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "customer"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q18w_orders"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "lineitem"
+      } ]
+    },
+    "optimalJoinTree" : "tpch_int.customer(custkey,nationkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.lineitem(orderkey,partkey,suppkey)",
+    "cost" : 1275140.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 6,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 0,
+        "numSQLsGen" : 18,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch.q18w_orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q18w_orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch_int.lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch_int.customer",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "customer"
+          },
+          "attributes" : [ "custkey", "nationkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q18w_orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q18w_orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        }
+      } ]
+    }
+  } ]
+}

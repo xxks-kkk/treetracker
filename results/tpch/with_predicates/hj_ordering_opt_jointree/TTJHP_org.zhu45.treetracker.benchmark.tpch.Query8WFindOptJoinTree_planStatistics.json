@@ -1,0 +1,35 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch",
+      "tableName" : "q8w_part"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "lineitem"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q8w_orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "customer"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q8w_nation"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q8w_region"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q8w_supplier"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q8w_nation2"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch.q8w_part(partkey)\n|tpch_int.lineitem(orderkey,partkey,suppkey)\n||tpch.q8w_orders(orderkey,custkey)\n|||tpch_int.customer(custkey,nationkey)\n||||tpch.q8w_nation(nationkey,regionkey)\n|||||tpch.q8w_region(regionkey)\n||tpch.q8w_supplier(suppkey,nationkey2)\n|||tpch.q8w_nation2(nationkey2,regionkey2)\n" : 3.118518016E9
+  },
+  "optimalJoinTree" : "tpch.q8w_part(partkey)\n|tpch_int.lineitem(orderkey,partkey,suppkey)\n||tpch.q8w_orders(orderkey,custkey)\n|||tpch_int.customer(custkey,nationkey)\n||||tpch.q8w_nation(nationkey,regionkey)\n|||||tpch.q8w_region(regionkey)\n||tpch.q8w_supplier(suppkey,nationkey2)\n|||tpch.q8w_nation2(nationkey2,regionkey2)\n",
+  "cost" : 3.118518016E9,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ]
+}

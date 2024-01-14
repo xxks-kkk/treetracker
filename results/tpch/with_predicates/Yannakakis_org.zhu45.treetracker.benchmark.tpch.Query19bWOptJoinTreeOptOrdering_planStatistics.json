@@ -1,0 +1,62 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch",
+      "tableName" : "q19bw_lineitem"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q19bw_part"
+    } ]
+  },
+  "optimalJoinTree" : "tpch.q19bw_lineitem(orderkey,partkey,suppkey)\n|tpch.q19bw_part(partkey)",
+  "cost" : 46782.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch",
+        "tableName" : "q19bw_lineitem"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q19bw_part"
+      } ]
+    },
+    "optimalJoinTree" : "tpch.q19bw_lineitem(orderkey,partkey,suppkey)\n|tpch.q19bw_part(partkey)",
+    "cost" : 46782.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 3,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 0,
+        "numSQLsGen" : 5,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch.q19bw_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q19bw_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q19bw_part",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q19bw_part"
+          },
+          "attributes" : [ "partkey" ]
+        }
+      } ]
+    }
+  } ]
+}

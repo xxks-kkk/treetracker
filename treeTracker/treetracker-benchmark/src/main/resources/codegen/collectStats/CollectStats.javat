@@ -1,0 +1,38 @@
+package org.zhu45.treetracker.benchmark.hvt;
+
+import de.renebergelt.test.Switches;
+import org.zhu45.treetracker.benchmark.Query;
+import org.zhu45.treetracker.benchmark.QueryProviderContext;
+import org.zhu45.treetracker.benchmark.tpch.{{ query }};
+import org.zhu45.treetracker.relational.JoinFragmentType;
+import org.zhu45.treetracker.relational.operator.JoinOperator;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkState;
+import static org.zhu45.treetracker.benchmark.Benchmarks.SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.QueryProvider.createStatisticsJson;
+import static org.zhu45.treetracker.benchmark.QueryProvider.queryProvider;
+import static org.zhu45.treetracker.jdbc.JdbcSupplier.duckDBJdbcClientSupplier;
+
+public class CollectTPCHStats
+{
+    private static void run(JoinOperator algorithm, Class<? extends Query> queryClazz)
+    {
+        System.out.println("JoinOperator: " + algorithm);
+        System.out.println("queryClazz: " + queryClazz);
+        checkState(Switches.STATS, "need to enable Switches.STATS");
+        QueryProviderContext context = QueryProviderContext.builder()
+                .setJoinOperator(algorithm)
+                .setQueryClazz(queryClazz)
+                .setRules(List.of())
+                .setJdbcClient(duckDBJdbcClientSupplier.get())
+                .build();
+        JoinFragmentType query = queryProvider(context);
+        createStatisticsJson(query, SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        run(JoinOperator.{{ algorithm }}, {{ query }}.class);
+    }
+}

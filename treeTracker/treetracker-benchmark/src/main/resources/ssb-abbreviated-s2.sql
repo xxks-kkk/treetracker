@@ -1,0 +1,128 @@
+-- setup Postgres database schemas for Star Schema Benchmarok (SSB)
+-- In this version, we remove unnecessary data to reduce the benchmark time.
+-- instruction:  psql -p5432 -d postgres -f treeTracker/treetracker-benchmark/src/main/resources/ssb-abbreviated-s2.sql
+-- ref:
+-- - https://github.com/nuko-yokohama/ssb-postgres/blob/master/tables.sql
+BEGIN TRANSACTION;
+
+DROP SCHEMA IF EXISTS ssb_int CASCADE;
+CREATE SCHEMA ssb_int;
+
+CREATE UNLOGGED TABLE SSB_INT."CUSTOMER_TMP"
+(
+    CUSTKEY      INTEGER,
+    C_NAME       VARCHAR,
+    C_ADDRESS    VARCHAR,
+    C_CITY       VARCHAR,
+    C_NATION     VARCHAR,
+    C_REGION     VARCHAR,
+    C_PHONE      VARCHAR,
+    C_MKTSEGMENT VARCHAR
+);
+
+CREATE UNLOGGED TABLE SSB_INT."PART_TMP"
+(
+    PARTKEY     INTEGER,
+    P_NAME      VARCHAR,
+    P_MFGR      VARCHAR,
+    P_CATEGORY  VARCHAR,
+    P_BRAND1    VARCHAR,
+    P_COLOR     VARCHAR,
+    P_TYPE      VARCHAR,
+    P_SIZE      VARCHAR,
+    P_CONTAINER VARCHAR
+);
+
+CREATE UNLOGGED TABLE SSB_INT."SUPPLIER_TMP"
+(
+    SUPPKEY   INTEGER,
+    S_NAME    VARCHAR,
+    S_ADDRESS VARCHAR,
+    S_CITY    VARCHAR,
+    S_NATION  VARCHAR,
+    S_REGION  VARCHAR,
+    S_PHONE   VARCHAR
+);
+
+CREATE UNLOGGED TABLE SSB_INT."DATE_TMP"
+(
+    DATEKEY            INTEGER,
+    D_DATE             VARCHAR,
+    D_DAYOFWEEK        VARCHAR,
+    D_MONTH            VARCHAR,
+    D_YEAR             VARCHAR,
+    D_YEARMONTHNUM     VARCHAR,
+    D_YEARMONTH        VARCHAR,
+    D_DAYNUMINWEEK     VARCHAR,
+    D_DAYNUMINMONTH    VARCHAR,
+    D_DAYNUMINYEAR     VARCHAR,
+    D_MONTHNUMINYEAR   VARCHAR,
+    D_WEEKNUMINYEAR    VARCHAR,
+    D_SELLINGSEASON    VARCHAR,
+    D_LASTDAYINWEEKFL  VARCHAR,
+    D_LASTDAYINMONTHFL VARCHAR,
+    D_HOLIDAYFL        VARCHAR,
+    D_WEEKDAYFL        VARCHAR
+);
+
+CREATE UNLOGGED TABLE SSB_INT."LINEORDER_TMP"
+(
+    LO_ORDERKEY      INTEGER,
+    LO_LINENUMBER    INTEGER,
+    CUSTKEY          INTEGER,
+    PARTKEY          INTEGER,
+    SUPPKEY          INTEGER,
+    DATEKEY          INTEGER,
+    LO_ORDERPRIORITY VARCHAR,
+    LO_SHIPPRIORITY  VARCHAR,
+    LO_QUANTITY      VARCHAR,
+    LO_EXTENDEDPRICE VARCHAR,
+    LO_ORDTOTALPRICE VARCHAR,
+    LO_DISCOUNT      VARCHAR,
+    LO_REVENUE       VARCHAR,
+    LO_SUPPLYCOST    VARCHAR,
+    LO_TAX           VARCHAR,
+    LO_COMMITDATE    VARCHAR,
+    LO_SHIPMODE      VARCHAR
+);
+
+COPY SSB_INT."LINEORDER_TMP" FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s2/lineorder.tbl' WITH DELIMITER '|' NULL '\N' CSV;
+COPY SSB_INT."CUSTOMER_TMP" FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s2/customer.tbl' WITH DELIMITER '|' NULL '\N' CSV;
+COPY SSB_INT."PART_TMP" FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s2/part.tbl' WITH DELIMITER '|' NULL '\N' CSV;
+COPY SSB_INT."SUPPLIER_TMP" FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s2/supplier.tbl' WITH DELIMITER '|' NULL '\N' CSV;
+COPY SSB_INT."DATE_TMP" FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s2/date.tbl' WITH DELIMITER '|' NULL '\N' CSV;
+
+SELECT CUSTKEY
+INTO ssb_INT.customer
+FROM ssb_INT."CUSTOMER_TMP";
+SELECT PARTKEY
+INTO ssb_INT.part
+FROM ssb_INT."PART_TMP";
+SELECT SUPPKEY
+INTO ssb_INT.supplier
+FROM ssb_INT."SUPPLIER_TMP";
+SELECT DATEKEY
+INTO ssb_INT.date
+FROM ssb_INT."DATE_TMP";
+SELECT LO_ORDERKEY, CUSTKEY, PARTKEY, SUPPKEY, DATEKEY
+INTO ssb_INT.lineorder
+FROM ssb_INT."LINEORDER_TMP";
+
+DROP TABLE ssb_int."LINEORDER_TMP";
+DROP TABLE ssb_int."CUSTOMER_TMP";
+DROP TABLE ssb_int."PART_TMP";
+DROP TABLE ssb_int."SUPPLIER_TMP";
+DROP TABLE ssb_int."DATE_TMP";
+
+ALTER TABLE ssb_int.lineorder
+    SET LOGGED;
+ALTER TABLE ssb_int.customer
+    SET LOGGED;
+ALTER TABLE ssb_int.part
+    SET LOGGED;
+ALTER TABLE ssb_int.supplier
+    SET LOGGED;
+ALTER TABLE ssb_int.date
+    SET LOGGED;
+
+COMMIT;

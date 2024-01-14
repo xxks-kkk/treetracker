@@ -1,0 +1,69 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q8b_cast_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8b_role_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8b_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8b_movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8b_company_name"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8b_name"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "aka_name"
+    } ]
+  },
+  "optimalJoinTree" : "imdb.q8b_cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb.q8b_role_type(role_id)\n|imdb.q8b_title(movie_id,kind_id)\n||imdb.q8b_movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q8b_company_name(company_id)\n|imdb.q8b_name(person_id)\n||imdb_int.aka_name(person_id)",
+  "cost" : 62625.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb",
+        "tableName" : "q8b_cast_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8b_role_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8b_title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8b_movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8b_company_name"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8b_name"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "aka_name"
+      } ]
+    },
+    "optimalJoinTree" : "imdb.q8b_cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb.q8b_role_type(role_id)\n|imdb.q8b_title(movie_id,kind_id)\n||imdb.q8b_movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q8b_company_name(company_id)\n|imdb.q8b_name(person_id)\n||imdb_int.aka_name(person_id)",
+    "cost" : 62625.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 58,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 308,
+        "numSQLsGen" : 691,
+        "numJoinTreeCosted" : 67
+      }
+    }
+  } ]
+}

@@ -1,0 +1,62 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "part"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q14w_lineitem"
+    } ]
+  },
+  "optimalJoinTree" : "tpch_int.part(partkey)\n|tpch.q14w_lineitem(orderkey,partkey,suppkey)",
+  "cost" : 200000.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "part"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q14w_lineitem"
+      } ]
+    },
+    "optimalJoinTree" : "tpch_int.part(partkey)\n|tpch.q14w_lineitem(orderkey,partkey,suppkey)",
+    "cost" : 200000.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 3,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 0,
+        "numSQLsGen" : 5,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch_int.part",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "part"
+          },
+          "attributes" : [ "partkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q14w_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q14w_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        }
+      } ]
+    }
+  } ]
+}

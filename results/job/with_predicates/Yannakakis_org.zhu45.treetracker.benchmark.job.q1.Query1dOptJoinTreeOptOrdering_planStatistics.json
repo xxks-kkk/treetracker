@@ -1,0 +1,131 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_info_idx"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1d_info_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1d_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1d_movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q1d_company_type"
+    } ]
+  },
+  "optimalJoinTree" : "imdb_int.movie_info_idx(movie_id,info_type_id)\n|imdb.q1d_info_type(info_type_id)\n|imdb.q1d_title(movie_id,kind_id)\n|imdb.q1d_movie_companies(movie_id,company_id,company_type_id)\n||imdb.q1d_company_type(company_type_id)",
+  "cost" : 84723.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_info_idx"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1d_info_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1d_title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1d_movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q1d_company_type"
+      } ]
+    },
+    "optimalJoinTree" : "imdb_int.movie_info_idx(movie_id,info_type_id)\n|imdb.q1d_info_type(info_type_id)\n|imdb.q1d_title(movie_id,kind_id)\n|imdb.q1d_movie_companies(movie_id,company_id,company_type_id)\n||imdb.q1d_company_type(company_type_id)",
+    "cost" : 84723.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 19,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 20,
+        "numSQLsGen" : 157,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "imdb.q1d_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q1d_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q1d_company_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q1d_company_type"
+          },
+          "attributes" : [ "company_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_info_idx",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_info_idx"
+          },
+          "attributes" : [ "movie_id", "info_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q1d_info_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q1d_info_type"
+          },
+          "attributes" : [ "info_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_info_idx",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_info_idx"
+          },
+          "attributes" : [ "movie_id", "info_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q1d_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q1d_title"
+          },
+          "attributes" : [ "movie_id", "kind_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.movie_info_idx",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_info_idx"
+          },
+          "attributes" : [ "movie_id", "info_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q1d_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q1d_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        }
+      } ]
+    }
+  } ]
+}

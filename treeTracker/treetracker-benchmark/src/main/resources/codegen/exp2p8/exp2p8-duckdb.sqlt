@@ -1,0 +1,12 @@
+-- Ingest data for Exp2.8: Impact of Backjumping
+-- instruction:
+-- duckdb /home/zeyuanhu/projects/treetracker2/exp28.duckdb < /home/zeyuanhu/projects/treetracker2/treeTracker/treetracker-benchmark/src/main/resources/exp2p8/exp2p8-duckdb.sql
+BEGIN TRANSACTION;
+
+DROP SCHEMA IF EXISTS exp2p8 CASCADE;
+CREATE SCHEMA exp2p8;
+
+{{ CreateTableBlock }}
+{{ CopyDataBlock }}
+
+COMMIT;

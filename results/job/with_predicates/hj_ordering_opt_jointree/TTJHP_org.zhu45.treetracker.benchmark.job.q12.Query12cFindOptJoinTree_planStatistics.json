@@ -1,0 +1,82 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_movie_info_idx2"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_info_type2"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_movie_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_info_type1"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_title"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_company_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q12c_company_name"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb.q12c_title(movie_id,kind_id)\n|||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||||imdb.q12c_company_type(company_type_id)\n||||imdb.q12c_company_name(company_id)" : 4291123.0,
+    "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb.q12c_title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q12c_company_type(company_type_id)\n||imdb.q12c_company_name(company_id)" : 4291695.0,
+    "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n|imdb.q12c_title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)" : 4290313.0,
+    "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)\n|imdb.q12c_title(movie_id,kind_id)" : 4292022.0,
+    "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n|imdb.q12c_title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q12c_company_type(company_type_id)\n||imdb.q12c_company_name(company_id)" : 4291056.0,
+    "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb.q12c_title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)" : 4292903.0
+  },
+  "optimalJoinTree" : "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n|imdb.q12c_title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)",
+  "cost" : 4290313.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_movie_info_idx2"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_info_type2"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_movie_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_info_type1"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_title"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_company_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q12c_company_name"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb.q12c_title(movie_id,kind_id)\n|||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||||imdb.q12c_company_type(company_type_id)\n||||imdb.q12c_company_name(company_id)" : 4291123.0,
+      "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb.q12c_title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q12c_company_type(company_type_id)\n||imdb.q12c_company_name(company_id)" : 4291695.0,
+      "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n|imdb.q12c_title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)" : 4290313.0,
+      "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)\n|imdb.q12c_title(movie_id,kind_id)" : 4292022.0,
+      "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n|imdb.q12c_title(movie_id,kind_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q12c_company_type(company_type_id)\n||imdb.q12c_company_name(company_id)" : 4291056.0,
+      "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n||imdb.q12c_title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)" : 4292903.0
+    },
+    "optimalJoinTree" : "imdb.q12c_movie_info_idx2(movie_id,info_type_id2)\n|imdb.q12c_info_type2(info_type_id2)\n|imdb.q12c_movie_info(movie_id,info_type_id)\n||imdb.q12c_info_type1(info_type_id)\n|imdb.q12c_title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q12c_company_type(company_type_id)\n|||imdb.q12c_company_name(company_id)",
+    "cost" : 4290313.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0
+  } ]
+}

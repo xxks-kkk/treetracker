@@ -1,0 +1,36 @@
+package org.zhu45.treetracker.benchmark.micro.exp2p8;
+
+import org.zhu45.treetracker.benchmark.Query;
+import org.zhu45.treetracker.benchmark.QueryEnum;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public enum Exp2P8Queries
+        implements QueryEnum
+{
+    {{ EnumCodeBlock }}
+
+    private static final Map<String, Class<? extends Query>> map = new HashMap<>(values().length, 1);
+
+    static {
+        for (Exp2P8Queries c : values()) {
+            switch (c) {
+                {{ caseCodeBlock }}
+            }
+        }
+    }
+
+    private final String val;
+
+    private Exp2P8Queries(String s)
+    {
+        val = s;
+    }
+
+    @Override
+    public Class<? extends Query> getQueryClazz()
+    {
+        return map.get(val);
+    }
+}

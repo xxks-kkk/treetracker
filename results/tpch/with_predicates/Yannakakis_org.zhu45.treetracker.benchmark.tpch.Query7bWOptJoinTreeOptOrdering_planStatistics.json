@@ -1,0 +1,154 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch",
+      "tableName" : "q7bw_customer"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q7bw_nation2"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "orders"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q7bw_lineitem"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "supplier"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q7bw_nation1"
+    } ]
+  },
+  "optimalJoinTree" : "tpch.q7bw_customer(custkey,nationkey2)\n|tpch.q7bw_nation2(nationkey2)\n|tpch_int.orders(orderkey,custkey)\n||tpch.q7bw_lineitem(orderkey,partkey,suppkey)\n|||tpch_int.supplier(suppkey,nationkey)\n||||tpch.q7bw_nation1(nationkey)",
+  "cost" : 3484678.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer", "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "cost" : 0.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.AttachFullReducer",
+    "dpTableNumCells" : 0
+  }, {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch",
+        "tableName" : "q7bw_customer"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q7bw_nation2"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "orders"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q7bw_lineitem"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "supplier"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q7bw_nation1"
+      } ]
+    },
+    "optimalJoinTree" : "tpch.q7bw_customer(custkey,nationkey2)\n|tpch.q7bw_nation2(nationkey2)\n|tpch_int.orders(orderkey,custkey)\n||tpch.q7bw_lineitem(orderkey,partkey,suppkey)\n|||tpch_int.supplier(suppkey,nationkey)\n||||tpch.q7bw_nation1(nationkey)",
+    "cost" : 3484678.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 21,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstYannakakisProvider",
+        "numCacheHit" : 11,
+        "numSQLsGen" : 155,
+        "numJoinTreeCosted" : 0
+      }
+    },
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch_int.supplier",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "supplier"
+          },
+          "attributes" : [ "suppkey", "nationkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q7bw_nation1",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q7bw_nation1"
+          },
+          "attributes" : [ "nationkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch.q7bw_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q7bw_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch_int.supplier",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "supplier"
+          },
+          "attributes" : [ "suppkey", "nationkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch_int.orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q7bw_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q7bw_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch.q7bw_customer",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q7bw_customer"
+          },
+          "attributes" : [ "custkey", "nationkey2" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q7bw_nation2",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q7bw_nation2"
+          },
+          "attributes" : [ "nationkey2" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch.q7bw_customer",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q7bw_customer"
+          },
+          "attributes" : [ "custkey", "nationkey2" ]
+        },
+        "right" : {
+          "nodeName" : "tpch_int.orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        }
+      } ]
+    }
+  } ]
+}

@@ -1,0 +1,76 @@
+package org.zhu45.treetracker.benchmark.job.q20;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
+import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
+import org.zhu45.treetracker.benchmark.JoinFragmentContext;
+import org.zhu45.treetracker.benchmark.Query;
+import org.zhu45.treetracker.benchmark.job.JOBQueries;
+import org.zhu45.treetracker.benchmark.job.TableInstanceId;
+import org.zhu45.treetracker.relational.operator.Operator;
+import org.zhu45.treetracker.relational.planner.Plan;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.zhu45.treektracker.multiwayJoin.MultiwayJoinPreorderTraversalStrategy.getMultiwayJoinOrderedGraph;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getCastInfoInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getCharNameInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getCompCastTypeInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getCompleteCastInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getKeywordInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getKindTypeInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getMovieKeywordInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getNameInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getTitleInt;
+import static org.zhu45.treetracker.common.Edge.asEdge;
+
+public class Query20b
+        extends Query
+{
+    public Query20b(JoinFragmentContext context)
+    {
+        super(context);
+    }
+
+    @Override
+    protected Pair<Plan, List<Operator>> constructQuery()
+    {
+        MultiwayJoinNode completeCastNode = getCompleteCastInt();
+        MultiwayJoinNode compCastTypeNode1 = getCompCastTypeInt(JOBQueries.Q20b, TableInstanceId.ONE);
+        MultiwayJoinNode compCastTypeNode2 = getCompCastTypeInt(JOBQueries.Q20b, TableInstanceId.TWO);
+        MultiwayJoinNode castInfoNode = getCastInfoInt(JOBQueries.Q20b);
+        MultiwayJoinNode charNameNode = getCharNameInt(JOBQueries.Q20b);
+        MultiwayJoinNode movieKeywordNode = getMovieKeywordInt();
+        MultiwayJoinNode nameNode = getNameInt(JOBQueries.Q20b);
+        MultiwayJoinNode keywordNode = getKeywordInt(JOBQueries.Q20b);
+        MultiwayJoinNode kindTypeNode = getKindTypeInt(JOBQueries.Q20b, null);
+        MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q20b, null);
+
+        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(Arrays.asList(
+                asEdge(completeCastNode, compCastTypeNode1),
+                asEdge(completeCastNode, compCastTypeNode2),
+                asEdge(completeCastNode, titleNode),
+                asEdge(titleNode, kindTypeNode),
+                asEdge(completeCastNode, castInfoNode),
+                asEdge(castInfoNode, nameNode),
+                asEdge(castInfoNode, movieKeywordNode),
+                asEdge(movieKeywordNode, keywordNode),
+                asEdge(castInfoNode, charNameNode)), completeCastNode);
+
+        Pair<Plan, List<Operator>> pair = createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Plan plan = pair.getKey();
+
+        verifyJoinOrdering(plan, Arrays.asList(completeCastNode.getSchemaTableName(),
+                compCastTypeNode1.getSchemaTableName(),
+                compCastTypeNode2.getSchemaTableName(),
+                titleNode.getSchemaTableName(),
+                kindTypeNode.getSchemaTableName(),
+                castInfoNode.getSchemaTableName(),
+                nameNode.getSchemaTableName(),
+                movieKeywordNode.getSchemaTableName(),
+                keywordNode.getSchemaTableName(),
+                charNameNode.getSchemaTableName()));
+        return pair;
+    }
+}

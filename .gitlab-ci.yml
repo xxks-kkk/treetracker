@@ -1,0 +1,54 @@
+services:
+  - name: postgres:13-alpine
+    alias: postgres
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=1000"
+  - redis:latest
+
+stages:
+  - test
+
+test:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+        - "*.java"
+        - "**/*.java"
+        compare_to: refs/heads/master
+      when: manual 
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "*.{java}"
+        - "**/*.{java}"
+      when: always
+  image: maven:3.8-openjdk-11
+  # Cache downloaded dependencies and plugins between builds.
+  # To keep cache across branches add 'key: "$CI_JOB_NAME"'
+  cache:
+    paths:
+      - .m2/repository
+    key: "$CI_JOB_NAME"
+  script:
+    - export github=1 # disable certain test cases due to postgres max_connection limit or interaction between COPY and github actions limitation
+    - cd treeTracker
+    - cp src/gitlab/db.properties treetracker-relational/src/test/resources/db.properties
+    - cp src/gitlab/db.properties treetracker-multiway-join/src/test/resources/db.properties
+    - cp src/gitlab/db.properties treetracker-jdbc/src/test/resources/db.properties
+    - cp src/gitlab/db.properties treetracker-jdbc/src/main/resources/db.properties
+    - cp src/gitlab/redisson.yaml treetracker-common/src/main/resources/redisson.yaml
+    - "echo \" TEST INTEGRATION\""
+    - "mvn clean install -P dev -P stats"
+  stage: test
+  variables:
+    POSTGRES_DB: postgres
+    POSTGRES_PASSWORD: password
+    POSTGRES_USER: postgres
+    POSTGRES_HOST_AUTH_METHOD: trust
+    REDIS_PORT: 6379
+    REDIS_HOST: redis
+    REDIS_URL: redis://redis:6379
+

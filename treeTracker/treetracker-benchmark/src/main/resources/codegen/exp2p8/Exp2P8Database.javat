@@ -1,0 +1,24 @@
+package org.zhu45.treetracker.benchmark.micro.exp2p8;
+
+import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
+import org.zhu45.treetracker.benchmark.Database;
+import org.zhu45.treetracker.common.SchemaTableName;
+
+/**
+ * Exp 2.8: Impact of Backjumping
+ */
+public class Exp2P8Database
+{
+    private Exp2P8Database()
+    {
+    }
+
+    public static final String exp2P8DatabaseSchema = "exp2p8";
+
+    {{ relationBlock }}
+
+    public static MultiwayJoinNode getTableNode(String exp2P8BaseRelation)
+    {
+        return Database.getTableNode(new SchemaTableName(exp2P8DatabaseSchema, exp2P8BaseRelation));
+    }
+}

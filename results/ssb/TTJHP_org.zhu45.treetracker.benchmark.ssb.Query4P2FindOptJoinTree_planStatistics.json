@@ -1,0 +1,54 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb",
+      "tableName" : "q4p2_supplier"
+    }, {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p2_customer"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p2_date"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p2_part"
+    } ]
+  },
+  "optimalJoinTree" : "ssb.q4p2_supplier(suppkey)\n|ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n||ssb.q4p2_customer(custkey)\n||ssb.q4p2_date(datekey)\n||ssb.q4p2_part(partkey)",
+  "cost" : 8450005.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb",
+        "tableName" : "q4p2_supplier"
+      }, {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p2_customer"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p2_date"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p2_part"
+      } ]
+    },
+    "optimalJoinTree" : "ssb.q4p2_supplier(suppkey)\n|ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n||ssb.q4p2_customer(custkey)\n||ssb.q4p2_date(datekey)\n||ssb.q4p2_part(partkey)",
+    "cost" : 8450005.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 23,
+        "numSQLsGen" : 111
+      }
+    }
+  } ]
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- copied from: https://www.liaoxuefeng.com/wiki/1252599548343744/1264739436350112 -->
+<Configuration>
+    <Properties>
+        <!-- 定义日志格式 -->
+        <Property name="log.pattern">%d{MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36}%n%msg%n%n</Property>
+        <!-- 定义文件名变量 -->
+        <Property name="file.err.filename">log/err.log</Property>
+        <Property name="file.err.pattern">log/err.%i.log.gz</Property>
+        <Property name="file.warn.filename">log/warn.log</Property>
+        <Property name="file.warn.pattern">log/warn.%i.log.gz</Property>
+        <Property name="file.debug.filename">log/debug.log</Property>
+        <Property name="file.debug.pattern">log/debug.%i.log.gz</Property>
+        <Property name="file.trace.filename">log/trace.log</Property>
+        <Property name="file.trace.pattern">log/trace.%i.log.gz</Property>
+    </Properties>
+    <!-- 定义Appender，即目的地 -->
+    <Appenders>
+        <!-- 定义输出到屏幕 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <!-- 日志格式引用上面定义的log.pattern -->
+            <PatternLayout pattern="${log.pattern}" />
+            <!-- trace level log is stored into file directly -->
+            <ThresholdFilter level="DEBUG"  onMatch="ACCEPT"   onMismatch="DENY"/>
+        </Console>
+        <RollingFile name="trace" fileName="${file.trace.filename}" filePattern="${file.trace.pattern}">
+<!--            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>-->
+<!--            <PatternLayout pattern="%L - %msg%xEx%n"/>-->
+            <PatternLayout pattern="%msg%xEx%n"/>
+            <!-- filter only trace level in this appender -->
+            <ThresholdFilter level="DEBUG"  onMatch="DENY"   onMismatch="ACCEPT"/>
+            <Policies>
+                <!-- 根据文件大小自动切割日志 -->
+                <SizeBasedTriggeringPolicy size="1 MB" />
+            </Policies>
+            <!-- 保留最近10份 -->
+            <DefaultRolloverStrategy max="30" />
+        </RollingFile>
+        <!-- 定义输出到文件,文件名引用上面定义的file.err.filename -->
+        <RollingFile name="err" bufferedIO="true" fileName="${file.err.filename}" filePattern="${file.err.pattern}">
+            <PatternLayout pattern="${log.pattern}" />
+            <Policies>
+                <!-- 根据文件大小自动切割日志 -->
+                <SizeBasedTriggeringPolicy size="1 MB" />
+            </Policies>
+            <!-- 保留最近10份 -->
+            <DefaultRolloverStrategy max="30" />
+        </RollingFile>
+        <RollingFile name="warn" bufferedIO="true" fileName="${file.warn.filename}" filePattern="${file.warn.pattern}">
+            <PatternLayout pattern="${log.pattern}" />
+            <Policies>
+                <!-- 根据文件大小自动切割日志 -->
+                <SizeBasedTriggeringPolicy size="1 MB" />
+            </Policies>
+            <!-- 保留最近10份 -->
+            <DefaultRolloverStrategy max="30" />
+        </RollingFile>
+        <RollingFile name="debug" bufferedIO="true" fileName="${file.debug.filename}" filePattern="${file.debug.pattern}">
+            <PatternLayout pattern="${log.pattern}" />
+            <Policies>
+                <!-- 根据文件大小自动切割日志 -->
+                <SizeBasedTriggeringPolicy size="2 MB" />
+            </Policies>
+            <!-- 保留最近10份 -->
+            <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root>
+            <!-- 对info级别的日志，输出到console -->
+            <AppenderRef ref="console"/>
+            <!-- 对error级别的日志，输出到err，即上面定义的RollingFile -->
+            <AppenderRef ref="err" level="error"/>
+            <AppenderRef ref="warn" level="warn"/>
+            <AppenderRef ref="trace"/>
+        </Root>
+    </Loggers>
+</Configuration>

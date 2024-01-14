@@ -1,0 +1,72 @@
+package org.zhu45.treetracker.benchmark.tpch;
+
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.RunnerException;
+import org.zhu45.treetracker.relational.JoinFragmentType;
+import org.zhu45.treetracker.relational.operator.JoinOperator;
+
+import java.util.List;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.openjdk.jmh.annotations.Mode.AverageTime;
+import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_WITH_PREDICATES_RESULT_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.benchmark;
+import static org.zhu45.treetracker.benchmark.QueryProvider.queryProvider;
+import static org.zhu45.treetracker.jdbc.JdbcSupplier.duckDBJdbcClientSupplier;
+
+@State(Scope.Benchmark)
+@OutputTimeUnit(MILLISECONDS)
+@BenchmarkMode(AverageTime)
+@Fork(value = 2, warmups = 2, jvmArgsAppend = {"-Xmx30G", "-Xms10G"})
+@Warmup(iterations = 1)
+@Measurement(iterations = 3)
+public class BenchmarkTPCHWithPredicatesAutoGen
+{
+    @State(Scope.Benchmark)
+    public static class BenchState
+    {
+        @Param({"TTJHP", "HASH_JOIN"})
+        public JoinOperator joinOperator;
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        @Param({"Query10WOptJoinTreeOptOrdering", "Query11WOptJoinTreeOptOrdering", "Query12WOptJoinTreeOptOrdering", "Query14WOptJoinTreeOptOrdering", "Query15WOptJoinTreeOptOrdering", "Query16WOptJoinTreeOptOrdering", "Query18WOptJoinTreeOptOrdering", "Query19aWOptJoinTreeOptOrdering", "Query19bWOptJoinTreeOptOrdering", "Query19cWOptJoinTreeOptOrdering", "Query20WOptJoinTreeOptOrdering", "Query3WOptJoinTreeOptOrdering", "Query7aWOptJoinTreeOptOrdering", "Query7bWOptJoinTreeOptOrdering", "Query8WOptJoinTreeOptOrdering", "Query9WOptJoinTreeOptOrdering"})
+        public TPCHQueriesAutoGen tpchQueries;
+        JoinFragmentType query;
+
+        @Setup(Level.Invocation)
+        public void setUp()
+        {
+            query = queryProvider(joinOperator, tpchQueries,
+                    List.of(),
+                    duckDBJdbcClientSupplier.get());
+        }
+
+        @TearDown(Level.Invocation)
+        public void tearDown()
+        {
+            query.cleanUp();
+        }
+    }
+
+    @Benchmark
+    public void bench(BenchState state)
+    {
+        state.query.eval();
+    }
+
+    public static void main(String[] args)
+            throws RunnerException
+    {
+        benchmark(BenchmarkTPCHWithPredicatesAutoGen.class, TPCH_WITH_PREDICATES_RESULT_STORED_PATH).run();
+    }
+}

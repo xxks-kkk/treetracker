@@ -1,0 +1,68 @@
+package org.zhu45.treetracker.benchmark.job.q11;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
+import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
+import org.zhu45.treetracker.benchmark.JoinFragmentContext;
+import org.zhu45.treetracker.benchmark.Query;
+import org.zhu45.treetracker.benchmark.job.JOBQueries;
+import org.zhu45.treetracker.relational.operator.Operator;
+import org.zhu45.treetracker.relational.planner.Plan;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.zhu45.treektracker.multiwayJoin.MultiwayJoinPreorderTraversalStrategy.getMultiwayJoinOrderedGraph;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getCompanyNameInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getCompanyTypeInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getKeywordInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getLinkTypeInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getMovieCompaniesInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getMovieKeywordInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getMovieLinkInt;
+import static org.zhu45.treetracker.benchmark.job.IMDBDatabase.getTitleInt;
+import static org.zhu45.treetracker.common.Edge.asEdge;
+
+public class Query11c
+        extends Query
+{
+    public Query11c(JoinFragmentContext context)
+    {
+        super(context);
+    }
+
+    @Override
+    protected Pair<Plan, List<Operator>> constructQuery()
+    {
+        MultiwayJoinNode movieCompaniesNode = getMovieCompaniesInt(JOBQueries.Q11c, null);
+        MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q11c, null);
+        MultiwayJoinNode companyNameNode = getCompanyNameInt(JOBQueries.Q11c, null);
+        MultiwayJoinNode companyTypeNode = getCompanyTypeInt(JOBQueries.Q11c);
+        MultiwayJoinNode movieKeywordNode = getMovieKeywordInt();
+        MultiwayJoinNode keywordNode = getKeywordInt(JOBQueries.Q11c);
+        MultiwayJoinNode movieLinkNode = getMovieLinkInt();
+        MultiwayJoinNode linkTypeNode = getLinkTypeInt(JOBQueries.Q11c);
+
+        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(Arrays.asList(
+                asEdge(movieCompaniesNode, titleNode),
+                asEdge(movieCompaniesNode, companyNameNode),
+                asEdge(movieCompaniesNode, companyTypeNode),
+                asEdge(movieCompaniesNode, movieKeywordNode),
+                asEdge(movieKeywordNode, keywordNode),
+                asEdge(movieCompaniesNode, movieLinkNode),
+                asEdge(movieLinkNode, linkTypeNode)), movieCompaniesNode);
+
+        Pair<Plan, List<Operator>> pair = createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Plan plan = pair.getKey();
+
+        verifyJoinOrdering(plan, Arrays.asList(movieCompaniesNode.getSchemaTableName(),
+                titleNode.getSchemaTableName(),
+                companyNameNode.getSchemaTableName(),
+                companyTypeNode.getSchemaTableName(),
+                movieKeywordNode.getSchemaTableName(),
+                keywordNode.getSchemaTableName(),
+                movieLinkNode.getSchemaTableName(),
+                linkTypeNode.getSchemaTableName()));
+        return pair;
+    }
+}

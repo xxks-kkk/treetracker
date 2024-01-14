@@ -1,0 +1,29 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q10c_cast_info"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "char_name"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_companies"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "company_type"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "role_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q10c_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q10c_company_name"
+    } ]
+  },
+  "optimalJoinTree" : "imdb.q10c_cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.char_name(person_role_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb_int.company_type(company_type_id)\n||imdb.q10c_company_name(company_id)\n|imdb_int.role_type(role_id)\n|imdb.q10c_title(movie_id,kind_id)",
+  "cost" : 20.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ]
+}

@@ -1,0 +1,38 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "part"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q14w_lineitem"
+    } ]
+  },
+  "optimalJoinTree" : "tpch_int.part(partkey)\n|tpch.q14w_lineitem(orderkey,partkey,suppkey)",
+  "cost" : 200000.0,
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "part"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q14w_lineitem"
+      } ]
+    },
+    "optimalJoinTree" : "tpch_int.part(partkey)\n|tpch.q14w_lineitem(orderkey,partkey,suppkey)",
+    "cost" : 200000.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindTheBestJoinOrderingJoinTreeWithDP",
+    "dpTableNumCells" : 3,
+    "cardEstProviderStatistics" : {
+      "providerName" : "org.zhu45.treetracker.relational.planner.cost.TTJCardEstProvider",
+      "joinTreeCostStatistics" : {
+        "providerName" : "org.zhu45.treetracker.relational.planner.cost.JoinTreeCostEstProvider",
+        "numCacheHit" : 0,
+        "numSQLsGen" : 4,
+        "numJoinTreeCosted" : 1
+      }
+    }
+  } ]
+}
