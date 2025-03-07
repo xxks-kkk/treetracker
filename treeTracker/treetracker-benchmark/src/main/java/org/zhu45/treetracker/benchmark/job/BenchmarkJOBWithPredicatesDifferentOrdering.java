@@ -140,6 +140,33 @@ public class BenchmarkJOBWithPredicatesDifferentOrdering
         }
     }
 
+    @State(Scope.Benchmark)
+    public static class BenchStateYannakakis1Pass
+    {
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        @Param({"Yannakakis1Pass"})
+        public JoinOperator joinOperator;
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        @Param({"Query10aOptJoinTreeOptOrderingY1P", "Query10bOptJoinTreeOptOrderingY1P", "Query10cOptJoinTreeOptOrderingY1P", "Query11aOptJoinTreeOptOrderingY1P", "Query11bOptJoinTreeOptOrderingY1P", "Query11cOptJoinTreeOptOrderingY1P", "Query11dOptJoinTreeOptOrderingY1P", "Query12aOptJoinTreeOptOrderingY1P", "Query12bOptJoinTreeOptOrderingY1P", "Query12cOptJoinTreeOptOrderingY1P", "Query13aOptJoinTreeOptOrderingY1P", "Query13bOptJoinTreeOptOrderingY1P", "Query13cOptJoinTreeOptOrderingY1P", "Query13dOptJoinTreeOptOrderingY1P", "Query14aOptJoinTreeOptOrderingY1P", "Query14bOptJoinTreeOptOrderingY1P", "Query14cOptJoinTreeOptOrderingY1P", "Query15aOptJoinTreeOptOrderingY1P", "Query15bOptJoinTreeOptOrderingY1P", "Query15cOptJoinTreeOptOrderingY1P", "Query15dOptJoinTreeOptOrderingY1P", "Query16aOptJoinTreeOptOrderingY1P", "Query16bOptJoinTreeOptOrderingY1P", "Query16cOptJoinTreeOptOrderingY1P", "Query16dOptJoinTreeOptOrderingY1P", "Query17aOptJoinTreeOptOrderingY1P", "Query17bOptJoinTreeOptOrderingY1P", "Query17cOptJoinTreeOptOrderingY1P", "Query17dOptJoinTreeOptOrderingY1P", "Query17eOptJoinTreeOptOrderingY1P", "Query17fOptJoinTreeOptOrderingY1P", "Query18aOptJoinTreeOptOrderingY1P", "Query18bOptJoinTreeOptOrderingY1P", "Query18cOptJoinTreeOptOrderingY1P", "Query19aOptJoinTreeOptOrderingY1P", "Query19bOptJoinTreeOptOrderingY1P", "Query19cOptJoinTreeOptOrderingY1P", "Query19dOptJoinTreeOptOrderingY1P", "Query1aOptJoinTreeOptOrderingY1P", "Query1bOptJoinTreeOptOrderingY1P", "Query1cOptJoinTreeOptOrderingY1P", "Query1dOptJoinTreeOptOrderingY1P", "Query20aOptJoinTreeOptOrderingY1P", "Query20bOptJoinTreeOptOrderingY1P", "Query20cOptJoinTreeOptOrderingY1P", "Query21aOptJoinTreeOptOrderingY1P", "Query21bOptJoinTreeOptOrderingY1P", "Query21cOptJoinTreeOptOrderingY1P", "Query22aOptJoinTreeOptOrderingY1P", "Query22bOptJoinTreeOptOrderingY1P", "Query22cOptJoinTreeOptOrderingY1P", "Query22dOptJoinTreeOptOrderingY1P", "Query23aOptJoinTreeOptOrderingY1P", "Query23bOptJoinTreeOptOrderingY1P", "Query23cOptJoinTreeOptOrderingY1P", "Query24aOptJoinTreeOptOrderingY1P", "Query24bOptJoinTreeOptOrderingY1P", "Query25aOptJoinTreeOptOrderingY1P", "Query25bOptJoinTreeOptOrderingY1P", "Query25cOptJoinTreeOptOrderingY1P", "Query26aOptJoinTreeOptOrderingY1P", "Query26bOptJoinTreeOptOrderingY1P", "Query26cOptJoinTreeOptOrderingY1P", "Query27aOptJoinTreeOptOrderingY1P", "Query27bOptJoinTreeOptOrderingY1P", "Query27cOptJoinTreeOptOrderingY1P", "Query28aOptJoinTreeOptOrderingY1P", "Query28bOptJoinTreeOptOrderingY1P", "Query28cOptJoinTreeOptOrderingY1P", "Query29aOptJoinTreeOptOrderingY1P", "Query29bOptJoinTreeOptOrderingY1P", "Query29cOptJoinTreeOptOrderingY1P", "Query2aOptJoinTreeOptOrderingY1P", "Query2bOptJoinTreeOptOrderingY1P", "Query2cOptJoinTreeOptOrderingY1P", "Query2dOptJoinTreeOptOrderingY1P", "Query30aOptJoinTreeOptOrderingY1P", "Query30bOptJoinTreeOptOrderingY1P", "Query30cOptJoinTreeOptOrderingY1P", "Query31aOptJoinTreeOptOrderingY1P", "Query31bOptJoinTreeOptOrderingY1P", "Query31cOptJoinTreeOptOrderingY1P", "Query32aOptJoinTreeOptOrderingY1P", "Query32bOptJoinTreeOptOrderingY1P", "Query33aOptJoinTreeOptOrderingY1P", "Query33bOptJoinTreeOptOrderingY1P", "Query33cOptJoinTreeOptOrderingY1P", "Query3aOptJoinTreeOptOrderingY1P", "Query3bOptJoinTreeOptOrderingY1P", "Query3cOptJoinTreeOptOrderingY1P", "Query4aOptJoinTreeOptOrderingY1P", "Query4bOptJoinTreeOptOrderingY1P", "Query4cOptJoinTreeOptOrderingY1P", "Query5aOptJoinTreeOptOrderingY1P", "Query5bOptJoinTreeOptOrderingY1P", "Query5cOptJoinTreeOptOrderingY1P", "Query6aOptJoinTreeOptOrderingY1P", "Query6bOptJoinTreeOptOrderingY1P", "Query6cOptJoinTreeOptOrderingY1P", "Query6dOptJoinTreeOptOrderingY1P", "Query6eOptJoinTreeOptOrderingY1P", "Query6fOptJoinTreeOptOrderingY1P", "Query7aOptJoinTreeOptOrderingY1P", "Query7bOptJoinTreeOptOrderingY1P", "Query7cOptJoinTreeOptOrderingY1P", "Query8aOptJoinTreeOptOrderingY1P", "Query8bOptJoinTreeOptOrderingY1P", "Query8cOptJoinTreeOptOrderingY1P", "Query8dOptJoinTreeOptOrderingY1P", "Query9aOptJoinTreeOptOrderingY1P", "Query9bOptJoinTreeOptOrderingY1P", "Query9cOptJoinTreeOptOrderingY1P", "Query9dOptJoinTreeOptOrderingY1P"})
+        public JOBQueriesYannakakis1Pass jobQueries;
+        JoinFragmentType query;
+
+        @Setup(Level.Trial)
+        public void setUp()
+        {
+            query = queryProvider(joinOperator,
+                    jobQueries,
+                    List.of(),
+                    duckDBJdbcClientSupplier.get());
+        }
+
+        @TearDown(Level.Trial)
+        public void tearDown()
+        {
+            query.cleanUp();
+        }
+    }
+
     @Benchmark
     public void benchTTJ(BenchStateTTJ state)
     {
@@ -160,6 +187,12 @@ public class BenchmarkJOBWithPredicatesDifferentOrdering
 
     @Benchmark
     public void benchYannakakisB(BenchStateYannakakisB state)
+    {
+        state.query.eval();
+    }
+
+    @Benchmark
+    public void benchYannakakis1Pass(BenchStateYannakakis1Pass state)
     {
         state.query.eval();
     }

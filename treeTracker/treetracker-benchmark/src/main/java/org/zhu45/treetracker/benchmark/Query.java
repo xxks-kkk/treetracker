@@ -37,6 +37,7 @@ public abstract class Query
         this.algorithm = context.getAlgorithm();
         this.queryName = context.getQueryName() == null ? this.getClass().getCanonicalName() : context.getQueryName();
         this.stopAfterFullReducer = context.getStopAfterFullReducer();
+        this.disablePTOptimizationTrick = context.isDisablePTOptimizationTrick();
         initializeQuery();
     }
 

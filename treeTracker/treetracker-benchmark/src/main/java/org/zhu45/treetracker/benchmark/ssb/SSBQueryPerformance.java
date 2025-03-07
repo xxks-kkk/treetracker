@@ -103,6 +103,6 @@ public class SSBQueryPerformance
 
     public static void main(String[] args)
     {
-        run(JoinOperator.TTJHP, Query2P1.class, false);
+        run(JoinOperator.Yannakakis1Pass, Query2P1.class, false);
     }
 }

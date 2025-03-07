@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkState;
 import static org.zhu45.treetracker.relational.planner.catalog.TableCatalog.initializeTableCatalog;
 
 public class CatalogGroup
@@ -31,5 +32,10 @@ public class CatalogGroup
     public TableCatalog getTableCatalog(SchemaTableName schemaTableName)
     {
         return catalogs.get(schemaTableName);
+    }
+
+    public void addTableCatalog(SchemaTableName schemaTableName, TableCatalog tableCatalog)
+    {
+        checkState(catalogs.put(schemaTableName, tableCatalog) == null, schemaTableName + " already exists in CatalogGroup");
     }
 }

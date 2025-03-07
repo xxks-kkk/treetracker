@@ -3,13 +3,16 @@ package org.zhu45.treetracker.relational.operator;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.ColumnHandle;
 import org.zhu45.treetracker.common.SchemaTableName;
+import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.jdbc.RecordTupleSourceProvider;
+import org.zhu45.treetracker.relational.JoinResultColumnHandle;
 import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodListMap;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNodeId;
 import org.zhu45.treetracker.relational.planner.catalog.TableCatalog;
+import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.util.List;
 
@@ -55,13 +58,19 @@ public interface Operator
 
     Row passContext(OperatorInformation info);
 
+    IntRow passContext(int parentId, int id);
+
     void setMultiwayJoinNode(MultiwayJoinNode node);
+
+    void setChildMultiwayJoinNode(MultiwayJoinNode node);
 
     void setSchemaTableName(SchemaTableName schemaTableName);
 
     SchemaTableName getSchemaTableName();
 
     MultiwayJoinNode getMultiwayJoinNode();
+
+    MultiwayJoinNode getChildMultiwayJoinNode();
 
     void setPlanBuildContext(PlanBuildContext context);
 
@@ -76,10 +85,6 @@ public interface Operator
     boolean getUseDomainAsSource();
 
     StatisticsInformation getStatisticsInformation();
-
-    void setLeftMostOperatorInPlan();
-
-    boolean isLeftMostOperatorInPlan();
 
     void setOperatorAssociatedRelationSize(long operatorAssociatedRelationSize);
 
@@ -96,4 +101,12 @@ public interface Operator
     }
 
     void initializeContextObject();
+
+    void setSide(Side side);
+
+    Side getSide();
+
+    List<JoinResultColumnHandle> getResultColumnHandles();
+
+    void setFactTableOperator(Operator operator);
 }

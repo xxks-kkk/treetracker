@@ -18,6 +18,7 @@ import org.zhu45.treetracker.relational.operator.TTJStatisticsInformation;
 import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedTableScanStatisticsInformation;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
+import org.zhu45.treetracker.relational.planner.plan.TableNode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -35,15 +36,15 @@ public class DefaultNoGoodListMap
 {
     private final Map<Integer, Pair<List<Integer>, NoGoodList<Value>>> noGoodListMap;
 
-    private DefaultNoGoodListMap(PlanBuildContext planBuildContext)
+    private DefaultNoGoodListMap(TableNode outerTable, PlanBuildContext planBuildContext)
     {
         if (Switches.DEBUG) {
             traceLogger = LogManager.getLogger(DefaultNoGoodListMap.class);
         }
         this.planBuildContext = planBuildContext;
-        this.associateSchemaTableName = planBuildContext.getLeftMostPlanNodeOperator().getSchemaTableName();
-        this.traceDepth = planBuildContext.getLeftMostPlanNodeOperator().getOperatorTraceDepth() + 1;
-        this.noGoodListMap = constructNoGoodListMap(planBuildContext);
+        this.associateSchemaTableName = outerTable.getSchemaTableName();
+        this.traceDepth = outerTable.getOperator().getOperatorTraceDepth() + 1;
+        this.noGoodListMap = constructNoGoodListMap(outerTable, planBuildContext);
         if (Switches.STATS) {
             this.statisticsInformation = new TupleBasedTableScanStatisticsInformation();
         }
@@ -134,6 +135,22 @@ public class DefaultNoGoodListMap
     }
 
     @Override
+    public void updateNoGoodListMap(Row row, int id)
+    {
+        List<Integer> factTableJoinAttributeIdx = noGoodListMap.get(id).getLeft();
+        JoinValueContainerKey jav = new JoinValueContainerKey(
+                factTableJoinAttributeIdx.stream().map(idx -> row.getVals().get(idx)).collect(Collectors.toList()));
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+            traceLogger.trace(formatTraceMessage("jav: " + jav));
+        }
+        noGoodListMap.get(id).getRight().add(jav);
+        noGoodListMapAddedValue = true;
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+            traceLogger.trace(formatTraceMessage("noGoodListMap: " + noGoodListMap));
+        }
+    }
+
+    @Override
     public String generateNoGoodListMapRepresentation()
     {
         List<MultiwayJoinNode> nodes = planBuildContext.getOrderedGraph().getTraversalList();
@@ -189,18 +206,17 @@ public class DefaultNoGoodListMap
         return parseInstance(noGoodListMap).totalSize();
     }
 
-    public static DefaultNoGoodListMap constructDefaultNoGoodListMap(PlanBuildContext planBuildContext)
+    public static DefaultNoGoodListMap constructDefaultNoGoodListMap(TableNode outerTable, PlanBuildContext planBuildContext)
     {
-        return new DefaultNoGoodListMap(planBuildContext);
+        return new DefaultNoGoodListMap(outerTable, planBuildContext);
     }
 
-    private static Map<Integer, Pair<List<Integer>, NoGoodList<Value>>> constructNoGoodListMap(PlanBuildContext context)
+    private static Map<Integer, Pair<List<Integer>, NoGoodList<Value>>> constructNoGoodListMap(TableNode outerTable, PlanBuildContext context)
     {
         Map<Integer, Pair<List<Integer>, NoGoodList<Value>>> noGoodListMap = new Int2ObjectOpenHashMap<>();
-        for (Map.Entry<Integer, List<Integer>> entry : context.getNodeId2FactTableJoinAttributeIdx().entrySet()) {
-            if (Switches.DEBUG) {
-                checkArgument(!entry.getValue().isEmpty(), "factTableJoinAttributeIdx is empty");
-            }
+        Map<Integer, List<Integer>> nodeId2JoinIdx = context.getNodeId2FactTableJoinAttributeIdx(outerTable);
+        for (Map.Entry<Integer, List<Integer>> entry : nodeId2JoinIdx.entrySet()) {
+            checkArgument(!entry.getValue().isEmpty(), "factTableJoinAttributeIdx is empty");
             Class<? extends NoGoodList> noGoodListClazz = context.getNoGoodList().getClass();
             try {
                 Method method = noGoodListClazz.getMethod("create");

@@ -1,6 +1,8 @@
 package org.zhu45.treetracker.relational.planner;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.Getter;
+import lombok.Setter;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
 import org.zhu45.treetracker.common.SchemaTableName;
@@ -12,10 +14,13 @@ import org.zhu45.treetracker.relational.operator.TupleBasedJoinOperator;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodList;
 import org.zhu45.treetracker.relational.operator.noGoodList.PlainNoGoodList;
 import org.zhu45.treetracker.relational.planner.catalog.CatalogGroup;
+import org.zhu45.treetracker.relational.planner.plan.TableNode;
 import org.zhu45.treetracker.relational.planner.rule.Rule;
 import org.zhu45.treetracker.relational.planner.rule.SemiJoinOrdering;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -31,21 +36,51 @@ import static java.util.Objects.requireNonNullElse;
 public class PlanBuildContext
 {
     private PlanNodeIdAllocator idAllocator;
+    @Getter
     private List<Rule> rules;
+    @Getter
     private MultiwayJoinOrderedGraph orderedGraph;
+    @Getter
     private List<MultiwayJoinNode> childrenOfRoot;
+    @Getter
     private NoGoodList noGoodList;
+    // The PlanNode that has an operator and the operator is the root of the operator tree.
+    // Except Postgres plan, this is the root PlanNode of the plan. Under Postgres plan, this node
+    // may not be the root of the plan because the root of the Postgres plan may not have a binding operator in our system, e.g., Aggregate.
+    @Setter @Getter
     private PlanNode root;
-    private Operator leftMostPlanNodeOperator;
+    // The PlanNode that is the root of the loaded Postgres plan.
+    @Setter @Getter
+    private PlanNode postgresPlanRoot;
+    @Getter
+    @Setter
     private JdbcClient jdbcClient;
+    @Getter
     private final Map<OptType, List<Class<? extends Operator>>> operatorMap;
+    @Getter
     private CatalogGroup catalogGroup;
+    @Getter
+    @Setter
     private List<SchemaTableName> schemaTableNameList;
-    private Map<Integer, List<Integer>> nodeId2FactTableJoinAttributeIdx;
+    @Getter
     private final SemiJoinOrdering semiJoinOrdering;
+    @Setter
+    @Getter
     private Class<? extends TupleBasedJoinOperator> semiJoinClazz;
+    @Getter
     private Boolean disablePTOptimizationTrick;
+    @Getter
     private Boolean enableJoinGraphHeuristicFromPT;
+    @Getter
+    private Boolean skipTopDownSemijoins;
+    @Getter
+    private PlanBuildOption planBuildOption;
+    @Getter
+    private String postgresPlan;
+    @Getter // Only need to set when use Postgres plan because Postgres plan doesn't contain schema of the relation.
+    private String schema;
+    @Getter @Setter
+    HashMap<SchemaTableName, HashSet<String>> schemaTableNameAttributes;
 
     private PlanBuildContext(Builder builder)
     {
@@ -60,69 +95,42 @@ public class PlanBuildContext
         this.semiJoinClazz = builder.semiJoinClazz;
         this.disablePTOptimizationTrick = builder.disablePTOptimizationTrick;
         this.enableJoinGraphHeuristicFromPT = builder.enableJoinGraphHeuristicFromPT;
+        this.skipTopDownSemijoins = builder.skipTopDownSemijoins;
+        this.planBuildOption = builder.planBuildOption;
+        this.postgresPlan = builder.postgresPlan;
+        this.schema = builder.schema;
+        this.schemaTableNameList = builder.schemaTableNameList;
     }
 
-    public void setRoot(PlanNode root)
+    public PlanBuildContext(PlanBuildContext context, MultiwayJoinOrderedGraph orderedGraph)
     {
-        this.root = root;
-    }
-
-    public PlanNode getRoot()
-    {
-        return root;
-    }
-
-    public void setJdbcClient(JdbcClient jdbcClient)
-    {
-        this.jdbcClient = jdbcClient;
-    }
-
-    public JdbcClient getJdbcClient()
-    {
-        return this.jdbcClient;
-    }
-
-    public void setLeftMostPlanNodeOperator()
-    {
-        requireNonNull(root.getOperator(), "There is no operator in root. Maybe passed in logical plan instead of physical plan?");
-
-        PlanNode current = root;
-        while (!current.getSources().isEmpty()) {
-            current = current.getSources().get(0);
-        }
-        leftMostPlanNodeOperator = current.getOperator();
-        leftMostPlanNodeOperator.setLeftMostOperatorInPlan();
-        checkArgument(leftMostPlanNodeOperator.getOperatorType() == OptType.table, "left most operator should be a table scan");
-    }
-
-    public Operator getLeftMostPlanNodeOperator()
-    {
-        return leftMostPlanNodeOperator;
-    }
-
-    public MultiwayJoinOrderedGraph getOrderedGraph()
-    {
-        return orderedGraph;
+        this.rules = context.rules;
+        setOrderedGraph(orderedGraph);
+        this.root = context.root;
+        this.postgresPlanRoot = context.postgresPlanRoot;
+        this.catalogGroup = context.catalogGroup;
+        this.idAllocator = context.idAllocator;
+        this.jdbcClient = context.jdbcClient;
+        this.noGoodList = requireNonNullElse(context.noGoodList, PlainNoGoodList.create());
+        this.operatorMap = context.operatorMap;
+        this.semiJoinOrdering = context.semiJoinOrdering;
+        this.semiJoinClazz = context.semiJoinClazz;
+        this.disablePTOptimizationTrick = context.disablePTOptimizationTrick;
+        this.enableJoinGraphHeuristicFromPT = context.enableJoinGraphHeuristicFromPT;
+        this.skipTopDownSemijoins = context.skipTopDownSemijoins;
+        this.planBuildOption = context.planBuildOption;
+        this.postgresPlan = context.postgresPlan;
+        this.schema = context.schema;
+        this.schemaTableNameList = context.schemaTableNameList;
+        this.schemaTableNameAttributes = context.schemaTableNameAttributes;
     }
 
     public void setOrderedGraph(MultiwayJoinOrderedGraph orderedGraph)
     {
         this.orderedGraph = orderedGraph;
-    }
-
-    public List<MultiwayJoinNode> getChildrenOfRoot()
-    {
-        return childrenOfRoot;
-    }
-
-    public NoGoodList getNoGoodList()
-    {
-        return noGoodList;
-    }
-
-    public List<Rule> getRules()
-    {
-        return rules;
+        MultiwayJoinNode root = orderedGraph.getRoot();
+        childrenOfRoot = orderedGraph.getChildren().get(root);
+        this.planBuildOption = PlanBuildOption.JOINTREE;
     }
 
     public PlanNodeIdAllocator getPlanNodeIdAllocator()
@@ -130,42 +138,25 @@ public class PlanBuildContext
         return idAllocator;
     }
 
-    public Map<OptType, List<Class<? extends Operator>>> getOperatorMap()
-    {
-        return operatorMap;
-    }
-
     public void initializeCatalogGroup(List<SchemaTableName> schemaTableNameList)
     {
+        requireNonNull(schemaTableNameList, "schemaTableNameList must not be null");
         catalogGroup = CatalogGroup.initializeCatalogGroup(schemaTableNameList, jdbcClient);
     }
 
-    public CatalogGroup getCatalogGroup()
+    public Map<Integer, List<Integer>> getNodeId2FactTableJoinAttributeIdx(TableNode outerTable)
     {
-        return catalogGroup;
-    }
-
-    public void setSchemaTableNameList(List<SchemaTableName> schemaTableNameList)
-    {
-        this.schemaTableNameList = schemaTableNameList;
-    }
-
-    public List<SchemaTableName> getSchemaTableNameList()
-    {
-        return schemaTableNameList;
-    }
-
-    public void setNodeId2FactTableJoinAttributeIdx()
-    {
-        nodeId2FactTableJoinAttributeIdx = new Int2ObjectOpenHashMap<>();
-        checkState(orderedGraph != null);
-        checkState(childrenOfRoot != null);
         checkState(getCatalogGroup() != null);
-        for (MultiwayJoinNode childNode : childrenOfRoot) {
+        checkState(outerTable.getOperator() != null, outerTable + " should have a binding operator");
+        Map<Integer, List<Integer>> nodeId2FactTableJoinAttributeIdx = new Int2ObjectOpenHashMap<>();
+        List<MultiwayJoinNode> children = orderedGraph.getChildren().get(outerTable.getOperator().getMultiwayJoinNode());
+        for (MultiwayJoinNode childNode : children) {
             int nodeId = childNode.getNodeId();
-            List<Integer> factTableJoinAttributeIdx = populateFactTableJoinAttributeIdx(orderedGraph.getRoot(), childNode);
+            List<Integer> factTableJoinAttributeIdx = populateFactTableJoinAttributeIdx(outerTable.getOperator().getMultiwayJoinNode(),
+                    childNode);
             nodeId2FactTableJoinAttributeIdx.put(nodeId, factTableJoinAttributeIdx);
         }
+        return nodeId2FactTableJoinAttributeIdx;
     }
 
     private List<Integer> populateFactTableJoinAttributeIdx(MultiwayJoinNode root, MultiwayJoinNode childNode)
@@ -177,13 +168,14 @@ public class PlanBuildContext
         List<Integer> factTableJoinAttributeIdx = new ArrayList<>();
         List<String> factTableAttributes = getCatalogGroup().getTableCatalog(root.getSchemaTableName()).getAttributes();
         List<Type> factTableTypes = getCatalogGroup().getTableCatalog(root.getSchemaTableName()).getTypeList();
-        List<String> baseRelationAttributes = getCatalogGroup().getTableCatalog(childNode.getSchemaTableName()).getAttributes();
+        List<String> baseRelationAttributes = getCatalogGroup().getTableCatalog(
+                childNode.getSchemaTableName()).getAttributes();
         List<Type> baseRelationTypes = getCatalogGroup().getTableCatalog(childNode.getSchemaTableName()).getTypeList();
 
         for (int i = 0; i < factTableAttributes.size(); ++i) {
             for (int j = 0; j < baseRelationAttributes.size(); ++j) {
-                if (factTableAttributes.get(i).equals(baseRelationAttributes.get(j)) &&
-                        factTableTypes.get(i).equals(baseRelationTypes.get(j))) {
+                if (factTableAttributes.get(i).equals(baseRelationAttributes.get(j)) && factTableTypes.get(i).equals(
+                        baseRelationTypes.get(j))) {
                     factTableJoinAttributeIdx.add(i);
                 }
             }
@@ -191,34 +183,9 @@ public class PlanBuildContext
         return factTableJoinAttributeIdx;
     }
 
-    public Map<Integer, List<Integer>> getNodeId2FactTableJoinAttributeIdx()
+    public void setPlanBuildOption(PlanBuildOption option)
     {
-        return nodeId2FactTableJoinAttributeIdx;
-    }
-
-    public SemiJoinOrdering getSemiJoinOrdering()
-    {
-        return semiJoinOrdering;
-    }
-
-    public Class<? extends TupleBasedJoinOperator> getSemiJoinClazz()
-    {
-        return semiJoinClazz;
-    }
-
-    public void setSemiJoinClazz(Class<? extends TupleBasedJoinOperator> semiJoinClazz)
-    {
-        this.semiJoinClazz = semiJoinClazz;
-    }
-
-    public Boolean getDisablePTOptimizationTrick()
-    {
-        return disablePTOptimizationTrick;
-    }
-
-    public Boolean getEnableJoinGraphHeuristicFromPT()
-    {
-        return enableJoinGraphHeuristicFromPT;
+        this.planBuildOption = option;
     }
 
     public static Builder builder()
@@ -239,6 +206,11 @@ public class PlanBuildContext
         private Class<? extends TupleBasedJoinOperator> semiJoinClazz;
         private boolean disablePTOptimizationTrick;
         private boolean enableJoinGraphHeuristicFromPT;
+        private boolean skipTopDownSemijoins;
+        private PlanBuildOption planBuildOption = PlanBuildOption.DEFAULT;
+        private String postgresPlan;
+        private String schema;
+        private List<SchemaTableName> schemaTableNameList;
 
         public Builder()
         {
@@ -250,6 +222,7 @@ public class PlanBuildContext
             this.orderedGraph = orderedGraph;
             MultiwayJoinNode root = orderedGraph.getRoot();
             childrenOfRoot = orderedGraph.getChildren().get(root);
+            this.planBuildOption = PlanBuildOption.JOINTREE;
             return this;
         }
 
@@ -307,9 +280,52 @@ public class PlanBuildContext
             return this;
         }
 
+        public Builder skipTopDownSemijoins(boolean skipTopDownSemijoins)
+        {
+            this.skipTopDownSemijoins = skipTopDownSemijoins;
+            return this;
+        }
+
+        public Builder planBuildOption(PlanBuildOption planBuildOption)
+        {
+            this.planBuildOption = planBuildOption;
+            return this;
+        }
+
+        public Builder postgresPlan(String postgresPlan)
+        {
+            this.postgresPlan = postgresPlan;
+            // To avoid large refactoring, we automatically set PlanBuildOption when serOrderedGraph(). However,
+            // with introduced PlanBuildOption, we should explicitly set it regardless what other data we set, e.g.,
+            // postgresPlan. To encourage this better usage, we don't automatically set PlanBuildOption here.
+            return this;
+        }
+
+        public Builder schema(String schema)
+        {
+            this.schema = schema;
+            return this;
+        }
+
+        public Builder schemaTableNameList(List<SchemaTableName> schemaTableNameList)
+        {
+            this.schemaTableNameList = schemaTableNameList;
+            return this;
+        }
+
         public PlanBuildContext build()
         {
             return new PlanBuildContext(this);
         }
+    }
+
+    /**
+     * Controls how we want to build a plan
+     */
+    public enum PlanBuildOption
+    {
+        DEFAULT,       // build a left-deep plan
+        JOINTREE,      // build a left-deep plan based on join tree
+        POSTGRES       // build plan based on input Postgres plan
     }
 }

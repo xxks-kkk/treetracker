@@ -44,6 +44,17 @@ public class TableCatalog
         this.fractionOfUniquesInEachColumn = initializeFractionOfUniquesInEachColumn();
     }
 
+    public TableCatalog(SchemaTableName schemaTableName, List<Type> typeList, List<String> attributes)
+    {
+        this.schemaTableName = schemaTableName;
+        this.jdbcClient = null;
+        this.tableHandle = null;
+        this.columnHandles = null;
+        this.typeList = typeList;
+        this.attributes = attributes;
+        this.fractionOfUniquesInEachColumn = null;
+    }
+
     public SchemaTableName getTableName()
     {
         return schemaTableName;

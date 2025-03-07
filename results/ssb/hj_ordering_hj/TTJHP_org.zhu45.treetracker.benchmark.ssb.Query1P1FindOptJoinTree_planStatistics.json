@@ -1,0 +1,37 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb",
+      "tableName" : "q1p1_lineorder"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q1p1_date"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "ssb.q1p1_lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q1p1_date(DATEKEY)" : 2.0
+  },
+  "optimalJoinTree" : "ssb.q1p1_lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q1p1_date(DATEKEY)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree", "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb",
+        "tableName" : "q1p1_lineorder"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q1p1_date"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "ssb.q1p1_lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q1p1_date(DATEKEY)" : 2.0
+    },
+    "optimalJoinTree" : "ssb.q1p1_lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q1p1_date(DATEKEY)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree"
+  }, {
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee"
+  } ]
+}

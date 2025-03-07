@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,7 +33,7 @@ public class LIPAggregateStatisticsInformation
             @Override
             public void visitTupleBasedLIPTableScanOperator(TupleBasedLIPTableScanOperator operator, Void context)
             {
-                if (!operator.isLeftMostOperatorInPlan()) {
+                if (operator.getSide() != Side.OUTER) {
                     numberOfR1Assignments += operator.getStatisticsInformation().getNumberOfR1Assignments();
                     innerRelationSize += operator.getStatisticsInformation().getNumberOfTuples();
                 }

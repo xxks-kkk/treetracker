@@ -3,6 +3,7 @@ package org.zhu45.treetracker.benchmark.codegen;
 import com.google.common.base.Joiner;
 import com.google.common.io.Resources;
 import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.JinjavaConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.parser.ParseException;
@@ -24,8 +25,11 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang.StringUtils.repeat;
+import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_RESULT_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_SQLITE_ORDERING_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.codegen.GenerateFindOptJoinTree.Step2.step2Driver;
 import static org.zhu45.treetracker.benchmark.codegen.GenerateFindOptJoinTree.Step3.step3Driver;
@@ -86,7 +90,7 @@ public class GenerateFindOptJoinTree
             return queryNames;
         }
 
-        private static File[] getAListOfTargetJsonFiles(String planStatisticsPath)
+        public static File[] getAListOfTargetJsonFiles(String planStatisticsPath)
         {
             String[] patterns = "HASH_JOIN,planStatistics".split(",");
             return new File(planStatisticsPath).listFiles((dir, name) -> Stream.of(patterns).allMatch(name::contains) && name.endsWith(".json"));
@@ -125,18 +129,22 @@ public class GenerateFindOptJoinTree
             return multiwayJoinNodes;
         }
 
-        private static void generateJavaClass(Map<String, Object> context,
-                                              String queryName,
-                                              String templatePathPrefix,
-                                              Map<String, String> queryName2Template,
-                                              String savePathPrefix,
-                                              Map<String, String> queryName2SavePath)
+        public static void generateJavaClass(Map<String, Object> context,
+                                             String queryName,
+                                             String templatePathPrefix,
+                                             Map<String, String> queryName2Template,
+                                             String savePathPrefix,
+                                             Map<String, String> queryName2SavePath)
                 throws IOException
         {
             String templatePath = Paths.get(templatePathPrefix, constructTemplateName(queryName, queryName2Template)).toString();
             String savePath = getJavaSavePath(queryName, savePathPrefix, queryName2SavePath);
 
-            Jinjava jinjava = new Jinjava();
+            JinjavaConfig config = JinjavaConfig.newBuilder()
+                    .withTrimBlocks(true)
+                    .withLstripBlocks(true)
+                    .build();
+            Jinjava jinjava = new Jinjava(config);
             String template = Resources.toString(Resources.getResource(templatePath), StandardCharsets.UTF_8);
             String output = jinjava.render(template, context);
             FileUtils.writeStringToFile(new File(savePath), output, StandardCharsets.UTF_8);
@@ -320,10 +328,40 @@ public class GenerateFindOptJoinTree
                 "codegen/job/FindOptimalJoinTreeForJOBWithPredicatesAutoGen.javat");
     }
 
+    public static void generateFindOptJoinTreeJOBSQLite()
+            throws IOException, ParseException
+    {
+        run(JOB_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH,
+                relation2MultiwayJoinNode,
+                templatePathPrefix,
+                queryName2Template,
+                savePathPrefix,
+                queryName2SavePath,
+                "import org.zhu45.treetracker.benchmark.job",
+                "codegen/job/JOBQueriesFindOptJoinTree.javat",
+                "JOBQueriesAutoGenAnnotationBlock",
+                "codegen/job/FindOptimalJoinTreeForJOBWithPredicatesAutoGen.javat");
+    }
+
     public static void generateFindOptJoinTreeTPCH()
             throws IOException, ParseException
     {
         run(TPCH_WITH_PREDICATES_RESULT_STORED_PATH,
+                TPCHDatabase.CodeGen.relation2MultiwayJoinNode,
+                TPCHDatabase.CodeGen.templatePathPrefix,
+                TPCHDatabase.CodeGen.queryName2Template,
+                TPCHDatabase.CodeGen.savePathPrefix,
+                TPCHDatabase.CodeGen.queryName2SavePath,
+                "import org.zhu45.treetracker.benchmark.tpch",
+                "codegen/tpch/TPCHQueriesFindOptJoinTree.javat",
+                "TPCHQueriesAutoGenAnnotationBlock",
+                "codegen/tpch/FindOptimalJoinTreeForTPCHWithPredicatesAutoGen.javat");
+    }
+
+    public static void generateFindOptJoinTreeTPCHSQLite()
+            throws IOException, ParseException
+    {
+        run(TPCH_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH,
                 TPCHDatabase.CodeGen.relation2MultiwayJoinNode,
                 TPCHDatabase.CodeGen.templatePathPrefix,
                 TPCHDatabase.CodeGen.queryName2Template,
@@ -350,11 +388,29 @@ public class GenerateFindOptJoinTree
                 "codegen/ssb/FindOptimalJoinTreeForSSBWithPredicatesAutoGen.javat");
     }
 
+    public static void generateFindOptJoinTreeSSBSQLite()
+            throws IOException, ParseException
+    {
+        run(SSB_SQLITE_ORDERING_STORED_PATH,
+                SSBDatabase.CodeGen.relation2MultiwayJoinNode,
+                SSBDatabase.CodeGen.templatePathPrefix,
+                SSBDatabase.CodeGen.queryName2Template,
+                SSBDatabase.CodeGen.savePathPrefix,
+                SSBDatabase.CodeGen.queryName2SavePath,
+                "import org.zhu45.treetracker.benchmark.ssb",
+                "codegen/ssb/SSBQueriesFindOptJoinTree.javat",
+                "SSBQueriesAutoGenAnnotationBlock",
+                "codegen/ssb/FindOptimalJoinTreeForSSBWithPredicatesAutoGen.javat");
+    }
+
     public static void main(String[] args)
             throws IOException, ParseException
     {
-        generateFindOptJoinTreeJOB();
-        generateFindOptJoinTreeTPCH();
-        generateFindOptJoinTreeSSB();
+//        generateFindOptJoinTreeJOB();
+//        generateFindOptJoinTreeTPCH();
+//        generateFindOptJoinTreeSSB();
+//        generateFindOptJoinTreeJOBSQLite();
+        generateFindOptJoinTreeTPCHSQLite();
+//        generateFindOptJoinTreeSSBSQLite();
     }
 }

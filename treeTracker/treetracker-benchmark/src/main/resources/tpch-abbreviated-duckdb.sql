@@ -112,14 +112,70 @@ COPY tpch_int.partsupp_tmp FROM '/home/zeyuanhu/projects/tpch-kit/dbgen/postgres
 COPY tpch_int.region_tmp FROM '/home/zeyuanhu/projects/tpch-kit/dbgen/postgres/s1/region.tbl' WITH DELIMITER '|' NULL '\N' CSV;
 COPY tpch_int.supplier_tmp FROM '/home/zeyuanhu/projects/tpch-kit/dbgen/postgres/s1/supplier.tbl' WITH DELIMITER '|' NULL '\N' CSV;
 
-CREATE TABLE tpch_int.nation as SELECT nationkey, regionkey from tpch_int.nation_tmp;
-CREATE TABLE tpch_int.region as SELECT regionkey from tpch_int.region_tmp;
-CREATE TABLE tpch_int.part as SELECT partkey from tpch_int.part_tmp;
-CREATE TABLE tpch_int.supplier as SELECT suppkey, nationkey from tpch_int.supplier_tmp;
-CREATE TABLE tpch_int.partsupp as SELECT partkey, suppkey from tpch_int.partsupp_tmp;
-CREATE TABLE tpch_int.customer as SELECT custkey, nationkey from tpch_int.customer_tmp;
-CREATE TABLE tpch_int.orders as SELECT orderkey, custkey from tpch_int.orders_tmp;
-CREATE TABLE tpch_int.lineitem as SELECT orderkey, partkey, suppkey from tpch_int.lineitem_tmp;
+CREATE TABLE tpch_int.region
+(
+    regionkey INTEGER primary key,
+);
+
+CREATE TABLE tpch_int.nation
+(
+    nationkey INTEGER primary key,
+    regionkey INTEGER, -- references R_REGIONKEY
+    FOREIGN KEY (regionkey) REFERENCES tpch_int.region(regionkey)
+);
+
+CREATE TABLE tpch_int.part
+(
+    partkey     INTEGER primary key
+);
+
+CREATE TABLE tpch_int.supplier
+(
+    suppkey   INTEGER primary key,
+    nationkey INTEGER, -- references N_NATIONKEY
+    FOREIGN KEY (nationkey) REFERENCES tpch_int.nation(nationkey)
+);
+
+CREATE TABLE tpch_int.partsupp
+(
+    partkey     INTEGER, -- references P_PARTKEY
+    suppkey     INTEGER, -- references S_SUPPKEY
+    FOREIGN KEY (partkey) REFERENCES tpch_int.part(partkey),
+    FOREIGN KEY (suppkey) REFERENCES tpch_int.supplier(suppkey),
+    UNIQUE (partkey, suppkey)
+);
+
+CREATE TABLE tpch_int.customer
+(
+    custkey    INTEGER primary key,
+    nationkey  INTEGER, -- references N_NATIONKEY
+    FOREIGN KEY (nationkey) REFERENCES tpch_int.nation(nationkey)
+);
+
+CREATE TABLE tpch_int.orders
+(
+    orderkey      INTEGER primary key,
+    custkey       INTEGER, -- references C_CUSTKEY
+    FOREIGN KEY (custkey) REFERENCES tpch_int.customer(custkey)
+);
+
+CREATE TABLE tpch_int.lineitem
+(
+    orderkey      INTEGER, -- references O_ORDERKEY
+    partkey       INTEGER, -- references P_PARTKEY (compound fk to PARTSUPP)
+    suppkey       INTEGER, -- references S_SUPPKEY (compound fk to PARTSUPP)
+    FOREIGN KEY (orderkey) REFERENCES tpch_int.orders(orderkey),
+    FOREIGN KEY (partkey, suppkey) REFERENCES tpch_int.partsupp(partkey, suppkey)
+);
+
+INSERT INTO tpch_int.region SELECT regionkey from tpch_int.region_tmp;
+INSERT INTO tpch_int.nation SELECT nationkey, regionkey from tpch_int.nation_tmp;
+INSERT INTO tpch_int.part SELECT partkey from tpch_int.part_tmp;
+INSERT INTO tpch_int.supplier SELECT suppkey, nationkey from tpch_int.supplier_tmp;
+INSERT INTO tpch_int.partsupp SELECT partkey, suppkey from tpch_int.partsupp_tmp;
+INSERT INTO tpch_int.customer SELECT custkey, nationkey from tpch_int.customer_tmp;
+INSERT INTO tpch_int.orders SELECT orderkey, custkey from tpch_int.orders_tmp;
+INSERT INTO tpch_int.lineitem SELECT orderkey, partkey, suppkey from tpch_int.lineitem_tmp;
 
 DROP TABLE tpch_int.nation_tmp;
 DROP TABLE tpch_int.region_tmp;
@@ -131,3 +187,12 @@ DROP TABLE tpch_int.orders_tmp;
 DROP TABLE tpch_int.lineitem_tmp;
 
 COMMIT;
+
+analyze tpch_int.part;
+analyze tpch_int.supplier;
+analyze tpch_int.partsupp;
+analyze tpch_int.customer;
+analyze tpch_int.orders;
+analyze tpch_int.lineitem;
+analyze tpch_int.nation;
+analyze tpch_int.region;

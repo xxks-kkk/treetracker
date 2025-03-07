@@ -6,6 +6,7 @@ import org.zhu45.treetracker.relational.operator.OperatorInformation;
 import org.zhu45.treetracker.relational.operator.StatisticsInformation;
 import org.zhu45.treetracker.relational.operator.TupleBasedTableScanStatisticsInformation;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
+import org.zhu45.treetracker.relational.planner.PlanNode;
 
 import static org.openjdk.jol.info.GraphLayout.parseInstance;
 
@@ -76,7 +77,7 @@ public class SimpleNoGoodListMap
         return parseInstance(noGoodList).totalSize();
     }
 
-    public static SimpleNoGoodListMap constructSimpleNoGoodListMap(PlanBuildContext planBuildContext)
+    public static SimpleNoGoodListMap constructSimpleNoGoodListMap(PlanNode outerTable, PlanBuildContext planBuildContext)
     {
         return new SimpleNoGoodListMap(planBuildContext.getNoGoodList());
     }

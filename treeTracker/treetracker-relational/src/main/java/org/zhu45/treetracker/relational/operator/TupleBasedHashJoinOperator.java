@@ -103,6 +103,11 @@ public class TupleBasedHashJoinOperator
         iL = null;
         currRowPointedbyIL = null;
         l = null;
+        if (Switches.STATS) {
+            if (hashTableH != null) {
+                statisticsInformation.updateHashTableSizeAfterEvaluation(getHashTableSizeAfterEvaluation());
+            }
+        }
         hashTableH = null;
 
         if (Switches.STATS) {
@@ -112,6 +117,15 @@ public class TupleBasedHashJoinOperator
 
         r1Operator.close();
         r2Operator.close();
+    }
+
+    private long getHashTableSizeAfterEvaluation()
+    {
+        long size = 0;
+        for (var val : hashTableH.values()) {
+            size += val.size();
+        }
+        return size;
     }
 
     protected void updateStatisticsInformatAtClose()
@@ -188,6 +202,7 @@ public class TupleBasedHashJoinOperator
         long probeHashTableTime;
         if (Switches.STATS) {
             probeHashTableTime = System.nanoTime();
+            statisticsInformation.incrementNumberOfHashTableProbe();
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".lookUpH()"));

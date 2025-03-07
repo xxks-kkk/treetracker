@@ -82,7 +82,8 @@ public class TestFindTheOptimalJoinTree
      * Then, the resulting plan uses that join tree and can be evaluated correctly.
      */
     @Test
-    public void testFindOptimalJoinTree() {
+    public void testFindOptimalJoinTree()
+    {
         String schemaName = base.getDatabase().getSchemaName();
         JdbcClient jdbcClient = base.getDatabase().getJdbcClient();
 
@@ -157,7 +158,8 @@ public class TestFindTheOptimalJoinTree
      * In this test, we check if the rule handles the unique attribute case.
      */
     @Test
-    public void testFindOptimalJoinTree2() {
+    public void testFindOptimalJoinTree2()
+    {
         String schemaName = base.getDatabase().getSchemaName();
         JdbcClient jdbcClient = base.getDatabase().getJdbcClient();
 
@@ -200,7 +202,8 @@ public class TestFindTheOptimalJoinTree
      * is yet to be processed.
      */
     @Test
-    public void testFindOptimalJoinTree3() {
+    public void testFindOptimalJoinTree3()
+    {
         String schemaName = base.getDatabase().getSchemaName();
         JdbcClient jdbcClient = base.getDatabase().getJdbcClient();
 

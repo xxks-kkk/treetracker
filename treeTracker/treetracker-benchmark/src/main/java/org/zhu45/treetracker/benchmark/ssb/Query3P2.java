@@ -39,6 +39,12 @@ public class Query3P2
                 asEdge(lineOrderNode, customerNode),
                 asEdge(lineOrderNode, supplierNode)), lineOrderNode);
 
-        return createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Pair<Plan, List<Operator>> pair = createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Plan plan = pair.getLeft();
+        verifyJoinOrdering(plan, Arrays.asList(lineOrderNode.getSchemaTableName(),
+                dateNode.getSchemaTableName(),
+                customerNode.getSchemaTableName(),
+                supplierNode.getSchemaTableName()));
+        return pair;
     }
 }

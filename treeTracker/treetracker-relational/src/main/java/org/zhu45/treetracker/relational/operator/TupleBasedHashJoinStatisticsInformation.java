@@ -11,6 +11,12 @@ public class TupleBasedHashJoinStatisticsInformation
     @Getter private long probeHashTableTime;
     // hash table initial allocation capacity
     @Getter private int hashTableInitialAllocationCapacity;
+    // number of hash table probe
+    @Getter private int numberOfHashTableProbe;
+    // number of semijoin probe success. Effectively, this outputs
+    // semijoin output size
+    @Getter private long numberOfSemiJoinSuccess;
+    private long hashTableSizeAfterEvaluation;
 
     @Override
     public void setHashTableBuildTime(long hashTableBuildTime)
@@ -28,5 +34,41 @@ public class TupleBasedHashJoinStatisticsInformation
     public void setHashTableInitialAllocationCapacity(int hashTableInitialAllocationCapacity)
     {
         this.hashTableInitialAllocationCapacity = hashTableInitialAllocationCapacity;
+    }
+
+    @Override
+    public void incrementNumberOfHashTableProbe()
+    {
+        this.numberOfHashTableProbe++;
+    }
+
+    @Override
+    public long getNumberOfHashTableProbe()
+    {
+        return this.numberOfHashTableProbe;
+    }
+
+    @Override
+    public void incrementNumberOfSemiJoinSuccess()
+    {
+        this.numberOfSemiJoinSuccess++;
+    }
+
+    @Override
+    public long getNumberOfSemiJoinSuccess()
+    {
+        return this.numberOfSemiJoinSuccess;
+    }
+
+    @Override
+    public void updateHashTableSizeAfterEvaluation(long hashTableSize)
+    {
+        this.hashTableSizeAfterEvaluation = hashTableSize;
+    }
+
+    @Override
+    public long getHashTableSizeAfterEvaluation()
+    {
+        return hashTableSizeAfterEvaluation;
     }
 }

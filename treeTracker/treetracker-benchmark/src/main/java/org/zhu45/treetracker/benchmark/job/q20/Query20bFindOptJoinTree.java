@@ -48,17 +48,17 @@ public class Query20bFindOptJoinTree
         MultiwayJoinNode kindTypeNode = getKindTypeInt(JOBQueries.Q20b, null);
         MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q20b, null);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(completeCastNode, compCastTypeNode1, compCastTypeNode2, titleNode, kindTypeNode, castInfoNode, nameNode, charNameNode, movieKeywordNode, keywordNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(castInfoNode, charNameNode, titleNode, kindTypeNode, nameNode, completeCastNode, compCastTypeNode1, compCastTypeNode2, movieKeywordNode, keywordNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(completeCastNode.getSchemaTableName(),
-                compCastTypeNode1.getSchemaTableName(),
-                compCastTypeNode2.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(castInfoNode.getSchemaTableName(),
+                charNameNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
                 kindTypeNode.getSchemaTableName(),
-                castInfoNode.getSchemaTableName(),
                 nameNode.getSchemaTableName(),
-                charNameNode.getSchemaTableName(),
+                completeCastNode.getSchemaTableName(),
+                compCastTypeNode1.getSchemaTableName(),
+                compCastTypeNode2.getSchemaTableName(),
                 movieKeywordNode.getSchemaTableName(),
                 keywordNode.getSchemaTableName()));
         return pair;

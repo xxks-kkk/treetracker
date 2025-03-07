@@ -35,10 +35,16 @@ public class Query3P4
         MultiwayJoinNode supplierNode = getSupplierInt(SSBQueries.Q3P4);
 
         MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(Arrays.asList(
-                asEdge(lineOrderNode, dateNode),
                 asEdge(lineOrderNode, customerNode),
-                asEdge(lineOrderNode, supplierNode)), lineOrderNode);
+                asEdge(lineOrderNode, supplierNode),
+                asEdge(lineOrderNode, dateNode)), lineOrderNode);
 
-        return createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Pair<Plan, List<Operator>> pair = createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Plan plan = pair.getLeft();
+        verifyJoinOrdering(plan, Arrays.asList(lineOrderNode.getSchemaTableName(),
+                customerNode.getSchemaTableName(),
+                supplierNode.getSchemaTableName(),
+                dateNode.getSchemaTableName()));
+        return pair;
     }
 }

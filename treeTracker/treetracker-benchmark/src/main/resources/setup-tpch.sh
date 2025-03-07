@@ -1,8 +1,9 @@
 #!/bin/bash -xve
 
-# Setup IMDB dataset to be used for benchmarking and testing
+# Setup TPC-H to be used for benchmarking and testing
 PROJECT_ROOT=/home/zeyuanhu/projects/treetracker2
 
+psql -p5432 -d tpch -f ${PROJECT_ROOT}/treeTracker/treetracker-benchmark/src/main/resources/tpch-original.sql &&
 psql -p5432 -d postgres -f ${PROJECT_ROOT}/treeTracker/treetracker-benchmark/src/main/resources/tpch.sql &&
 psql -p5432 -d postgres -f ${PROJECT_ROOT}/treeTracker/treetracker-benchmark/src/main/resources/tpch-constraints-analyze.sql &&
 

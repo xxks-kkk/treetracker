@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 from seaborn import regplot
 
 from plot.constants import FIG_SAVE_LOCATION, DATA_SOURCE_CSV, HJ, TTJ, LIP, Yannakakis, JOB_RELATION_SIZE, TTJ_NO_NG, \
-    TTJ_BF, TTJ_BG, YannakakisB
+    TTJ_BF, TTJ_BG, YannakakisB, Yannakakis1Pass, TTJ_NO_DP, TTJ_VANILLA
 from plot.cost import JSON_PREFIX, AGG_STATS_FIELDS, DATA_PATH, PATTERNS, FILENAME_SIGNATURE, COST, get_query_name
 from plot.job import construct_fig_name
 from plot.utility import to_float, render_filename, check_argument
@@ -67,6 +67,14 @@ def extract_data_from_csv(csv_file_path: Path,
                 result[TTJ] = dict()
                 for query_label, num_str in zip(headers[start_idx:end_idx],row[start_idx:end_idx]):
                     result[TTJ][query_label.lower()] = to_float(num_str)
+            elif TTJ_NO_DP in row:
+                result[TTJ_NO_DP] = dict()
+                for query_label, num_str in zip(headers[start_idx:end_idx], row[start_idx:end_idx]):
+                    result[TTJ_NO_DP][query_label.lower()] = to_float(num_str)
+            elif TTJ_VANILLA in row:
+                result[TTJ_VANILLA] = dict()
+                for query_label, num_str in zip(headers[start_idx:end_idx], row[start_idx:end_idx]):
+                    result[TTJ_VANILLA][query_label.lower()] = to_float(num_str)
             elif LIP in row:
                 result[LIP] = dict()
                 for query_label, num_str in zip(headers[start_idx:end_idx],row[start_idx:end_idx]):
@@ -75,6 +83,10 @@ def extract_data_from_csv(csv_file_path: Path,
                 result[Yannakakis] = dict()
                 for query_label, num_str in zip(headers[start_idx:end_idx],row[start_idx:end_idx]):
                     result[Yannakakis][query_label.lower()] = to_float(num_str)
+            elif Yannakakis1Pass in row:
+                result[Yannakakis1Pass] = dict()
+                for query_label, num_str in zip(headers[start_idx:end_idx],row[start_idx:end_idx]):
+                    result[Yannakakis1Pass][query_label.lower()] = to_float(num_str)
             elif YannakakisB in row:
                 result[YannakakisB] = dict()
                 for query_label, num_str in zip(headers[start_idx:end_idx],row[start_idx:end_idx]):

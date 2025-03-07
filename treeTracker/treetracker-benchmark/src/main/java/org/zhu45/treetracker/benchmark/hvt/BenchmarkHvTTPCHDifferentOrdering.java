@@ -16,6 +16,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.zhu45.treetracker.benchmark.tpch.TPCHQueriesAutoGen;
 import org.zhu45.treetracker.benchmark.tpch.TPCHQueriesFindOptJoinTree;
 import org.zhu45.treetracker.benchmark.tpch.TPCHQueriesYannakakis;
+import org.zhu45.treetracker.benchmark.tpch.TPCHQueriesYannakakis1Pass;
 import org.zhu45.treetracker.benchmark.tpch.TPCHQueriesYannakakisB;
 import org.zhu45.treetracker.relational.JoinFragmentType;
 import org.zhu45.treetracker.relational.operator.JoinOperator;
@@ -145,6 +146,33 @@ public class BenchmarkHvTTPCHDifferentOrdering
         }
     }
 
+    @State(Scope.Benchmark)
+    public static class BenchStateYannakakis1Pass
+    {
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        @Param({"Yannakakis1Pass"})
+        public JoinOperator joinOperator;
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        @Param({"Query10WOptJoinTreeOptOrderingY1P", "Query11WOptJoinTreeOptOrderingY1P", "Query12WOptJoinTreeOptOrderingY1P", "Query14WOptJoinTreeOptOrderingY1P", "Query15WOptJoinTreeOptOrderingY1P", "Query16WOptJoinTreeOptOrderingY1P", "Query18WOptJoinTreeOptOrderingY1P", "Query19aWOptJoinTreeOptOrderingY1P", "Query19bWOptJoinTreeOptOrderingY1P", "Query19cWOptJoinTreeOptOrderingY1P", "Query20WOptJoinTreeOptOrderingY1P", "Query3WOptJoinTreeOptOrderingY1P", "Query7aWOptJoinTreeOptOrderingY1P", "Query7bWOptJoinTreeOptOrderingY1P", "Query8WOptJoinTreeOptOrderingY1P", "Query9WOptJoinTreeOptOrderingY1P"})
+        public TPCHQueriesYannakakis1Pass tpchQueriesYannakakis1Pass;
+        JoinFragmentType query;
+
+        @Setup(Level.Trial)
+        public void setUp()
+        {
+            query = queryProvider(joinOperator,
+                    tpchQueriesYannakakis1Pass,
+                    List.of(),
+                    duckDBJdbcClientSupplier.get());
+        }
+
+        @TearDown(Level.Trial)
+        public void tearDown()
+        {
+            query.cleanUp();
+        }
+    }
+
     @Benchmark
     public void benchTTJ(BenchStateTTJ state) throws InterruptedException
     {
@@ -168,6 +196,13 @@ public class BenchmarkHvTTPCHDifferentOrdering
 
     @Benchmark
     public void benchYannakakisB(BenchStateYannakakisB state) throws InterruptedException
+    {
+        createStatisticsJson(state.query, SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH);
+        Thread.sleep(2000);
+    }
+
+    @Benchmark
+    public void benchYannakakis1Pass(BenchStateYannakakis1Pass state) throws InterruptedException
     {
         createStatisticsJson(state.query, SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH);
         Thread.sleep(2000);

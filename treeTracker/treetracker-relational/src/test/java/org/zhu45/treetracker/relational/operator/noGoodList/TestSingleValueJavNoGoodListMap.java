@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.zhu45.treektracker.multiwayJoin.MultiwayJoinPreorderTraversalStrategy.getMultiwayJoinOrderedGraph;
 import static org.zhu45.treetracker.common.Edge.asEdge;
@@ -223,73 +222,6 @@ public class TestSingleValueJavNoGoodListMap
         assertTrue(pair.getLeft().getPlanStatistics().getNoGoodListMapClazzName().contains("DefaultNoGoodListMap"));
         cleanUp(pair.getValue());
     }
-
-    /**
-     * Test SingleValueJavNoGoodListMap is not activated for unqualified query. In this case, we test the deactivation
-     * due to number of join attributes between R_k and one of its child is not 1.
-     */
-    @Test
-    public void testDeactivationForUnqualifiedQuery2()
-    {
-        JdbcClient jdbcClient = base.getDatabase().getJdbcClient();
-        String schemaName = base.getDatabase().getSchemaName();
-        String relationNamePrefix = "testDeactivationForUnqualifiedQuery2";
-        String relationCastInfo = relationNamePrefix + "_R";
-        SchemaTableName schemaTableNameCastInfo = new SchemaTableName(schemaName, relationCastInfo);
-        if (jdbcClient.getTableHandle(schemaTableNameCastInfo) == null) {
-            List<List<RelationalValue>> relationValCastInfo = new ArrayList<>(Arrays.asList(
-                    List.of(new IntegerValue(1), new IntegerValue(1), new IntegerValue(1))));
-            jdbcClient.ingestRelation(
-                    schemaName,
-                    relationCastInfo,
-                    new ArrayList<>(List.of("x", "y", "z")),
-                    new ArrayList<>(List.of(INTEGER, INTEGER, INTEGER)),
-                    relationValCastInfo);
-        }
-        MultiwayJoinDomain domainCastInfo = new MultiwayJoinDomain();
-        MultiwayJoinNode nodeCastInfo = new MultiwayJoinNode(schemaTableNameCastInfo, domainCastInfo);
-
-        String relationAkaName = relationNamePrefix + "_S";
-        SchemaTableName schemaTableNameAkaName = new SchemaTableName(schemaName, relationAkaName);
-        if (jdbcClient.getTableHandle(schemaTableNameAkaName) == null) {
-            List<List<RelationalValue>> relationValAkaName = List.of(
-                    List.of(new IntegerValue(1), new IntegerValue(1)));
-            jdbcClient.ingestRelation(
-                    schemaName,
-                    relationAkaName,
-                    new ArrayList<>(List.of("x", "y")),
-                    new ArrayList<>(List.of(INTEGER, INTEGER)),
-                    relationValAkaName);
-        }
-        MultiwayJoinDomain domainAkaName = new MultiwayJoinDomain();
-        MultiwayJoinNode nodeAkaName = new MultiwayJoinNode(schemaTableNameAkaName, domainAkaName);
-
-        String relationMovieCompanies = relationNamePrefix + "_T";
-        SchemaTableName schemaTableNameMovieCompanies = new SchemaTableName(schemaName, relationMovieCompanies);
-        if (jdbcClient.getTableHandle(schemaTableNameMovieCompanies) == null) {
-            List<List<RelationalValue>> relationValMovieCompanies = List.of(
-                    List.of(new IntegerValue(1)));
-            jdbcClient.ingestRelation(
-                    schemaName,
-                    relationMovieCompanies,
-                    new ArrayList<>(List.of("z")),
-                    new ArrayList<>(List.of(INTEGER)),
-                    relationValMovieCompanies);
-        }
-        MultiwayJoinDomain domainMovieCompanies = new MultiwayJoinDomain();
-        MultiwayJoinNode nodeMovieCompanies = new MultiwayJoinNode(schemaTableNameMovieCompanies, domainMovieCompanies);
-
-        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(new ArrayList<>(Arrays.asList(
-                asEdge(nodeCastInfo, nodeAkaName),
-                asEdge(nodeCastInfo, nodeMovieCompanies))), nodeCastInfo);
-
-        Pair<Plan, List<Operator>> pair = base.createFixedPhysicalPlanFromQueryGraph(orderedGraph,
-                Optional.empty(),
-                Optional.empty());
-        assertTrue(pair.getLeft().getPlanStatistics().getNoGoodListMapClazzName().contains("DefaultNoGoodListMap"));
-        base.testPhysicalPlanExecution(pair);
-    }
-
 
     @AfterAll
     public void tearDown()

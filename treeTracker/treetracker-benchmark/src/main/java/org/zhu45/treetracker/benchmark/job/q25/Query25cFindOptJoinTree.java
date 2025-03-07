@@ -46,14 +46,14 @@ public class Query25cFindOptJoinTree
         MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q25c, null);
         MultiwayJoinNode movieInfoIdxNode2 = getMovieInfoIdxInt(JOBQueries.Q25c, TableInstanceId.TWO);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieInfoNode, infoTypeNode1, movieInfoIdxNode2, infoTypeNode2, titleNode, movieKeywordNode, keywordNode, castInfoNode, nameNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieInfoNode, infoTypeNode1, titleNode, movieInfoIdxNode2, infoTypeNode2, movieKeywordNode, keywordNode, castInfoNode, nameNode)));
         Plan plan = pair.getKey();
 
         verifyJoinOrdering(plan, Arrays.asList(movieInfoNode.getSchemaTableName(),
                 infoTypeNode1.getSchemaTableName(),
+                titleNode.getSchemaTableName(),
                 movieInfoIdxNode2.getSchemaTableName(),
                 infoTypeNode2.getSchemaTableName(),
-                titleNode.getSchemaTableName(),
                 movieKeywordNode.getSchemaTableName(),
                 keywordNode.getSchemaTableName(),
                 castInfoNode.getSchemaTableName(),

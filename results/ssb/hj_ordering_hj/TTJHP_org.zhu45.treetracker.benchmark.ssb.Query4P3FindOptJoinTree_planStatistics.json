@@ -1,0 +1,55 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_customer"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_supplier"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_date"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_part"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q4p3_customer(CUSTKEY)\n|ssb.q4p3_supplier(SUPPKEY)\n|ssb.q4p3_date(DATEKEY)\n|ssb.q4p3_part(PARTKEY)" : 2.0
+  },
+  "optimalJoinTree" : "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q4p3_customer(CUSTKEY)\n|ssb.q4p3_supplier(SUPPKEY)\n|ssb.q4p3_date(DATEKEY)\n|ssb.q4p3_part(PARTKEY)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree", "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_customer"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_supplier"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_date"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_part"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q4p3_customer(CUSTKEY)\n|ssb.q4p3_supplier(SUPPKEY)\n|ssb.q4p3_date(DATEKEY)\n|ssb.q4p3_part(PARTKEY)" : 2.0
+    },
+    "optimalJoinTree" : "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q4p3_customer(CUSTKEY)\n|ssb.q4p3_supplier(SUPPKEY)\n|ssb.q4p3_date(DATEKEY)\n|ssb.q4p3_part(PARTKEY)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree"
+  }, {
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee"
+  } ]
+}

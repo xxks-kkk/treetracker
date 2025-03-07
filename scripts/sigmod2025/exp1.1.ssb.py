@@ -9,13 +9,14 @@ import numpy as np
 from matplotlib import pyplot as plt, transforms, ticker
 from scipy.stats import gmean
 
-from plot.constants import DATA_SOURCE_CSV, DECIMAL_PRECISION, HJ, PLOT_FUNCTION, FIG_SAVE_LOCATION, \
-    SORT_DESCENDING_BASED_ON_HJ, COLUMN_RIGHT_BOUND, ALGORITHMS_TO_PLOT, TTJ, Yannakakis, LIP, YannakakisB
-from plot.job import extract_data_from_csv, construct_fig_name
-from plot.utility import check_argument, convert_time, TimeUnits
+from plot.constants import DATA_SOURCE_CSV, HJ, COLUMN_RIGHT_BOUND, ALGORITHMS_TO_PLOT, TTJ, Yannakakis, LIP, \
+    YannakakisB, Yannakakis1Pass
+from plot.job import extract_data_from_csv
+from plot.utility import check_argument
+
 
 def get_ssb_full_path(csv_name):
-    return Path.home() / "projects" / "treetracker2-local" / "results" / "ssb" / csv_name
+    return Path.home() / "projects" / "treetracker2" / "results" / "ssb" / csv_name
 
 
 def speedup_analysis(data_speedup, labels):
@@ -41,14 +42,14 @@ def speedup_analysis(data_speedup, labels):
 
 def ssb_speedup_with_predicates():
     ssb_plot_with_predicates = {
-        DATA_SOURCE_CSV: "2024-01-05T08:54:18.234854Z_perf_report.csv",
-        ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis, LIP, YannakakisB],
+        DATA_SOURCE_CSV: "2024-03-04T20:42:41.588748Z_perf_report.csv",
+        ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis, LIP, YannakakisB, Yannakakis1Pass],
         COLUMN_RIGHT_BOUND: 14,
     }
 
     def bar_plot(ax, data, colors=None, total_width=0.8, single_width=1, legend=True, fontdict=None):
         # patterns = ["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O"]
-        patterns = ["\\", "-", "/", ""]
+        patterns = ["\\", "-", "/", "", "*"]
 
         # Check if colors where provided, otherwhise use the default color cycle
         if colors is None:
@@ -64,7 +65,7 @@ def ssb_speedup_with_predicates():
         bars = []
 
         # Iterate over all data
-        for i, name in enumerate([TTJ, Yannakakis, YannakakisB, LIP]):
+        for i, name in enumerate([TTJ, Yannakakis, Yannakakis1Pass, YannakakisB, LIP]):
             values = data[name]
             # The offset in x direction of that bar
             x_offset = (i - n_bars / 2) * bar_width + bar_width / 2
@@ -84,7 +85,7 @@ def ssb_speedup_with_predicates():
 
         # Draw legend if we need
         if legend:
-            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{PT}$', r'$\mathsf{LIP}$'], fontsize=15, ncol=2, frameon=False,
+            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{YA}^+$', r'$\mathsf{PT}$', r'$\mathsf{LIP}$'], fontsize=15, ncol=2, frameon=False,
                       loc='best')
 
         x = np.arange(len(labels))
@@ -140,7 +141,7 @@ def ssb_speedup_with_predicates():
     font = {'family': 'Helvetica',
             'weight': 'bold',
             'size': 15}
-    bar_plot(ax, data_speedup, colors=['#00994D', '#FF9933', "#00C3E3", '#9933FF'], total_width=.7, single_width=1,
+    bar_plot(ax, data_speedup, colors=['#00994D', '#FF9933', '#EA2283', "#00C3E3", '#9933FF'], total_width=.7, single_width=1,
              fontdict=font)
     font2 = {'family': 'Helvetica',
              'weight': 'bold',

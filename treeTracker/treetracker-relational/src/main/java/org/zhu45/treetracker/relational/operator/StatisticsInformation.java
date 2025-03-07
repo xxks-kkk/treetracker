@@ -129,4 +129,22 @@ public interface StatisticsInformation
     void setPredicateEvaluationTime(long predicateEvaluationTime);
 
     void updateSummationOfSemijoinOutputSize(long summationOfSemijoinOutputSize);
+
+    void incrementNumberOfHashTableProbe();
+
+    long getNumberOfHashTableProbe();
+
+    void updateNumberOfHashTableProbe(long numberOfHashTableProbe);
+
+    void updateNumberOfHashTableBuildTuples(long numberOfHashTableBuildTuples);
+
+    long getNumberOfHashTableBuildTuples();
+
+    void incrementNumberOfSemiJoinSuccess();
+
+    long getNumberOfSemiJoinSuccess();
+
+    void updateHashTableSizeAfterEvaluation(long hashTableSize);
+
+    long getHashTableSizeAfterEvaluation();
 }

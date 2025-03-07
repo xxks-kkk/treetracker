@@ -100,6 +100,11 @@ public class TestingPhysicalPlanBase<T extends ExecutionBase>
                 () -> this.operatorMap = defaultOperatorMap);
     }
 
+    public void updateRules(List<Rule> rules)
+    {
+        this.rules = rules;
+    }
+
     public Database getDatabase()
     {
         return database;
@@ -179,6 +184,44 @@ public class TestingPhysicalPlanBase<T extends ExecutionBase>
         return Pair.of(physicalPlan, physicalPlan.getOperatorList());
     }
 
+    public Pair<Plan, List<Operator>> createPhysicalPlanFromPostgresPlan(String postgresPlan, String schema)
+    {
+        PlanBuildContext.Builder builder = builder();
+        PlanBuildContext context = builder
+                .setRules(rules)
+                .setPlanNodeIdAllocator(idAllocator)
+                .setOperatorMap(operatorMap)
+                .setJdbcClient(jdbcClient)
+                .postgresPlan(postgresPlan)
+                .schema(schema)
+                .planBuildOption(PlanBuildContext.PlanBuildOption.POSTGRES)
+                .build();
+        PlanBuilder planBuilder = new PlanBuilder(context);
+        Plan logicalPlan = planBuilder.build();
+        RandomPhysicalPlanBuilder physicalPlanBuilder = new RandomPhysicalPlanBuilder(context);
+        Plan physicalPlan = physicalPlanBuilder.build(logicalPlan.getRoot());
+        return Pair.of(physicalPlan, physicalPlan.getOperatorList());
+    }
+
+    public Pair<Plan, List<Operator>> createPhysicalPlanFromPostgresPlan(String postgresPlan, List<SchemaTableName> schemaTableNames)
+    {
+        PlanBuildContext.Builder builder = builder();
+        PlanBuildContext context = builder
+                .setRules(List.of())
+                .setPlanNodeIdAllocator(idAllocator)
+                .setOperatorMap(operatorMap)
+                .setJdbcClient(jdbcClient)
+                .postgresPlan(postgresPlan)
+                .schemaTableNameList(schemaTableNames)
+                .planBuildOption(PlanBuildContext.PlanBuildOption.POSTGRES)
+                .build();
+        PlanBuilder planBuilder = new PlanBuilder(context);
+        Plan logicalPlan = planBuilder.build();
+        RandomPhysicalPlanBuilder physicalPlanBuilder = new RandomPhysicalPlanBuilder(context);
+        Plan physicalPlan = physicalPlanBuilder.build(logicalPlan.getRoot());
+        return Pair.of(physicalPlan, physicalPlan.getOperatorList());
+    }
+
     public void testPhysicalPlanExecution(Pair<Plan, List<Operator>> pair)
     {
         requireNonNull(executionClazz, "executionClazz is null");
@@ -243,7 +286,7 @@ public class TestingPhysicalPlanBase<T extends ExecutionBase>
             pair.getValue().forEach(operator -> {
                 if (operator.getMultiwayJoinNode() != null) {
                     MultiwayJoinNode node = operator.getMultiwayJoinNode();
-                    ((MultiwayJoinDomain) node.getDomain()).close();
+                    node.getDomain().close();
                 }
                 operator.close();
             });

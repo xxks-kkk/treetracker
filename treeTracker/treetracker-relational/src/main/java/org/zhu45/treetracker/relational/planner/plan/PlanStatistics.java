@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.lang.Math.max;
 import static org.zhu45.treetracker.common.StandardErrorCode.GENERIC_USER_ERROR;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -54,14 +55,25 @@ public class PlanStatistics
 
     public void mergeRuleStatistics(RuleStatistics ruleStatistics)
     {
-        searchedPlan = ruleStatistics.getSearchedPlan();
-        optimalJoinOrdering = ruleStatistics.getOptimalJoinOrdering();
-        searchedJoinTrees = ruleStatistics.getSearchedJoinTrees();
-        optimalJoinTree = ruleStatistics.getOptimalJoinTree();
-        cost = ruleStatistics.getCost();
+        searchedPlan = setObject(searchedPlan, ruleStatistics.getSearchedPlan());
+        optimalJoinOrdering = setObject(optimalJoinOrdering, ruleStatistics.getOptimalJoinOrdering());
+        searchedJoinTrees = setObject(searchedJoinTrees, ruleStatistics.getSearchedJoinTrees());
+        optimalJoinTree = setObject(optimalJoinTree, ruleStatistics.getOptimalJoinTree());
+        cost = max(cost, ruleStatistics.getCost());
         rulesApplied.add(ruleStatistics.getRuleName());
         dpTable = ruleStatistics.getDpTable();
         ruleStatisticsList.add(ruleStatistics);
+    }
+
+    private static <T> T setObject(T objectToBeSet, T valueToSet)
+    {
+        if (objectToBeSet == null) {
+            return valueToSet;
+        }
+        if (valueToSet == null) {
+            return objectToBeSet;
+        }
+        throw new RuntimeException(String.format("%s is already non-null but is to be overridden by %s", objectToBeSet, valueToSet));
     }
 
     public HashMap<JoinOrdering, Float> getSearchedPlan()
@@ -72,6 +84,11 @@ public class PlanStatistics
     public JoinOrdering getOptimalJoinOrdering()
     {
         return optimalJoinOrdering;
+    }
+
+    public void setOptimalJoinOrdering(JoinOrdering joinOrdering)
+    {
+        this.optimalJoinOrdering = joinOrdering;
     }
 
     public MultiwayJoinOrderedGraph getOptimalJoinTree()
@@ -124,7 +141,8 @@ public class PlanStatistics
             extends JsonSerializer<Pair>
     {
         @Override
-        public void serialize(Pair value, JsonGenerator gen, SerializerProvider serializers) throws IOException
+        public void serialize(Pair value, JsonGenerator gen, SerializerProvider serializers)
+                throws IOException
         {
             gen.writeStartObject();
             gen.writeObjectField("left", value.getLeft());

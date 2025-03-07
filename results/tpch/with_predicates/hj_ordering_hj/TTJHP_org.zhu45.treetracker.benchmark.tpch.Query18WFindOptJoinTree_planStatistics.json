@@ -1,0 +1,42 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "lineitem"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q18w_orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "customer"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)" : 3.0
+  },
+  "optimalJoinTree" : "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)",
+  "cost" : 3.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "lineitem"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q18w_orders"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "customer"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)" : 3.0
+    },
+    "optimalJoinTree" : "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch.q18w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)",
+    "cost" : 3.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0
+  } ]
+}

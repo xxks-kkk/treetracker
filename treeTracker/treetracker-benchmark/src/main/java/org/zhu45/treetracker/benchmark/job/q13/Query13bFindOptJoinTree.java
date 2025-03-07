@@ -46,18 +46,18 @@ public class Query13bFindOptJoinTree
         MultiwayJoinNode infoTypeNode2 = getInfoTypeInt(JOBQueries.Q13b, TableInstanceId.TWO);
         MultiwayJoinNode movieInfoIdxNode = getMovieInfoIdxInt(JOBQueries.Q13b, null);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(titleNode, kindTypeNode, movieInfoIdxNode, infoTypeNode1, movieCompaniesNode, movieInfoNode, infoTypeNode2, companyNameNode, companyTypeNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieCompaniesNode, titleNode, companyNameNode, companyTypeNode, kindTypeNode, movieInfoIdxNode, infoTypeNode1, movieInfoNode, infoTypeNode2)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(titleNode.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(movieCompaniesNode.getSchemaTableName(),
+                titleNode.getSchemaTableName(),
+                companyNameNode.getSchemaTableName(),
+                companyTypeNode.getSchemaTableName(),
                 kindTypeNode.getSchemaTableName(),
                 movieInfoIdxNode.getSchemaTableName(),
                 infoTypeNode1.getSchemaTableName(),
-                movieCompaniesNode.getSchemaTableName(),
                 movieInfoNode.getSchemaTableName(),
-                infoTypeNode2.getSchemaTableName(),
-                companyNameNode.getSchemaTableName(),
-                companyTypeNode.getSchemaTableName()));
+                infoTypeNode2.getSchemaTableName()));
         return pair;
     }
 }

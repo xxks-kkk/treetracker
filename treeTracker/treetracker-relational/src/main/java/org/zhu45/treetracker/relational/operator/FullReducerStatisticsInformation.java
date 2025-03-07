@@ -35,6 +35,12 @@ public class FullReducerStatisticsInformation
     private Pair<MultiwayJoinNode, MultiwayJoinNode> semijoinCausingEarlyStop;
     // total runtime of executing full reducer
     private long fullReducerTime;
+    // total number of hash table probe when executing semijoins in full reducer.
+    private long numberOfHashTableProbe;
+    // total number of tuples that we build hash table in full reducer.
+    private long numberOfHashTableBuildTuples;
+    // hash table build time
+    private long hashTableBuildTime;
 
     public FullReducerStatisticsInformation()
     {
@@ -64,5 +70,29 @@ public class FullReducerStatisticsInformation
     public void setFullReducerTime(long fullReducerTime)
     {
         this.fullReducerTime = fullReducerTime;
+    }
+
+    @Override
+    public void updateNumberOfHashTableProbe(long numberOfHashTableProbe)
+    {
+        this.numberOfHashTableProbe += numberOfHashTableProbe;
+    }
+
+    @Override
+    public void updateNumberOfHashTableBuildTuples(long numberOfHashTableBuildTuples)
+    {
+        this.numberOfHashTableBuildTuples += numberOfHashTableBuildTuples;
+    }
+
+    @Override
+    public long getNumberOfHashTableBuildTuples()
+    {
+        return this.numberOfHashTableBuildTuples;
+    }
+
+    @Override
+    public void setHashTableBuildTime(long hashTableBuildTime)
+    {
+        this.hashTableBuildTime += hashTableBuildTime;
     }
 }

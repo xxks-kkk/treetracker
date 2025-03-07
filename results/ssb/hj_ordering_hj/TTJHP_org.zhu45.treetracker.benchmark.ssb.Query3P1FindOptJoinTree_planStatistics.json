@@ -1,0 +1,49 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q3p1_date"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q3p1_customer"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q3p1_supplier"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q3p1_date(DATEKEY)\n|ssb.q3p1_customer(CUSTKEY)\n|ssb.q3p1_supplier(SUPPKEY)" : 2.0
+  },
+  "optimalJoinTree" : "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q3p1_date(DATEKEY)\n|ssb.q3p1_customer(CUSTKEY)\n|ssb.q3p1_supplier(SUPPKEY)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree", "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q3p1_date"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q3p1_customer"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q3p1_supplier"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q3p1_date(DATEKEY)\n|ssb.q3p1_customer(CUSTKEY)\n|ssb.q3p1_supplier(SUPPKEY)" : 2.0
+    },
+    "optimalJoinTree" : "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb.q3p1_date(DATEKEY)\n|ssb.q3p1_customer(CUSTKEY)\n|ssb.q3p1_supplier(SUPPKEY)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree"
+  }, {
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee"
+  } ]
+}

@@ -30,7 +30,7 @@ public class BaseOrderedGraph<T extends Node<T, V, D>, V extends Value, D extend
         implements OrderedGraph<T, V, D>
 {
     // index of each node represents the order of each node get visited.
-    private List<T> traversalList;
+    protected List<T> traversalList;
     // key: node Val: a list of nodes that are children of key
     // e.g., A -> B will be key: A Val: B
     protected HashMap<T, List<T>> children;
@@ -184,7 +184,7 @@ public class BaseOrderedGraph<T extends Node<T, V, D>, V extends Value, D extend
         return this.children;
     }
 
-    private void generateDepth(T root, int depth)
+    protected void generateDepth(T root, int depth)
     {
         List<T> childrenBaseNodes = children.get(root);
         if (this.depth.containsKey(depth)) {

@@ -1,5 +1,6 @@
 package org.zhu45.treetracker.relational.operator;
 
+import de.renebergelt.test.Switches;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -12,6 +13,7 @@ import org.zhu45.treetracker.relational.execution.ExecutionNormal;
 import org.zhu45.treetracker.relational.operator.testCases.TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases;
 import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.TestingPhysicalPlanBase;
+import org.zhu45.treetracker.relational.planner.printer.PlanPrinter;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +40,7 @@ public class TestStatisticsInformationPrinter
             Configurator.setAllLevels(TestingPhysicalPlanBase.class.getName(), Level.TRACE);
             Configurator.setAllLevels(TupleBaseTreeTrackerOneBetaHashTableOperator.class.getName(), Level.TRACE);
             Configurator.setAllLevels(TupleBasedTableScanOperator.class.getName(), Level.TRACE);
+            Configurator.setAllLevels(TestStatisticsInformationPrinter.class.getName(), Level.TRACE);
         }
 
         TestingMultiwayJoinDatabaseComplex database = TestingMultiwayJoinDatabaseComplexSupplier.get();
@@ -61,11 +64,17 @@ public class TestStatisticsInformationPrinter
         base.testPhysicalPlanExecution(pair);
         Operator rootOperator = pair.getKey().getRoot().getOperator();
         String statistics = printer.print(rootOperator);
+        if (Switches.DEBUG && checkEnvVariableSet(TREETRACKER_DEBUG)) {
+            PlanPrinter planPrinter = new PlanPrinter(pair.getKey().getRoot());
+            System.out.println(planPrinter.toText(0));
+            System.out.println(statistics);
+        }
         assertTrue(statistics.contains("TTJ operator (2: join2): \n" +
                 "numberOfNoGoodTuples: 2"));
         assertTrue(statistics.contains("Table scan operator (0: caseone_T): \n" +
                 "fetchingTuplesTime (ms): 0\n" +
                 "RecordTupleSourceClazzName: org.zhu45.treetracker.jdbc.RecordObjectTupleSourceProvider\n" +
+                "noGoodListClazz: SimpleNoGoodListMap\n" +
                 "numberOfNoGoodTuples: 2\n" +
                 "numberOfNoGoodTuplesFiltered: 0"));
     }

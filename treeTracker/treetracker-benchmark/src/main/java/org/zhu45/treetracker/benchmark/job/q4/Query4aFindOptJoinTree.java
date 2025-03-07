@@ -38,12 +38,12 @@ public class Query4aFindOptJoinTree
         MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q4a, null);
         MultiwayJoinNode infoTypeNode = getInfoTypeInt(JOBQueries.Q4a, null);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieInfoIdxNode, infoTypeNode, titleNode, movieKeywordNode, keywordNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieInfoIdxNode, titleNode, infoTypeNode, movieKeywordNode, keywordNode)));
         Plan plan = pair.getKey();
 
         verifyJoinOrdering(plan, Arrays.asList(movieInfoIdxNode.getSchemaTableName(),
-                infoTypeNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
+                infoTypeNode.getSchemaTableName(),
                 movieKeywordNode.getSchemaTableName(),
                 keywordNode.getSchemaTableName()));
         return pair;

@@ -17,10 +17,14 @@ public class AggregateStatisticsInformationFactory
             case TTJHP_BG:
                 aggregateStatisticsInformation = new TTJAggregateStatisticsInformation();
                 break;
+            case TTJHP_INT:
+                aggregateStatisticsInformation = new TTJIntAggregateStatisticsInformation();
+                break;
             case Yannakakis:
             case YannakakisB:
             case PTO:
             case YannakakisVanilla:
+            case Yannakakis1Pass:
                 aggregateStatisticsInformation = new YannakakisAggregateStatisticsInformation();
                 break;
             case LIP:

@@ -7,7 +7,6 @@ import org.zhu45.treetracker.relational.operator.JoinOperator;
 import org.zhu45.treetracker.relational.operator.StatisticsInformationPrinter;
 
 import static org.zhu45.treetracker.benchmark.QueryProvider.queryProvider;
-import static org.zhu45.treetracker.common.RedissonClientSupplier.redissonClientSupplier;
 import static org.zhu45.treetracker.jdbc.JdbcSupplier.postgresJdbcClientSupplier;
 
 public class BackJumpQueryPerformance
@@ -37,9 +36,6 @@ public class BackJumpQueryPerformance
                 }
                 operator.close();
             });
-            if (!redissonClientSupplier.get().isShutdown()) {
-                redissonClientSupplier.get().shutdown();
-            }
             System.out.println("runtime: " + (System.currentTimeMillis() - timeNow) + " ms");
             System.out.println(printer.print(query.getRootOperator()));
         }

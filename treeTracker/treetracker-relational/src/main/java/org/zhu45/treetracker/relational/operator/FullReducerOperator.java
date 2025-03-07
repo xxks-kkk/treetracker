@@ -14,6 +14,7 @@ import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.execution.ExecutionNormal;
 import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.plan.JoinNode;
+import org.zhu45.treetracker.relational.planner.plan.TableNode;
 import org.zhu45.treetracker.relational.planner.printer.PlanPrinter;
 
 import java.util.ArrayList;
@@ -22,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.inject.internal.util.Preconditions.checkArgument;
+import static com.google.inject.internal.util.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 import static org.zhu45.treetracker.common.Utils.appendCallerInfo;
+import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder.gatherOuterTables;
 
 public class FullReducerOperator
         extends AbstractOperator
@@ -42,6 +45,7 @@ public class FullReducerOperator
     private Operator sinkOperator;
     private static final OptType operatorType = OptType.fullReducer;
     private boolean canBeEarlyStopped;
+    private boolean skipTopDownSemijoins;
 
     private List<Plan> bottomUpSemijoins;
     private List<Plan> topDownSemijoins;
@@ -101,20 +105,22 @@ public class FullReducerOperator
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                 traceLogger.trace(formatTraceMessage("about to execute top-down semijoins ..."));
             }
-            // We then perform semijoin reduction top-down: from root to the leaves, i.e., child \leftsemijoin parent
-            boolean canBeEarlyStoppedFromTopDown = executeSemiJoins(topDownSemijoins);
-            if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
-                traceLogger.debug(appendCallerInfo("finish the execution of full reducer", 2));
-            }
-            if (canBeEarlyStoppedFromTopDown) {
-                canBeEarlyStopped = true;
-                cleanUp();
-                if (Switches.STATS) {
-                    ((FullReducerStatisticsInformation) statisticsInformation).setEarlyStoppedDueToTopDownPass(true);
-                    fullReducerTime = System.nanoTime() - fullReducerTimerMarker;
-                    ((FullReducerStatisticsInformation) statisticsInformation).setFullReducerTime(fullReducerTime);
+            if (!skipTopDownSemijoins) {
+                // We then perform semijoin reduction top-down: from root to the leaves, i.e., child \leftsemijoin parent
+                boolean canBeEarlyStoppedFromTopDown = executeSemiJoins(topDownSemijoins);
+                if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
+                    traceLogger.debug(appendCallerInfo("finish the execution of full reducer", 2));
                 }
-                return;
+                if (canBeEarlyStoppedFromTopDown) {
+                    canBeEarlyStopped = true;
+                    cleanUp();
+                    if (Switches.STATS) {
+                        ((FullReducerStatisticsInformation) statisticsInformation).setEarlyStoppedDueToTopDownPass(true);
+                        fullReducerTime = System.nanoTime() - fullReducerTimerMarker;
+                        ((FullReducerStatisticsInformation) statisticsInformation).setFullReducerTime(fullReducerTime);
+                    }
+                    return;
+                }
             }
             if (Switches.STATS) {
                 ((FullReducerStatisticsInformation) statisticsInformation).setCostMap(costMap);
@@ -143,7 +149,10 @@ public class FullReducerOperator
                 PlanPrinter printer = new PlanPrinter(plan.getRoot());
                 traceLogger.debug(printer.toText(0));
             }
-            Operator multiwayJoinParentOperator = plan.getRoot().getOperator().getPlanBuildContext().getLeftMostPlanNodeOperator();
+            List<TableNode> outerTables = new ArrayList<>();
+            gatherOuterTables(plan.getRoot(), outerTables);
+            checkState(outerTables.size() == 1, "We expect there should be 1 table with Side.OUTER but got " + outerTables.size());
+            Operator multiwayJoinParentOperator = outerTables.get(0).getOperator();
             MultiwayJoinNode multiwayJoinParentNode = multiwayJoinParentOperator.getMultiwayJoinNode();
             MultiwayJoinDomain multiwayJoinParentDomain = multiwayJoinParentNode.getDomain();
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -177,6 +186,8 @@ public class FullReducerOperator
                 statisticsInformation.updateNumberOfTuplesRemovedByFullReducer(multiwayJoinParentName,
                         getDomainOriginalSize(multiwayJoinParentOperator) - multiwayJoinParentReducedDomainAsRowSet.size());
                 statisticsInformation.updateSummationOfSemijoinOutputSize(multiwayJoinParentReducedDomainAsRowSet.size());
+                statisticsInformation.updateNumberOfHashTableProbe(aggregateStatisticsInformation.getNumberOfHashTableProbe());
+                statisticsInformation.updateNumberOfHashTableBuildTuples(aggregateStatisticsInformation.innerRelationSize);
                 costMap.get(multiwayJoinParentNode).set(1, multiwayJoinParentReducedDomainAsRowSet.size());
             }
             if (multiwayJoinParentReducedDomainAsRowSet.size() == 0) {
@@ -312,5 +323,10 @@ public class FullReducerOperator
     public void setNode2Operators(Map<Integer, List<Operator>> node2Operators)
     {
         this.node2Operators = node2Operators;
+    }
+
+    public void setSkipTopDownSemijoins(boolean skipTopDownSemijoins)
+    {
+        this.skipTopDownSemijoins = skipTopDownSemijoins;
     }
 }

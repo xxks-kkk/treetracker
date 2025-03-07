@@ -1,0 +1,125 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_customer"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_supplier"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_date"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q4p3_part"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb.q4p3_customer(custkey)\n|ssb.q4p3_supplier(suppkey)\n|ssb.q4p3_date(datekey)\n|ssb.q4p3_part(partkey)" : 2.0
+  },
+  "optimalJoinTree" : "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb.q4p3_customer(custkey)\n|ssb.q4p3_supplier(suppkey)\n|ssb.q4p3_date(datekey)\n|ssb.q4p3_part(partkey)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_customer"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_supplier"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_date"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q4p3_part"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb.q4p3_customer(custkey)\n|ssb.q4p3_supplier(suppkey)\n|ssb.q4p3_date(datekey)\n|ssb.q4p3_part(partkey)" : 2.0
+    },
+    "optimalJoinTree" : "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb.q4p3_customer(custkey)\n|ssb.q4p3_supplier(suppkey)\n|ssb.q4p3_date(datekey)\n|ssb.q4p3_part(partkey)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb.q4p3_customer",
+          "schemaTableName" : {
+            "schemaName" : "ssb",
+            "tableName" : "q4p3_customer"
+          },
+          "attributes" : [ "CUSTKEY" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb.q4p3_supplier",
+          "schemaTableName" : {
+            "schemaName" : "ssb",
+            "tableName" : "q4p3_supplier"
+          },
+          "attributes" : [ "SUPPKEY" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb.q4p3_date",
+          "schemaTableName" : {
+            "schemaName" : "ssb",
+            "tableName" : "q4p3_date"
+          },
+          "attributes" : [ "DATEKEY" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb.q4p3_part",
+          "schemaTableName" : {
+            "schemaName" : "ssb",
+            "tableName" : "q4p3_part"
+          },
+          "attributes" : [ "PARTKEY" ]
+        }
+      } ]
+    }
+  } ]
+}

@@ -1,6 +1,7 @@
 -- JOB query written with our own setup
 
 -- Q1a
+--- 142
 /*+
 Leading( ((((imdb_int.movie_info_idx imdb.q1a_info_type) imdb_int.title) imdb.q1a_company_type) imdb.q1a_movie_companies))
 HashJoin (imdb_int.movie_info_idx imdb.q1a_info_type)
@@ -13,7 +14,9 @@ SeqScan(imdb_int.title)
 SeqScan(imdb.q1a_company_type)
 SeqScan(imdb.q1a_movie_companies)
 */
-explain (FORMAT JSON, ANALYZE) SELECT *
+explain
+(FORMAT JSON, ANALYZE)
+SELECT *
 FROM imdb.q1a_company_type
          natural join
      imdb.q1a_info_type
@@ -54,6 +57,9 @@ from imdb.q1b_company_type
          natural join
      imdb_int.movie_info_idx;
 
+-- Q1c
+--- 3
+
 -- Q2a
 --- 7834
 SELECT count(*)
@@ -62,8 +68,8 @@ FROM imdb.company_name AS cn,
      imdb.movie_companies AS mc,
      imdb.movie_keyword AS mk,
      imdb.title AS t
-WHERE cn.country_code ='[de]'
-  AND k.keyword ='character-name-in-title'
+WHERE cn.country_code = '[de]'
+  AND k.keyword = 'character-name-in-title'
   AND cn.company_id = mc.company_id
   AND mc.movie_id = t.movie_id
   AND t.movie_id = mk.movie_id
@@ -71,11 +77,15 @@ WHERE cn.country_code ='[de]'
   AND mc.movie_id = mk.movie_id;
 
 SELECT count(*)
-FROM imdb.q2a_company_name natural join
-     imdb.q2a_keyword natural join
-    imdb_int.movie_companies natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.title;
+FROM imdb.q2a_company_name
+         natural join
+     imdb.q2a_keyword
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.title;
 
 -- Q3a
 --- 206
@@ -100,10 +110,13 @@ WHERE k.keyword LIKE '%sequel%'
   AND k.keyword_id = mk.keyword_id;
 
 SELECT count(*)
-FROM imdb.q3a_keyword natural join
-    imdb.q3a_movie_info natural join
-    imdb.q3a_title natural join
-    imdb_int.movie_keyword;
+FROM imdb.q3a_keyword
+         natural join
+     imdb.q3a_movie_info
+         natural join
+     imdb.q3a_title
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q4a
 --- 740
@@ -113,7 +126,7 @@ FROM imdb.info_type AS it,
      imdb.movie_info_idx AS mi_idx,
      imdb.movie_keyword AS mk,
      imdb.title AS t
-WHERE it.info ='rating'
+WHERE it.info = 'rating'
   AND k.keyword LIKE '%sequel%'
   AND mi_idx.info > '5.0'
   AND t.production_year > 2005
@@ -124,11 +137,15 @@ WHERE it.info ='rating'
   AND it.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM imdb.q4a_info_type natural join
-    imdb.q4a_keyword natural join
-    imdb.q4a_movie_info_idx natural join
-    imdb.q4a_title natural join
-    imdb_int.movie_keyword;
+FROM imdb.q4a_info_type
+         natural join
+     imdb.q4a_keyword
+         natural join
+     imdb.q4a_movie_info_idx
+         natural join
+     imdb.q4a_title
+         natural join
+     imdb_int.movie_keyword;
 
 
 -- Q5b
@@ -153,11 +170,15 @@ WHERE ct.kind = 'production companies'
   AND it.info_type_id = mi.info_type_id;
 
 SELECT count(*)
-FROM imdb.q5b_company_type natural join
-    imdb.q5b_movie_companies natural join
-    imdb.q5b_movie_info natural join
-    imdb.q5b_title natural join
-    imdb_int.info_type;
+FROM imdb.q5b_company_type
+         natural join
+     imdb.q5b_movie_companies
+         natural join
+     imdb.q5b_movie_info
+         natural join
+     imdb.q5b_title
+         natural join
+     imdb_int.info_type;
 
 -- Q6a
 --- 6
@@ -177,10 +198,14 @@ WHERE k.keyword = 'marvel-cinematic-universe'
   AND n.person_id = ci.person_id;
 
 SELECT count(*)
-FROM imdb.q6a_keyword natural join
-     imdb.q6a_name natural join
-     imdb.q6a_title natural join
-     imdb_int.cast_info natural join
+FROM imdb.q6a_keyword
+         natural join
+     imdb.q6a_name
+         natural join
+     imdb.q6a_title
+         natural join
+     imdb_int.cast_info
+         natural join
      imdb_int.movie_keyword;
 -- Q7a
 --- 32
@@ -194,13 +219,13 @@ FROM imdb.aka_name AS an,
      imdb.person_info AS pi,
      imdb.title AS t
 WHERE an.name LIKE '%a%'
-  AND it.info ='mini biography'
-  AND lt.link ='features'
+  AND it.info = 'mini biography'
+  AND lt.link = 'features'
   AND n.name_pcode_cf BETWEEN 'A' AND 'F'
-  AND (n.gender='m'
+  AND (n.gender = 'm'
     OR (n.gender = 'f'
         AND n.name LIKE 'B%'))
-  AND pi.note ='Volker Boehm'
+  AND pi.note = 'Volker Boehm'
   AND t.production_year BETWEEN 1980 AND 1995
   AND n.person_id = an.person_id
   AND n.person_id = pi.person_id
@@ -215,15 +240,21 @@ WHERE an.name LIKE '%a%'
   AND ci.movie_id = ml.linked_movie_id;
 
 SELECT count(*)
-FROM
-imdb.q7a_aka_name natural join
-    imdb.q7a_info_type natural join
-    imdb.q7a_link_type natural join
-    imdb.q7a_name natural join
-    imdb.q7a_person_info natural join
-    imdb.q7a_title natural join
-    imdb_int.cast_info natural join
-    imdb.q7a_movie_link;
+FROM imdb.q7a_aka_name
+         natural join
+     imdb.q7a_info_type
+         natural join
+     imdb.q7a_link_type
+         natural join
+     imdb.q7a_name
+         natural join
+     imdb.q7a_person_info
+         natural join
+     imdb.q7a_title
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb.q7a_movie_link;
 
 -- Q7b
 --- 16
@@ -237,11 +268,11 @@ FROM imdb.aka_name AS an,
      imdb.person_info AS pi,
      imdb.title AS t
 WHERE an.name LIKE '%a%'
-  AND it.info ='mini biography'
-  AND lt.link ='features'
+  AND it.info = 'mini biography'
+  AND lt.link = 'features'
   AND n.name_pcode_cf LIKE 'D%'
-  AND n.gender='m'
-  AND pi.note ='Volker Boehm'
+  AND n.gender = 'm'
+  AND pi.note = 'Volker Boehm'
   AND t.production_year BETWEEN 1980 AND 1984
   AND n.person_id = an.person_id
   AND n.person_id = pi.person_id
@@ -256,15 +287,21 @@ WHERE an.name LIKE '%a%'
   AND ci.movie_id = ml.linked_movie_id;
 
 SELECT count(*)
-FROM
-    imdb.q7b_aka_name natural join
-    imdb.q7b_info_type natural join
-    imdb.q7b_link_type natural join
-    imdb.q7b_name natural join
-    imdb.q7b_person_info natural join
-    imdb.q7b_title natural join
-    imdb_int.cast_info natural join
-    imdb.q7b_movie_link;
+FROM imdb.q7b_aka_name
+         natural join
+     imdb.q7b_info_type
+         natural join
+     imdb.q7b_link_type
+         natural join
+     imdb.q7b_name
+         natural join
+     imdb.q7b_person_info
+         natural join
+     imdb.q7b_title
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb.q7b_movie_link;
 
 -- Q7c
 --- 68185
@@ -280,13 +317,13 @@ FROM imdb.aka_name AS an,
 WHERE an.name IS NOT NULL
   AND (an.name LIKE '%a%'
     OR an.name LIKE 'A%')
-  AND it.info ='mini biography'
+  AND it.info = 'mini biography'
   AND lt.link IN ('references',
                   'referenced in',
                   'features',
                   'featured in')
   AND n.name_pcode_cf BETWEEN 'A' AND 'F'
-  AND (n.gender='m'
+  AND (n.gender = 'm'
     OR (n.gender = 'f'
         AND n.name LIKE 'A%'))
   AND pi.note IS NOT NULL
@@ -304,15 +341,21 @@ WHERE an.name IS NOT NULL
   AND ci.movie_id = ml.linked_movie_id;
 
 SELECT count(*)
-FROM
-    imdb.q7c_aka_name natural join
-    imdb.q7c_info_type natural join
-    imdb.q7c_link_type natural join
-    imdb.q7c_name natural join
-    imdb.q7c_person_info natural join
-    imdb.q7c_title natural join
-    imdb_int.cast_info natural join
-    imdb.q7c_movie_link;
+FROM imdb.q7c_aka_name
+         natural join
+     imdb.q7c_info_type
+         natural join
+     imdb.q7c_link_type
+         natural join
+     imdb.q7c_name
+         natural join
+     imdb.q7c_person_info
+         natural join
+     imdb.q7c_title
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb.q7c_movie_link;
 
 -- Q8a
 --- 62
@@ -324,13 +367,13 @@ FROM imdb.aka_name AS an1,
      imdb.name AS n1,
      imdb.role_type AS rt,
      imdb.title AS t
-WHERE ci.note ='(voice: English version)'
-  AND cn.country_code ='[jp]'
+WHERE ci.note = '(voice: English version)'
+  AND cn.country_code = '[jp]'
   AND mc.note LIKE '%(Japan)%'
   AND mc.note NOT LIKE '%(USA)%'
   AND n1.name LIKE '%Yo%'
   AND n1.name NOT LIKE '%Yu%'
-  AND rt.role ='actress'
+  AND rt.role = 'actress'
   AND an1.person_id = n1.person_id
   AND n1.person_id = ci.person_id
   AND ci.movie_id = t.movie_id
@@ -341,13 +384,19 @@ WHERE ci.note ='(voice: English version)'
   AND ci.movie_id = mc.movie_id;
 
 SELECT count(*)
-FROM imdb.q8a_cast_info natural join
-    imdb.q8a_company_name natural join
-    imdb.q8a_movie_companies natural join
-    imdb.q8a_name natural join
-    imdb.q8a_role_type natural join
-    imdb_int.aka_name natural join
-    imdb_int.title;
+FROM imdb.q8a_cast_info
+         natural join
+     imdb.q8a_company_name
+         natural join
+     imdb.q8a_movie_companies
+         natural join
+     imdb.q8a_name
+         natural join
+     imdb.q8a_role_type
+         natural join
+     imdb_int.aka_name
+         natural join
+     imdb_int.title;
 
 -- Q9a
 --- 121
@@ -364,13 +413,13 @@ WHERE ci.note IN ('(voice)',
                   '(voice: Japanese version)',
                   '(voice) (uncredited)',
                   '(voice: English version)')
-  AND cn.country_code ='[us]'
+  AND cn.country_code = '[us]'
   AND mc.note IS NOT NULL
   AND (mc.note LIKE '%(USA)%'
     OR mc.note LIKE '%(worldwide)%')
-  AND n.gender ='f'
+  AND n.gender = 'f'
   AND n.name LIKE '%Ang%'
-  AND rt.role ='actress'
+  AND rt.role = 'actress'
   AND t.production_year BETWEEN 2005 AND 2015
   AND ci.movie_id = t.movie_id
   AND t.movie_id = mc.movie_id
@@ -383,34 +432,53 @@ WHERE ci.note IN ('(voice)',
   AND an.person_id = ci.person_id;
 
 SELECT count(*)
-FROM imdb.q9a_cast_info natural join
-    imdb.q9a_company_name natural join
-    imdb.q9a_movie_companies natural join
-    imdb.q9a_name natural join
-    imdb.q9a_role_type natural join
-    imdb.q9a_title natural join
-    imdb_int.aka_name natural join
-    imdb_int.char_name;
+FROM imdb.q9a_cast_info
+         natural join
+     imdb.q9a_company_name
+         natural join
+     imdb.q9a_movie_companies
+         natural join
+     imdb.q9a_name
+         natural join
+     imdb.q9a_role_type
+         natural join
+     imdb.q9a_title
+         natural join
+     imdb_int.aka_name
+         natural join
+     imdb_int.char_name;
 
 
 -- Q10a
 SELECT *
-FROM imdb.q10a_cast_info natural join
-    imdb.q10a_company_name natural join
-    imdb.q10a_role_type natural join
-    imdb.q10a_title natural join
-    imdb_int.char_name natural join
-    imdb_int.company_type natural join
-    imdb_int.movie_companies;
+FROM imdb.q10a_cast_info
+         natural join
+     imdb.q10a_company_name
+         natural join
+     imdb.q10a_role_type
+         natural join
+     imdb.q10a_title
+         natural join
+     imdb_int.char_name
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.movie_companies;
 
 -- Q10b
 SELECT *
-FROM imdb.q10b_cast_info natural join
-     imdb.q10b_company_name natural join
-     imdb.q10b_role_type natural join
-     imdb.q10b_title natural join
-    imdb_int.char_name natural join
-     imdb_int.company_type natural join
+FROM imdb.q10b_cast_info
+         natural join
+     imdb.q10b_company_name
+         natural join
+     imdb.q10b_role_type
+         natural join
+     imdb.q10b_title
+         natural join
+     imdb_int.char_name
+         natural join
+     imdb_int.company_type
+         natural join
      imdb_int.movie_companies;
 
 -- Q10c
@@ -435,45 +503,74 @@ WHERE ci.note LIKE '%(producer)%'
   AND ct.company_type_id = mc.company_type_id;
 
 SELECT count(*)
-FROM imdb.q10c_cast_info natural join
-     imdb.q10c_company_name natural join
-     imdb.q10c_title natural join
-     imdb_int.char_name natural join
-     imdb_int.company_type natural join
-     imdb_int.movie_companies natural join
-    imdb_int.role_type;
+FROM imdb.q10c_cast_info
+         natural join
+     imdb.q10c_company_name
+         natural join
+     imdb.q10c_title
+         natural join
+     imdb_int.char_name
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.role_type;
 
 -- Q11a
-SELECT *
-FROM imdb.q11a_company_type natural join
-     imdb.q11a_company_name natural join
-     imdb.q11a_keyword natural join
-     imdb.q11a_link_type natural join
-     imdb.q11a_movie_companies natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.movie_link natural join
+--- 310
+SELECT count(*)
+FROM imdb.q11a_company_type
+         natural join
+     imdb.q11a_company_name
+         natural join
+     imdb.q11a_keyword
+         natural join
+     imdb.q11a_link_type
+         natural join
+     imdb.q11a_movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link
+         natural join
      imdb.q11a_title;
 
 -- Q11b
+--- 14
 SELECT *
-FROM imdb.q11b_company_type natural join
-     imdb.q11b_company_name natural join
-     imdb.q11b_keyword natural join
-     imdb.q11b_link_type natural join
-     imdb.q11b_movie_companies natural join
-     imdb_int.movie_keyword natural join
-     imdb_int.movie_link natural join
+FROM imdb.q11b_company_type
+         natural join
+     imdb.q11b_company_name
+         natural join
+     imdb.q11b_keyword
+         natural join
+     imdb.q11b_link_type
+         natural join
+     imdb.q11b_movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link
+         natural join
      imdb.q11b_title;
 
 -- Q11c
 SELECT *
-FROM imdb.q11c_company_type natural join
-     imdb.q11c_company_name natural join
-     imdb.q11c_keyword natural join
-     imdb.link_type natural join
-     imdb.q11c_movie_companies natural join
-     imdb_int.movie_keyword natural join
-     imdb_int.movie_link natural join
+FROM imdb.q11c_company_type
+         natural join
+     imdb.q11c_company_name
+         natural join
+     imdb.q11c_keyword
+         natural join
+     imdb.link_type
+         natural join
+     imdb.q11c_movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link
+         natural join
      imdb.q11c_title;
 
 -- Q11d
@@ -487,7 +584,7 @@ FROM imdb.company_name AS cn,
      imdb.movie_keyword AS mk,
      imdb.movie_link AS ml,
      imdb.title AS t
-WHERE cn.country_code !='[pl]'
+WHERE cn.country_code != '[pl]'
   AND ct.kind != 'production companies'
   AND ct.kind IS NOT NULL
   AND k.keyword IN ('sequel',
@@ -508,13 +605,20 @@ WHERE cn.country_code !='[pl]'
 
 
 SELECT count(*)
-FROM imdb.q11d_company_type natural join
-     imdb.q11d_company_name natural join
-     imdb.q11d_keyword natural join
-     imdb.link_type natural join
-     imdb.q11d_movie_companies natural join
-     imdb_int.movie_keyword natural join
-     imdb_int.movie_link natural join
+FROM imdb.q11d_company_type
+         natural join
+     imdb.q11d_company_name
+         natural join
+     imdb.q11d_keyword
+         natural join
+     imdb.link_type
+         natural join
+     imdb.q11d_movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link
+         natural join
      imdb.q11d_title;
 
 -- Q12a
@@ -549,14 +653,21 @@ WHERE cn.country_code = '[us]'
 
 
 SELECT count(*)
-FROM imdb.q12a_company_type natural join
-    imdb.q12a_company_name natural join
-    imdb.q12a_info_type1 natural join
-    imdb.q12a_info_type2 natural join
-    imdb.q12a_movie_info natural join
-    imdb.q12a_movie_info_idx2 natural join
-    imdb.q12a_title natural join
-    imdb_int.movie_companies;
+FROM imdb.q12a_company_type
+         natural join
+     imdb.q12a_company_name
+         natural join
+     imdb.q12a_info_type1
+         natural join
+     imdb.q12a_info_type2
+         natural join
+     imdb.q12a_movie_info
+         natural join
+     imdb.q12a_movie_info_idx2
+         natural join
+     imdb.q12a_title
+         natural join
+     imdb_int.movie_companies;
 
 -- Q12b
 --- 10
@@ -569,13 +680,13 @@ FROM imdb.company_name AS cn,
      imdb.movie_info AS mi,
      imdb.movie_info_idx AS mi_idx,
      imdb.title AS t
-WHERE cn.country_code ='[us]'
+WHERE cn.country_code = '[us]'
   AND ct.kind IS NOT NULL
-  AND (ct.kind ='production companies'
+  AND (ct.kind = 'production companies'
     OR ct.kind = 'distributors')
-  AND it1.info ='budget'
-  AND it2.info ='bottom 10 rank'
-  AND t.production_year >2000
+  AND it1.info = 'budget'
+  AND it2.info = 'bottom 10 rank'
+  AND t.production_year > 2000
   AND (t.title LIKE 'Birdemic%'
     OR t.title LIKE '%Movie%')
   AND t.movie_id = mi.movie_id
@@ -590,13 +701,20 @@ WHERE cn.country_code ='[us]'
   AND mi.movie_id = mi_idx.movie_id;
 
 SELECT count(*)
-FROM imdb.q12b_company_type natural join
-     imdb.q12b_company_name natural join
-     imdb.q12b_info_type1 natural join
-     imdb.q12b_info_type2 natural join
-     imdb_int.movie_info natural join
-     imdb.q12b_movie_info_idx2 natural join
-     imdb.q12b_title natural join
+FROM imdb.q12b_company_type
+         natural join
+     imdb.q12b_company_name
+         natural join
+     imdb.q12b_info_type1
+         natural join
+     imdb.q12b_info_type2
+         natural join
+     imdb_int.movie_info
+         natural join
+     imdb.q12b_movie_info_idx2
+         natural join
+     imdb.q12b_title
+         natural join
      imdb_int.movie_companies;
 
 -- Q12c
@@ -632,13 +750,20 @@ WHERE cn.country_code = '[us]'
   AND mi.movie_id = mi_idx.movie_id;
 
 SELECT count(*)
-FROM imdb.q12c_company_type natural join
-     imdb.q12c_company_name natural join
-     imdb.q12c_info_type1 natural join
-     imdb.q12c_info_type2 natural join
-     imdb.q12c_movie_info natural join
-     imdb.q12c_movie_info_idx2 natural join
-     imdb.q12c_title natural join
+FROM imdb.q12c_company_type
+         natural join
+     imdb.q12c_company_name
+         natural join
+     imdb.q12c_info_type1
+         natural join
+     imdb.q12c_info_type2
+         natural join
+     imdb.q12c_movie_info
+         natural join
+     imdb.q12c_movie_info_idx2
+         natural join
+     imdb.q12c_title
+         natural join
      imdb_int.movie_companies;
 
 -- Q13a
@@ -653,11 +778,11 @@ FROM imdb.company_name AS cn,
      imdb.movie_info AS mi,
      imdb.movie_info_idx AS miidx,
      imdb.title AS t
-WHERE cn.country_code ='[de]'
-  AND ct.kind ='production companies'
-  AND it.info ='rating'
-  AND it2.info ='release dates'
-  AND kt.kind ='movie'
+WHERE cn.country_code = '[de]'
+  AND ct.kind = 'production companies'
+  AND it.info = 'rating'
+  AND it2.info = 'release dates'
+  AND kt.kind = 'movie'
   AND mi.movie_id = t.movie_id
   AND it2.info_type_id = mi.info_type_id
   AND kt.kind_id = t.kind_id
@@ -671,15 +796,23 @@ WHERE cn.country_code ='[de]'
   AND miidx.movie_id = mc.movie_id;
 
 SELECT count(*)
-FROM imdb.q13a_company_type natural join
-     imdb.q13a_company_name natural join
-     imdb.q13a_info_type1 natural join
-     imdb.q13a_info_type2 natural join
-     imdb.q13a_kind_type natural join
-    imdb_int.movie_companies natural join
-     imdb.q13a_movie_info natural join
-    imdb_int.movie_info_idx natural join
-    imdb_int.title;
+FROM imdb.q13a_company_type
+         natural join
+     imdb.q13a_company_name
+         natural join
+     imdb.q13a_info_type1
+         natural join
+     imdb.q13a_info_type2
+         natural join
+     imdb.q13a_kind_type
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q13a_movie_info
+         natural join
+     imdb_int.movie_info_idx
+         natural join
+     imdb_int.title;
 
 -- Q13b
 --- 372
@@ -693,11 +826,11 @@ FROM imdb.company_name AS cn,
      imdb.movie_info AS mi,
      imdb.movie_info_idx AS miidx,
      imdb.title AS t
-WHERE cn.country_code ='[us]'
-  AND ct.kind ='production companies'
-  AND it.info ='rating'
-  AND it2.info ='release dates'
-  AND kt.kind ='movie'
+WHERE cn.country_code = '[us]'
+  AND ct.kind = 'production companies'
+  AND it.info = 'rating'
+  AND it2.info = 'release dates'
+  AND kt.kind = 'movie'
   AND t.title != ''
   AND (t.title LIKE '%Champion%'
     OR t.title LIKE '%Loser%')
@@ -714,14 +847,22 @@ WHERE cn.country_code ='[us]'
   AND miidx.movie_id = mc.movie_id;
 
 SELECT count(*)
-FROM imdb.q13b_company_type natural join
-     imdb.q13b_company_name natural join
-     imdb.q13b_info_type1 natural join
-     imdb.q13b_info_type2 natural join
-     imdb.q13b_kind_type natural join
-     imdb_int.movie_companies natural join
-     imdb.q13b_movie_info natural join
-     imdb_int.movie_info_idx natural join
+FROM imdb.q13b_company_type
+         natural join
+     imdb.q13b_company_name
+         natural join
+     imdb.q13b_info_type1
+         natural join
+     imdb.q13b_info_type2
+         natural join
+     imdb.q13b_kind_type
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q13b_movie_info
+         natural join
+     imdb_int.movie_info_idx
+         natural join
      imdb.q13b_title;
 
 -- Q13c
@@ -736,11 +877,11 @@ FROM imdb.company_name AS cn,
      imdb.movie_info AS mi,
      imdb.movie_info_idx AS miidx,
      imdb.title AS t
-WHERE cn.country_code ='[us]'
-  AND ct.kind ='production companies'
-  AND it.info ='rating'
-  AND it2.info ='release dates'
-  AND kt.kind ='movie'
+WHERE cn.country_code = '[us]'
+  AND ct.kind = 'production companies'
+  AND it.info = 'rating'
+  AND it2.info = 'release dates'
+  AND kt.kind = 'movie'
   AND t.title != ''
   AND (t.title LIKE 'Champion%'
     OR t.title LIKE 'Loser%')
@@ -757,14 +898,22 @@ WHERE cn.country_code ='[us]'
   AND miidx.movie_id = mc.movie_id;
 
 SELECT count(*)
-FROM imdb.q13c_company_type natural join
-     imdb.q13c_company_name natural join
-     imdb.q13c_info_type1 natural join
-     imdb.q13c_info_type2 natural join
-     imdb.q13c_kind_type natural join
-     imdb_int.movie_companies natural join
-     imdb.q13c_movie_info natural join
-     imdb_int.movie_info_idx natural join
+FROM imdb.q13c_company_type
+         natural join
+     imdb.q13c_company_name
+         natural join
+     imdb.q13c_info_type1
+         natural join
+     imdb.q13c_info_type2
+         natural join
+     imdb.q13c_kind_type
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q13c_movie_info
+         natural join
+     imdb_int.movie_info_idx
+         natural join
      imdb.q13c_title;
 
 -- Q13d
@@ -779,11 +928,11 @@ FROM imdb.company_name AS cn,
      imdb.movie_info AS mi,
      imdb.movie_info_idx AS miidx,
      imdb.title AS t
-WHERE cn.country_code ='[us]'
-  AND ct.kind ='production companies'
-  AND it.info ='rating'
-  AND it2.info ='release dates'
-  AND kt.kind ='movie'
+WHERE cn.country_code = '[us]'
+  AND ct.kind = 'production companies'
+  AND it.info = 'rating'
+  AND it2.info = 'release dates'
+  AND kt.kind = 'movie'
   AND mi.movie_id = t.movie_id
   AND it2.info_type_id = mi.info_type_id
   AND kt.kind_id = t.kind_id
@@ -797,26 +946,41 @@ WHERE cn.country_code ='[us]'
   AND miidx.movie_id = mc.movie_id;
 
 SELECT count(*)
-FROM imdb.q13d_company_type natural join
-     imdb.q13d_company_name natural join
-     imdb.q13d_info_type1 natural join
-     imdb.q13d_info_type2 natural join
-     imdb.q13d_kind_type natural join
-     imdb_int.movie_companies natural join
-     imdb.q13d_movie_info natural join
-     imdb_int.movie_info_idx natural join
+FROM imdb.q13d_company_type
+         natural join
+     imdb.q13d_company_name
+         natural join
+     imdb.q13d_info_type1
+         natural join
+     imdb.q13d_info_type2
+         natural join
+     imdb.q13d_kind_type
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q13d_movie_info
+         natural join
+     imdb_int.movie_info_idx
+         natural join
      imdb_int.title;
 
 -- Q14a
 SELECT count(*)
-FROM imdb.q14a_info_type1 natural join
-     imdb.q14a_info_type2 natural join
-     imdb.q14a_keyword natural join
-     imdb.q14a_kind_type natural join
-     imdb.q14a_movie_info natural join
-     imdb.q14a_movie_info_idx2 natural join
-     imdb.q14a_title natural join
-    imdb_int.movie_keyword;
+FROM imdb.q14a_info_type1
+         natural join
+     imdb.q14a_info_type2
+         natural join
+     imdb.q14a_keyword
+         natural join
+     imdb.q14a_kind_type
+         natural join
+     imdb.q14a_movie_info
+         natural join
+     imdb.q14a_movie_info_idx2
+         natural join
+     imdb.q14a_title
+         natural join
+     imdb_int.movie_keyword;
 --- 761
 SELECT count(*)
 FROM imdb.info_type AS it1,
@@ -900,15 +1064,21 @@ WHERE it1.info = 'countries'
   AND it2.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM
-imdb.q14b_info_type1 natural join
-imdb.q14b_info_type2 natural join
-imdb.q14b_keyword natural join
-imdb.q14b_kind_type natural join
-imdb.q14b_movie_info natural join
-imdb.q14b_movie_info_idx natural join
-imdb.q14b_title natural join
-imdb_int.movie_keyword;
+FROM imdb.q14b_info_type1
+         natural join
+     imdb.q14b_info_type2
+         natural join
+     imdb.q14b_keyword
+         natural join
+     imdb.q14b_kind_type
+         natural join
+     imdb.q14b_movie_info
+         natural join
+     imdb.q14b_movie_info_idx
+         natural join
+     imdb.q14b_title
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q14c
 --- 4115
@@ -954,15 +1124,21 @@ WHERE it1.info = 'countries'
   AND it2.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM
-    imdb.q14c_info_type1 natural join
-    imdb.q14c_info_type2 natural join
-    imdb.q14c_keyword natural join
-    imdb.q14c_kind_type natural join
-    imdb.q14c_movie_info natural join
-    imdb.q14c_movie_info_idx2 natural join
-    imdb.q14c_title natural join
-    imdb_int.movie_keyword;
+FROM imdb.q14c_info_type1
+         natural join
+     imdb.q14c_info_type2
+         natural join
+     imdb.q14c_keyword
+         natural join
+     imdb.q14c_kind_type
+         natural join
+     imdb.q14c_movie_info
+         natural join
+     imdb.q14c_movie_info_idx2
+         natural join
+     imdb.q14c_title
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q15a
 --- 328
@@ -982,7 +1158,8 @@ WHERE cn.country_code = '[us]'
   AND mc.note LIKE '%(worldwide)%'
   AND mi.note LIKE '%internet%'
   AND mi.info LIKE 'USA:% 200%'
-  AND t.production_year > 2000
+  AND t.production_year
+    > 2000
   AND t.movie_id = at.movie_id
   AND t.movie_id = mi.movie_id
   AND t.movie_id = mk.movie_id
@@ -1000,15 +1177,23 @@ WHERE cn.country_code = '[us]'
 
 
 SELECT count(*)
-FROM imdb.q15a_company_name natural join
-     imdb.q15a_info_type natural join
-     imdb.q15a_movie_companies natural join
-     imdb.q15a_movie_info natural join
-     imdb.q15a_title natural join
-    imdb_int.aka_title natural join
-    imdb_int.company_type natural join
-    imdb_int.keyword natural join
-    imdb_int.movie_keyword;
+FROM imdb.q15a_company_name
+         natural join
+     imdb.q15a_info_type
+         natural join
+     imdb.q15a_movie_companies
+         natural join
+     imdb.q15a_movie_info
+         natural join
+     imdb.q15a_title
+         natural join
+     imdb_int.aka_title
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.keyword
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q16a
 --- 385
@@ -1021,8 +1206,8 @@ FROM imdb.aka_name AS an,
      imdb.movie_keyword AS mk,
      imdb.name AS n,
      imdb.title AS t
-WHERE cn.country_code ='[us]'
-  AND k.keyword ='character-name-in-title'
+WHERE cn.country_code = '[us]'
+  AND k.keyword = 'character-name-in-title'
   AND t.episode_nr >= 50
   AND t.episode_nr < 100
   AND an.person_id = n.person_id
@@ -1039,24 +1224,37 @@ WHERE cn.country_code ='[us]'
 
 
 SELECT count(*)
-FROM imdb.q16a_company_name natural join
-     imdb.q16a_keyword natural join
-     imdb.q16a_title natural join
-    imdb_int.aka_name natural join
-    imdb_int.cast_info natural join
-    imdb_int.movie_companies natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.name;
+FROM imdb.q16a_company_name
+         natural join
+     imdb.q16a_keyword
+         natural join
+     imdb.q16a_title
+         natural join
+     imdb_int.aka_name
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.name;
 
 -- Q17a
 SELECT *
-FROM imdb.q17a_company_name natural join
-     imdb.q17a_keyword natural join
-     imdb.q17a_name natural join
-    imdb_int.cast_info natural join
-    imdb_int.movie_companies natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.title;
+FROM imdb.q17a_company_name
+         natural join
+     imdb.q17a_keyword
+         natural join
+     imdb.q17a_name
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.title;
 
 -- Q17b
 --- 52306
@@ -1068,7 +1266,7 @@ FROM imdb.cast_info AS ci,
      imdb.movie_keyword AS mk,
      imdb.name AS n,
      imdb.title AS t
-WHERE k.keyword ='character-name-in-title'
+WHERE k.keyword = 'character-name-in-title'
   AND n.name LIKE 'Z%'
   AND n.person_id = ci.person_id
   AND ci.movie_id = t.movie_id
@@ -1081,12 +1279,18 @@ WHERE k.keyword ='character-name-in-title'
   AND mc.movie_id = mk.movie_id;
 
 SELECT count(*)
-FROM imdb_int.company_name natural join
-     imdb.q17b_keyword natural join
-     imdb.q17b_name natural join
-     imdb_int.cast_info natural join
-     imdb_int.movie_companies natural join
-     imdb_int.movie_keyword natural join
+FROM imdb_int.company_name
+         natural join
+     imdb.q17b_keyword
+         natural join
+     imdb.q17b_name
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword
+         natural join
      imdb_int.title;
 
 
@@ -1117,13 +1321,19 @@ WHERE ci.note IN ('(producer)',
   AND it2.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM imdb.q18a_cast_info natural join
-     imdb.q18a_info_type1 natural join
-     imdb.q18a_info_type2 natural join
-     imdb.q18a_name natural join
-    imdb_int.movie_info natural join
-    imdb.q18a_movie_info_idx2 natural join
-    imdb_int.title;
+FROM imdb.q18a_cast_info
+         natural join
+     imdb.q18a_info_type1
+         natural join
+     imdb.q18a_info_type2
+         natural join
+     imdb.q18a_name
+         natural join
+     imdb_int.movie_info
+         natural join
+     imdb.q18a_movie_info_idx2
+         natural join
+     imdb_int.title;
 
 -- Q18b
 --- 11
@@ -1160,12 +1370,18 @@ WHERE ci.note IN ('(writer)',
   AND it2.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM imdb.q18b_cast_info natural join
-     imdb.q18b_info_type1 natural join
-     imdb.q18b_info_type2 natural join
-     imdb.q18b_name natural join
-     imdb.q18b_movie_info natural join
-     imdb.q18b_movie_info_idx2 natural join
+FROM imdb.q18b_cast_info
+         natural join
+     imdb.q18b_info_type1
+         natural join
+     imdb.q18b_info_type2
+         natural join
+     imdb.q18b_name
+         natural join
+     imdb.q18b_movie_info
+         natural join
+     imdb.q18b_movie_info_idx2
+         natural join
      imdb.q18b_title;
 
 -- Q18c
@@ -1203,12 +1419,18 @@ WHERE ci.note IN ('(writer)',
   AND it2.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM imdb.q18c_cast_info natural join
-     imdb.q18c_info_type1 natural join
-     imdb.q18c_info_type2 natural join
-     imdb.q18c_name natural join
-     imdb.q18c_movie_info natural join
-     imdb.q18c_movie_info_idx2 natural join
+FROM imdb.q18c_cast_info
+         natural join
+     imdb.q18c_info_type1
+         natural join
+     imdb.q18c_info_type2
+         natural join
+     imdb.q18c_name
+         natural join
+     imdb.q18c_movie_info
+         natural join
+     imdb.q18c_movie_info_idx2
+         natural join
      imdb_int.title;
 
 -- Q19a
@@ -1228,7 +1450,7 @@ WHERE ci.note IN ('(voice)',
                   '(voice: Japanese version)',
                   '(voice) (uncredited)',
                   '(voice: English version)')
-  AND cn.country_code ='[us]'
+  AND cn.country_code = '[us]'
   AND it.info = 'release dates'
   AND mc.note IS NOT NULL
   AND (mc.note LIKE '%(USA)%'
@@ -1236,9 +1458,9 @@ WHERE ci.note IN ('(voice)',
   AND mi.info IS NOT NULL
   AND (mi.info LIKE 'Japan:%200%'
     OR mi.info LIKE 'USA:%200%')
-  AND n.gender ='f'
+  AND n.gender = 'f'
   AND n.name LIKE '%Ang%'
-  AND rt.role ='actress'
+  AND rt.role = 'actress'
   AND t.production_year BETWEEN 2005 AND 2009
   AND t.movie_id = mi.movie_id
   AND t.movie_id = mc.movie_id
@@ -1255,16 +1477,25 @@ WHERE ci.note IN ('(voice)',
   AND chn.person_role_id = ci.person_role_id;
 
 SELECT count(*)
-FROM imdb.q19a_cast_info natural join
-     imdb.q19a_company_name natural join
-     imdb.q19a_info_type natural join
-     imdb.q19a_movie_companies natural join
-     imdb.q19a_movie_info natural join
-     imdb.q19a_name natural join
-     imdb.q19a_role_type natural join
-     imdb.q19a_title natural join
-    imdb_int.aka_name natural join
-    imdb_int.char_name;
+FROM imdb.q19a_cast_info
+         natural join
+     imdb.q19a_company_name
+         natural join
+     imdb.q19a_info_type
+         natural join
+     imdb.q19a_movie_companies
+         natural join
+     imdb.q19a_movie_info
+         natural join
+     imdb.q19a_name
+         natural join
+     imdb.q19a_role_type
+         natural join
+     imdb.q19a_title
+         natural join
+     imdb_int.aka_name
+         natural join
+     imdb_int.char_name;
 
 -- Q20a
 --- 33
@@ -1308,16 +1539,69 @@ WHERE cct1.kind = 'cast'
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM imdb.q20a_comp_cast_type1 natural join
-     imdb.q20a_comp_cast_type2 natural join
-     imdb.q20a_char_name natural join
-     imdb.q20a_keyword natural join
-     imdb.q20a_kind_type natural join
-     imdb.q20a_title natural join
-    imdb_int.complete_cast natural join
-    imdb_int.cast_info natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.name;
+FROM imdb.q20a_comp_cast_type1
+         natural join
+     imdb.q20a_comp_cast_type2
+         natural join
+     imdb.q20a_char_name
+         natural join
+     imdb.q20a_keyword
+         natural join
+     imdb.q20a_kind_type
+         natural join
+     imdb.q20a_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.name;
+
+-- Q20c
+--- duckDB
+select count(*)
+FROM imdb.complete_cast AS cc,
+     imdb.comp_cast_type AS cct1,
+     imdb.comp_cast_type AS cct2,
+     imdb.char_name AS chn,
+     imdb.cast_info AS ci,
+     imdb.keyword AS k,
+     imdb.kind_type AS kt,
+     imdb.movie_keyword AS mk,
+     imdb.name AS n,
+     imdb.title AS t
+WHERE cct1.kind = 'cast'
+  AND cct2.kind LIKE '%complete%'
+  AND chn.name IS NOT NULL
+  AND (chn.name LIKE '%man%'
+    OR chn.name LIKE '%Man%')
+  AND k.keyword IN ('superhero',
+                    'marvel-comics',
+                    'based-on-comic',
+                    'tv-special',
+                    'fight',
+                    'violence',
+                    'magnet',
+                    'web',
+                    'claw',
+                    'laser')
+  AND kt.kind = 'movie'
+  AND t.production_year > 2000
+  AND kt.kind_id = t.kind_id
+  AND t.movie_id = mk.movie_id
+  AND t.movie_id = ci.movie_id
+  AND t.movie_id = cc.movie_id
+  AND mk.movie_id = ci.movie_id
+  AND mk.movie_id = cc.movie_id
+  AND ci.movie_id = cc.movie_id
+  AND chn.person_role_id = ci.person_role_id
+  AND n.person_id = ci.person_id
+  AND k.keyword_id = mk.keyword_id
+  AND cct1.subject_id = cc.subject_id
+  AND cct2.subject_id = cc.status_id;
+
 
 -- Q21a
 --- 1410
@@ -1331,11 +1615,11 @@ FROM imdb.company_name AS cn,
      imdb.movie_keyword AS mk,
      imdb.movie_link AS ml,
      imdb.title AS t
-WHERE cn.country_code !='[pl]'
+WHERE cn.country_code != '[pl]'
   AND (cn.name LIKE '%Film%'
     OR cn.name LIKE '%Warner%')
-  AND ct.kind ='production companies'
-  AND k.keyword ='sequel'
+  AND ct.kind = 'production companies'
+  AND k.keyword = 'sequel'
   AND lt.link LIKE '%follow%'
   AND mc.note IS NULL
   AND mi.info IN ('Sweden',
@@ -1363,15 +1647,23 @@ WHERE cn.country_code !='[pl]'
   AND mc.movie_id = mi.movie_id;
 
 SELECT count(*)
-FROM imdb.q21a_company_name natural join
-    imdb.q21a_company_type natural join
-    imdb.q21a_keyword natural join
-    imdb.q21a_link_type natural join
-    imdb.q21a_movie_companies natural join
-    imdb.q21a_movie_info natural join
-    imdb.q21a_title natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.movie_link;
+FROM imdb.q21a_company_name
+         natural join
+     imdb.q21a_company_type
+         natural join
+     imdb.q21a_keyword
+         natural join
+     imdb.q21a_link_type
+         natural join
+     imdb.q21a_movie_companies
+         natural join
+     imdb.q21a_movie_info
+         natural join
+     imdb.q21a_title
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link;
 
 
 -- Q22a
@@ -1423,16 +1715,26 @@ WHERE cn.country_code != '[us]'
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM imdb.q22a_company_name natural join
-     imdb.q22a_info_type1 natural join
-     imdb.q22a_info_type2 natural join
-     imdb.q22a_keyword natural join
-     imdb.q22a_kind_type natural join
-     imdb.q22a_movie_companies natural join
-     imdb.q22a_movie_info natural join
-     imdb.q22a_movie_info_idx2 natural join
-     imdb.q22a_title natural join
-     imdb_int.company_type natural join
+FROM imdb.q22a_company_name
+         natural join
+     imdb.q22a_info_type1
+         natural join
+     imdb.q22a_info_type2
+         natural join
+     imdb.q22a_keyword
+         natural join
+     imdb.q22a_kind_type
+         natural join
+     imdb.q22a_movie_companies
+         natural join
+     imdb.q22a_movie_info
+         natural join
+     imdb.q22a_movie_info_idx2
+         natural join
+     imdb.q22a_title
+         natural join
+     imdb_int.company_type
+         natural join
      imdb_int.movie_keyword;
 
 -- Q22b
@@ -1484,17 +1786,27 @@ WHERE cn.country_code != '[us]'
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM imdb.q22b_company_name natural join
- imdb.q22b_info_type1 natural join
- imdb.q22b_info_type2 natural join
- imdb.q22b_keyword natural join
- imdb.q22b_kind_type natural join
- imdb.q22b_movie_companies natural join
- imdb.q22b_movie_info natural join
- imdb.q22b_movie_info_idx2 natural join
- imdb.q22b_title natural join
- imdb_int.company_type natural join
- imdb_int.movie_keyword;
+FROM imdb.q22b_company_name
+         natural join
+     imdb.q22b_info_type1
+         natural join
+     imdb.q22b_info_type2
+         natural join
+     imdb.q22b_keyword
+         natural join
+     imdb.q22b_kind_type
+         natural join
+     imdb.q22b_movie_companies
+         natural join
+     imdb.q22b_movie_info
+         natural join
+     imdb.q22b_movie_info_idx2
+         natural join
+     imdb.q22b_title
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q22c
 --- 21489
@@ -1551,16 +1863,26 @@ WHERE cn.country_code != '[us]'
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM imdb.q22c_company_name natural join
-     imdb.q22c_info_type1 natural join
-     imdb.q22c_info_type2 natural join
-     imdb.q22c_keyword natural join
-     imdb.q22c_kind_type natural join
-     imdb.q22c_movie_companies natural join
-     imdb.q22c_movie_info natural join
-     imdb.q22c_movie_info_idx2 natural join
-     imdb.q22c_title natural join
-     imdb_int.company_type natural join
+FROM imdb.q22c_company_name
+         natural join
+     imdb.q22c_info_type1
+         natural join
+     imdb.q22c_info_type2
+         natural join
+     imdb.q22c_keyword
+         natural join
+     imdb.q22c_kind_type
+         natural join
+     imdb.q22c_movie_companies
+         natural join
+     imdb.q22c_movie_info
+         natural join
+     imdb.q22c_movie_info_idx2
+         natural join
+     imdb.q22c_title
+         natural join
+     imdb_int.company_type
+         natural join
      imdb_int.movie_keyword;
 
 -- Q22d
@@ -1616,16 +1938,26 @@ WHERE cn.country_code != '[us]'
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM imdb.q22d_company_name natural join
-     imdb.q22d_info_type1 natural join
-     imdb.q22d_info_type2 natural join
-     imdb.q22d_keyword natural join
-     imdb.q22d_kind_type natural join
-     imdb_int.movie_companies natural join
-     imdb.q22d_movie_info natural join
-     imdb.q22d_movie_info_idx2 natural join
-     imdb.q22d_title natural join
-     imdb_int.company_type natural join
+FROM imdb.q22d_company_name
+         natural join
+     imdb.q22d_info_type1
+         natural join
+     imdb.q22d_info_type2
+         natural join
+     imdb.q22d_keyword
+         natural join
+     imdb.q22d_kind_type
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q22d_movie_info
+         natural join
+     imdb.q22d_movie_info_idx2
+         natural join
+     imdb.q22d_title
+         natural join
+     imdb_int.company_type
+         natural join
      imdb_int.movie_keyword;
 
 -- Q23a
@@ -1669,17 +2001,27 @@ WHERE cct1.kind = 'complete+verified'
   AND cct1.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM imdb.q23a_comp_cast_type natural join
-    imdb.q23a_company_name natural join
-    imdb.q23a_info_type natural join
-    imdb.q23a_kind_type natural join
-    imdb.q23a_movie_info natural join
-    imdb.q23a_title natural join
-    imdb_int.complete_cast natural join
-    imdb_int.company_type natural join
-    imdb_int.keyword natural join
-    imdb_int.movie_companies natural join
-    imdb_int.movie_keyword;
+FROM imdb.q23a_comp_cast_type
+         natural join
+     imdb.q23a_company_name
+         natural join
+     imdb.q23a_info_type
+         natural join
+     imdb.q23a_kind_type
+         natural join
+     imdb.q23a_movie_info
+         natural join
+     imdb.q23a_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.keyword
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q24a
 --- 275
@@ -1700,7 +2042,7 @@ WHERE ci.note IN ('(voice)',
                   '(voice: Japanese version)',
                   '(voice) (uncredited)',
                   '(voice: English version)')
-  AND cn.country_code ='[us]'
+  AND cn.country_code = '[us]'
   AND it.info = 'release dates'
   AND k.keyword IN ('hero',
                     'martial-arts',
@@ -1708,9 +2050,9 @@ WHERE ci.note IN ('(voice)',
   AND mi.info IS NOT NULL
   AND (mi.info LIKE 'Japan:%201%'
     OR mi.info LIKE 'USA:%201%')
-  AND n.gender ='f'
+  AND n.gender = 'f'
   AND n.name LIKE '%An%'
-  AND rt.role ='actress'
+  AND rt.role = 'actress'
   AND t.production_year > 2010
   AND t.movie_id = mi.movie_id
   AND t.movie_id = mc.movie_id
@@ -1732,18 +2074,82 @@ WHERE ci.note IN ('(voice)',
   AND k.keyword_id = mk.keyword_id;
 
 SELECT count(*)
-FROM imdb.q24a_cast_info natural join
-    imdb.q24a_company_name natural join
-    imdb.q24a_info_type natural join
-    imdb.q24a_keyword natural join
-    imdb.q24a_movie_info natural join
-    imdb.q24a_name natural join
-    imdb.q24a_role_type natural join
-    imdb.q24a_title natural join
-    imdb_int.aka_name natural join
-    imdb_int.char_name natural join
-    imdb_int.movie_companies natural join
-    imdb_int.movie_keyword;
+FROM imdb.q24a_cast_info
+         natural join
+     imdb.q24a_company_name
+         natural join
+     imdb.q24a_info_type
+         natural join
+     imdb.q24a_keyword
+         natural join
+     imdb.q24a_movie_info
+         natural join
+     imdb.q24a_name
+         natural join
+     imdb.q24a_role_type
+         natural join
+     imdb.q24a_title
+         natural join
+     imdb_int.aka_name
+         natural join
+     imdb_int.char_name
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword;
+
+-- Q24b
+--- duckDB
+select count(*)
+FROM imdb.aka_name AS an,
+     imdb.char_name AS chn,
+     imdb.cast_info AS ci,
+     imdb.company_name AS cn,
+     imdb.info_type AS it,
+     imdb.keyword AS k,
+     imdb.movie_companies AS mc,
+     imdb.movie_info AS mi,
+     imdb.movie_keyword AS mk,
+     imdb.name AS n,
+     imdb.role_type AS rt,
+     imdb.title AS t
+WHERE ci.note IN ('(voice)',
+                  '(voice: Japanese version)',
+                  '(voice) (uncredited)',
+                  '(voice: English version)')
+  AND cn.country_code ='[us]'
+  AND cn.name = 'DreamWorks Animation'
+  AND it.info = 'release dates'
+  AND k.keyword IN ('hero',
+                    'martial-arts',
+                    'hand-to-hand-combat',
+                    'computer-animated-movie')
+  AND mi.info IS NOT NULL
+  AND (mi.info LIKE 'Japan:%201%'
+    OR mi.info LIKE 'USA:%201%')
+  AND n.gender ='f'
+  AND n.name LIKE '%An%'
+  AND rt.role ='actress'
+  AND t.production_year > 2010
+  AND t.title LIKE 'Kung Fu Panda%'
+  AND t.movie_id = mi.movie_id
+  AND t.movie_id = mc.movie_id
+  AND t.movie_id = ci.movie_id
+  AND t.movie_id = mk.movie_id
+  AND mc.movie_id = ci.movie_id
+  AND mc.movie_id = mi.movie_id
+  AND mc.movie_id = mk.movie_id
+  AND mi.movie_id = ci.movie_id
+  AND mi.movie_id = mk.movie_id
+  AND ci.movie_id = mk.movie_id
+  AND cn.company_id = mc.company_id
+  AND it.info_type_id = mi.info_type_id
+  AND n.person_id = ci.person_id
+  AND rt.role_id = ci.role_id
+  AND n.person_id = an.person_id
+  AND ci.person_id = an.person_id
+  AND chn.person_role_id = ci.person_role_id
+  AND k.keyword_id = mk.keyword_id;
 
 
 -- Q25a
@@ -1788,16 +2194,23 @@ WHERE ci.note IN ('(writer)',
   AND k.keyword_id = mk.keyword_id;
 
 SELECT count(*)
-FROM
-imdb.q25a_cast_info natural join
-    imdb.q25a_info_type1 natural join
-    imdb.q25a_info_type2 natural join
-    imdb.q25a_keyword natural join
-    imdb.q25a_movie_info natural join
-    imdb.q25a_name natural join
-    imdb.q25a_movie_info_idx2 natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.title;
+FROM imdb.q25a_cast_info
+         natural join
+     imdb.q25a_info_type1
+         natural join
+     imdb.q25a_info_type2
+         natural join
+     imdb.q25a_keyword
+         natural join
+     imdb.q25a_movie_info
+         natural join
+     imdb.q25a_name
+         natural join
+     imdb.q25a_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.title;
 
 -- Q25b
 --- 6
@@ -1843,16 +2256,23 @@ WHERE ci.note IN ('(writer)',
   AND k.keyword_id = mk.keyword_id;
 
 SELECT count(*)
-FROM
-    imdb.q25b_cast_info natural join
-    imdb.q25b_info_type1 natural join
-    imdb.q25b_info_type2 natural join
-    imdb.q25b_keyword natural join
-    imdb.q25b_movie_info natural join
-    imdb.q25b_name natural join
-    imdb.q25b_movie_info_idx2 natural join
-    imdb_int.movie_keyword natural join
-    imdb.q25b_title;
+FROM imdb.q25b_cast_info
+         natural join
+     imdb.q25b_info_type1
+         natural join
+     imdb.q25b_info_type2
+         natural join
+     imdb.q25b_keyword
+         natural join
+     imdb.q25b_movie_info
+         natural join
+     imdb.q25b_name
+         natural join
+     imdb.q25b_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb.q25b_title;
 
 -- Q25c
 --- 26153
@@ -1903,16 +2323,23 @@ WHERE ci.note IN ('(writer)',
   AND k.keyword_id = mk.keyword_id;
 
 SELECT count(*)
-FROM
-    imdb.q25c_cast_info natural join
-    imdb.q25c_info_type1 natural join
-    imdb.q25c_info_type2 natural join
-    imdb.q25c_keyword natural join
-    imdb.q25c_movie_info natural join
-    imdb.q25c_name natural join
-    imdb.q25c_movie_info_idx2 natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.title;
+FROM imdb.q25c_cast_info
+         natural join
+     imdb.q25c_info_type1
+         natural join
+     imdb.q25c_info_type2
+         natural join
+     imdb.q25c_keyword
+         natural join
+     imdb.q25c_movie_info
+         natural join
+     imdb.q25c_name
+         natural join
+     imdb.q25c_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.title;
 
 
 -- Q26a
@@ -1968,18 +2395,127 @@ WHERE cct1.kind = 'cast'
   AND it2.info_type_id = mi_idx.info_type_id;
 
 SELECT count(*)
-FROM imdb.q26a_comp_cast_type1 natural join
-    imdb.q26a_comp_cast_type2 natural join
-    imdb.q26a_char_name natural join
-    imdb.q26a_info_type natural join
-    imdb.q26a_keyword natural join
-    imdb.q26a_kind_type natural join
-    imdb.q26a_movie_info_idx natural join
-    imdb.q26a_title natural join
-    imdb_int.complete_cast natural join
-    imdb_int.cast_info natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.name;
+FROM imdb.q26a_comp_cast_type1
+         natural join
+     imdb.q26a_comp_cast_type2
+         natural join
+     imdb.q26a_char_name
+         natural join
+     imdb.q26a_info_type
+         natural join
+     imdb.q26a_keyword
+         natural join
+     imdb.q26a_kind_type
+         natural join
+     imdb.q26a_movie_info_idx
+         natural join
+     imdb.q26a_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.cast_info
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.name;
+
+-- Q26b
+--- duckDB
+select count(*)
+FROM imdb.complete_cast AS cc,
+     imdb.comp_cast_type AS cct1,
+     imdb.comp_cast_type AS cct2,
+     imdb.char_name AS chn,
+     imdb.cast_info AS ci,
+     imdb.info_type AS it,
+     imdb.keyword AS k,
+     imdb.kind_type AS kt,
+     imdb.movie_info_idx AS mi_idx,
+     imdb.movie_keyword AS mk,
+     imdb.name AS n,
+     imdb.title AS t
+WHERE cct1.kind = 'cast'
+  AND cct2.kind LIKE '%complete%'
+  AND chn.name IS NOT NULL
+  AND (chn.name LIKE '%man%'
+    OR chn.name LIKE '%Man%')
+  AND it.info = 'rating'
+  AND k.keyword IN ('superhero',
+                    'marvel-comics',
+                    'based-on-comic',
+                    'fight')
+  AND kt.kind = 'movie'
+  AND mi_idx.info > '8.0'
+  AND t.production_year > 2005
+  AND kt.kind_id = t.kind_id
+  AND t.movie_id = mk.movie_id
+  AND t.movie_id = ci.movie_id
+  AND t.movie_id = cc.movie_id
+  AND t.movie_id = mi_idx.movie_id
+  AND mk.movie_id = ci.movie_id
+  AND mk.movie_id = cc.movie_id
+  AND mk.movie_id = mi_idx.movie_id
+  AND ci.movie_id = cc.movie_id
+  AND ci.movie_id = mi_idx.movie_id
+  AND cc.movie_id = mi_idx.movie_id
+  AND chn.person_role_id = ci.person_role_id
+  AND n.person_id = ci.person_id
+  AND k.keyword_id = mk.keyword_id
+  AND cct1.subject_id = cc.subject_id
+  AND cct2.subject_id = cc.status_id
+  AND it.info_type_id = mi_idx.info_type_id;
+
+-- Q26c
+--- duckDB
+select count(*)
+FROM imdb.complete_cast AS cc,
+     imdb.comp_cast_type AS cct1,
+     imdb.comp_cast_type AS cct2,
+     imdb.char_name AS chn,
+     imdb.cast_info AS ci,
+     imdb.info_type AS it,
+     imdb.keyword AS k,
+     imdb.kind_type AS kt,
+     imdb.movie_info_idx AS mi_idx,
+     imdb.movie_keyword AS mk,
+     imdb.name AS n,
+     imdb.title AS t
+WHERE cct1.kind = 'cast'
+  AND cct2.kind LIKE '%complete%'
+  AND chn.name IS NOT NULL
+  AND (chn.name LIKE '%man%'
+    OR chn.name LIKE '%Man%')
+  AND it.info = 'rating'
+  AND k.keyword IN ('superhero',
+                    'marvel-comics',
+                    'based-on-comic',
+                    'tv-special',
+                    'fight',
+                    'violence',
+                    'magnet',
+                    'web',
+                    'claw',
+                    'laser')
+  AND kt.kind = 'movie'
+  AND t.production_year > 2000
+  AND kt.kind_id = t.kind_id
+  AND t.movie_id = mk.movie_id
+  AND t.movie_id = ci.movie_id
+  AND t.movie_id = cc.movie_id
+  AND t.movie_id = mi_idx.movie_id
+  AND mk.movie_id = ci.movie_id
+  AND mk.movie_id = cc.movie_id
+  AND mk.movie_id = mi_idx.movie_id
+  AND ci.movie_id = cc.movie_id
+  AND ci.movie_id = mi_idx.movie_id
+  AND cc.movie_id = mi_idx.movie_id
+  AND chn.person_role_id = ci.person_role_id
+  AND n.person_id = ci.person_id
+  AND k.keyword_id = mk.keyword_id
+  AND cct1.subject_id = cc.subject_id
+  AND cct2.subject_id = cc.status_id
+  AND it.info_type_id = mi_idx.info_type_id;
+
 
 -- Q27a
 --- 477
@@ -1999,11 +2535,11 @@ FROM imdb.complete_cast AS cc,
 WHERE cct1.kind IN ('cast',
                     'crew')
   AND cct2.kind = 'complete'
-  AND cn.country_code !='[pl]'
+  AND cn.country_code != '[pl]'
   AND (cn.name LIKE '%Film%'
     OR cn.name LIKE '%Warner%')
-  AND ct.kind ='production companies'
-  AND k.keyword ='sequel'
+  AND ct.kind = 'production companies'
+  AND k.keyword = 'sequel'
   AND lt.link LIKE '%follow%'
   AND mc.note IS NULL
   AND mi.info IN ('Sweden',
@@ -2034,19 +2570,114 @@ WHERE cct1.kind IN ('cast',
   AND mi.movie_id = cc.movie_id;
 
 SELECT count(*)
-FROM
-imdb_int.complete_cast natural join
-imdb.q27a_comp_cast_type1 natural join
-imdb.q27a_comp_cast_type2 natural join
-imdb.q27a_company_name natural join
-imdb.q27a_company_type natural join
-imdb.q27a_keyword natural join
-imdb.q27a_link_type natural join
-imdb.q27a_movie_companies natural join
-imdb.q27a_movie_info natural join
-imdb.q27a_title natural join
-imdb_int.movie_keyword natural join
-imdb_int.movie_link;
+FROM imdb_int.complete_cast
+         natural join
+     imdb.q27a_comp_cast_type1
+         natural join
+     imdb.q27a_comp_cast_type2
+         natural join
+     imdb.q27a_company_name
+         natural join
+     imdb.q27a_company_type
+         natural join
+     imdb.q27a_keyword
+         natural join
+     imdb.q27a_link_type
+         natural join
+     imdb.q27a_movie_companies
+         natural join
+     imdb.q27a_movie_info
+         natural join
+     imdb.q27a_title
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link;
+
+-- Q27b
+--- 247
+
+-- Q27c
+--- 743
+SELECT count(*)
+FROM imdb.q27c_comp_cast_type1
+         natural join
+     imdb.q27c_comp_cast_type2
+         natural join
+     imdb.q27c_company_name
+         natural join
+     imdb.q27c_company_type
+         natural join
+     imdb.q27c_keyword
+         natural join
+     imdb.q27c_link_type
+         natural join
+     imdb.q27c_movie_companies
+         natural join
+     imdb.q27c_movie_info
+         natural join
+     imdb.q27c_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.movie_link;
+--- duckDB
+select count(*)
+FROM imdb.complete_cast AS cc,
+     imdb.comp_cast_type AS cct1,
+     imdb.comp_cast_type AS cct2,
+     imdb.company_name AS cn,
+     imdb.company_type AS ct,
+     imdb.keyword AS k,
+     imdb.link_type AS lt,
+     imdb.movie_companies AS mc,
+     imdb.movie_info AS mi,
+     imdb.movie_keyword AS mk,
+     imdb.movie_link AS ml,
+     imdb.title AS t
+WHERE cct1.kind = 'cast'
+  AND cct2.kind LIKE 'complete%'
+  AND cn.country_code !='[pl]'
+  AND (cn.name LIKE '%Film%'
+       OR cn.name LIKE '%Warner%')
+  AND ct.kind ='production companies'
+  AND k.keyword ='sequel'
+  AND lt.link LIKE '%follow%'
+  AND mc.note IS NULL
+  AND mi.info IN ('Sweden',
+                  'Norway',
+                  'Germany',
+                  'Denmark',
+                  'Swedish',
+                  'Denish',
+                  'Norwegian',
+                  'German',
+                  'English')
+  AND t.production_year BETWEEN 1950 AND 2010
+  AND lt.link_type_id = ml.link_type_id
+  AND ml.movie_id = t.movie_id
+  AND t.movie_id = mk.movie_id
+  AND mk.keyword_id = k.keyword_id
+  AND t.movie_id = mc.movie_id
+  AND mc.company_type_id = ct.company_type_id
+  AND mc.company_id = cn.company_id
+  AND mi.movie_id = t.movie_id
+  AND t.movie_id = cc.movie_id
+  AND cct1.subject_id = cc.subject_id
+  AND cct2.subject_id = cc.status_id
+  AND ml.movie_id = mk.movie_id
+  AND ml.movie_id = mc.movie_id
+  AND mk.movie_id = mc.movie_id
+  AND ml.movie_id = mi.movie_id
+  AND mk.movie_id = mi.movie_id
+  AND mc.movie_id = mi.movie_id
+  AND ml.movie_id = cc.movie_id
+  AND mk.movie_id = cc.movie_id
+  AND mc.movie_id = cc.movie_id
+  AND mi.movie_id = cc.movie_id;
+
 
 -- Q28a
 --- 4803
@@ -2115,21 +2746,33 @@ WHERE cct1.kind = 'crew'
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM
-imdb.q28a_comp_cast_type1 natural join
-imdb.q28a_comp_cast_type2 natural join
-imdb.q28a_company_name natural join
-imdb.q28a_info_type1 natural join
-imdb.q28a_info_type2 natural join
-imdb.q28a_keyword natural join
-imdb.q28a_kind_type natural join
-imdb.q28a_movie_companies natural join
-imdb.q28a_movie_info natural join
-imdb.q28a_movie_info_idx2 natural join
-imdb.q28a_title natural join
-imdb_int.complete_cast natural join
-imdb_int.company_type natural join
-imdb_int.movie_keyword;
+FROM imdb.q28a_comp_cast_type1
+         natural join
+     imdb.q28a_comp_cast_type2
+         natural join
+     imdb.q28a_company_name
+         natural join
+     imdb.q28a_info_type1
+         natural join
+     imdb.q28a_info_type2
+         natural join
+     imdb.q28a_keyword
+         natural join
+     imdb.q28a_kind_type
+         natural join
+     imdb.q28a_movie_companies
+         natural join
+     imdb.q28a_movie_info
+         natural join
+     imdb.q28a_movie_info_idx2
+         natural join
+     imdb.q28a_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q28b
 --- 148
@@ -2192,21 +2835,33 @@ WHERE cct1.kind = 'crew'
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM
-    imdb.q28b_comp_cast_type1 natural join
-    imdb.q28b_comp_cast_type2 natural join
-    imdb.q28b_company_name natural join
-    imdb.q28b_info_type1 natural join
-    imdb.q28b_info_type2 natural join
-    imdb.q28b_keyword natural join
-    imdb.q28b_kind_type natural join
-    imdb.q28b_movie_companies natural join
-    imdb.q28b_movie_info natural join
-    imdb.q28b_movie_info_idx2 natural join
-    imdb.q28b_title natural join
-    imdb_int.complete_cast natural join
-    imdb_int.company_type natural join
-    imdb_int.movie_keyword;
+FROM imdb.q28b_comp_cast_type1
+         natural join
+     imdb.q28b_comp_cast_type2
+         natural join
+     imdb.q28b_company_name
+         natural join
+     imdb.q28b_info_type1
+         natural join
+     imdb.q28b_info_type2
+         natural join
+     imdb.q28b_keyword
+         natural join
+     imdb.q28b_kind_type
+         natural join
+     imdb.q28b_movie_companies
+         natural join
+     imdb.q28b_movie_info
+         natural join
+     imdb.q28b_movie_info_idx2
+         natural join
+     imdb.q28b_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q28c
 --- 8373
@@ -2275,21 +2930,33 @@ WHERE cct1.kind = 'cast'
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM
-    imdb.q28c_comp_cast_type1 natural join
-    imdb.q28c_comp_cast_type2 natural join
-    imdb.q28c_company_name natural join
-    imdb.q28c_info_type1 natural join
-    imdb.q28c_info_type2 natural join
-    imdb.q28c_keyword natural join
-    imdb.q28c_kind_type natural join
-    imdb.q28c_movie_companies natural join
-    imdb.q28c_movie_info natural join
-    imdb.q28c_movie_info_idx2 natural join
-    imdb.q28c_title natural join
-    imdb_int.complete_cast natural join
-    imdb_int.company_type natural join
-    imdb_int.movie_keyword;
+FROM imdb.q28c_comp_cast_type1
+         natural join
+     imdb.q28c_comp_cast_type2
+         natural join
+     imdb.q28c_company_name
+         natural join
+     imdb.q28c_info_type1
+         natural join
+     imdb.q28c_info_type2
+         natural join
+     imdb.q28c_keyword
+         natural join
+     imdb.q28c_kind_type
+         natural join
+     imdb.q28c_movie_companies
+         natural join
+     imdb.q28c_movie_info
+         natural join
+     imdb.q28c_movie_info_idx2
+         natural join
+     imdb.q28c_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.company_type
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q29a
 --- 1620
@@ -2311,22 +2978,22 @@ FROM imdb.aka_name AS an,
      imdb.person_info AS pi,
      imdb.role_type AS rt,
      imdb.title AS t
-WHERE cct1.kind ='cast'
-  AND cct2.kind ='complete+verified'
+WHERE cct1.kind = 'cast'
+  AND cct2.kind = 'complete+verified'
   AND chn.name = 'Queen'
   AND ci.note IN ('(voice)',
                   '(voice) (uncredited)',
                   '(voice: English version)')
-  AND cn.country_code ='[us]'
+  AND cn.country_code = '[us]'
   AND it.info = 'release dates'
   AND it3.info = 'trivia'
   AND k.keyword = 'computer-animation'
   AND mi.info IS NOT NULL
   AND (mi.info LIKE 'Japan:%200%'
     OR mi.info LIKE 'USA:%200%')
-  AND n.gender ='f'
+  AND n.gender = 'f'
   AND n.name LIKE '%An%'
-  AND rt.role ='actress'
+  AND rt.role = 'actress'
   AND t.title = 'Shrek 2'
   AND t.production_year BETWEEN 2000 AND 2010
   AND t.movie_id = mi.movie_id
@@ -2359,23 +3026,172 @@ WHERE cct1.kind ='cast'
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM imdb.q29a_comp_cast_type1 natural join
-     imdb.q29a_comp_cast_type2 natural join
-     imdb.q29a_char_name natural join
-    imdb.q29a_cast_info natural join
-    imdb.q29a_company_name natural join
-    imdb.q29a_info_type1 natural join
-    imdb.q29a_info_type2 natural join
-    imdb.q29a_keyword natural join
-    imdb.q29a_movie_info natural join
-    imdb.q29a_name natural join
-    imdb.q29a_role_type natural join
-    imdb.q29a_title natural join
-    imdb.q29a_person_info natural join
-    imdb_int.aka_name natural join
-    imdb_int.complete_cast natural join
-    imdb_int.movie_companies natural join
-    imdb_int.movie_keyword;
+FROM imdb.q29a_comp_cast_type1
+         natural join
+     imdb.q29a_comp_cast_type2
+         natural join
+     imdb.q29a_char_name
+         natural join
+     imdb.q29a_cast_info
+         natural join
+     imdb.q29a_company_name
+         natural join
+     imdb.q29a_info_type1
+         natural join
+     imdb.q29a_info_type2
+         natural join
+     imdb.q29a_keyword
+         natural join
+     imdb.q29a_movie_info
+         natural join
+     imdb.q29a_name
+         natural join
+     imdb.q29a_role_type
+         natural join
+     imdb.q29a_title
+         natural join
+     imdb.q29a_person_info
+         natural join
+     imdb_int.aka_name
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb_int.movie_keyword;
+
+-- Q29b
+--- duckDB
+SELECT count(*)
+FROM imdb.aka_name AS an,
+     imdb.complete_cast AS cc,
+     imdb.comp_cast_type AS cct1,
+     imdb.comp_cast_type AS cct2,
+     imdb.char_name AS chn,
+     imdb.cast_info AS ci,
+     imdb.company_name AS cn,
+     imdb.info_type AS it1,
+     imdb.info_type AS it2,
+     imdb.keyword AS k,
+     imdb.movie_companies AS mc,
+     imdb.movie_info AS mi,
+     imdb.movie_keyword AS mk,
+     imdb.name AS n,
+     imdb.person_info AS pi,
+     imdb.role_type AS rt,
+     imdb.title AS t
+WHERE cct1.kind ='cast'
+  AND cct2.kind ='complete+verified'
+  AND chn.name = 'Queen'
+  AND ci.note IN ('(voice)',
+                  '(voice) (uncredited)',
+                  '(voice: English version)')
+  AND cn.country_code ='[us]'
+  AND it1.info = 'release dates'
+  AND it2.info = 'height'
+  AND k.keyword = 'computer-animation'
+  AND mi.info LIKE 'USA:%200%'
+  AND n.gender ='f'
+  AND n.name LIKE '%An%'
+  AND rt.role ='actress'
+  AND t.title = 'Shrek 2'
+  AND t.production_year BETWEEN 2000 AND 2005
+  AND t.movie_id = mi.movie_id
+  AND t.movie_id = mc.movie_id
+  AND t.movie_id = ci.movie_id
+  AND t.movie_id = mk.movie_id
+  AND t.movie_id = cc.movie_id
+  AND mc.movie_id = ci.movie_id
+  AND mc.movie_id = mi.movie_id
+  AND mc.movie_id = mk.movie_id
+  AND mc.movie_id = cc.movie_id
+  AND mi.movie_id = ci.movie_id
+  AND mi.movie_id = mk.movie_id
+  AND mi.movie_id = cc.movie_id
+  AND ci.movie_id = mk.movie_id
+  AND ci.movie_id = cc.movie_id
+  AND mk.movie_id = cc.movie_id
+  AND cn.company_id = mc.company_id
+  AND it1.info_type_id = mi.info_type_id
+  AND n.person_id = ci.person_id
+  AND rt.role_id = ci.role_id
+  AND n.person_id = an.person_id
+  AND ci.person_id = an.person_id
+  AND chn.person_role_id = ci.person_role_id
+  AND n.person_id = pi.person_id
+  AND ci.person_id = pi.person_id
+  AND it2.info_type_id = pi.info_type_id
+  AND k.keyword_id = mk.keyword_id
+  AND cct1.subject_id = cc.subject_id
+  AND cct2.subject_id = cc.status_id;
+
+-- Q29c
+--- duckDB
+SELECT count(*)
+FROM imdb.aka_name AS an,
+     imdb.complete_cast AS cc,
+     imdb.comp_cast_type AS cct1,
+     imdb.comp_cast_type AS cct2,
+     imdb.char_name AS chn,
+     imdb.cast_info AS ci,
+     imdb.company_name AS cn,
+     imdb.info_type AS it1,
+     imdb.info_type AS it2,
+     imdb.keyword AS k,
+     imdb.movie_companies AS mc,
+     imdb.movie_info AS mi,
+     imdb.movie_keyword AS mk,
+     imdb.name AS n,
+     imdb.person_info AS pi,
+     imdb.role_type AS rt,
+     imdb.title AS t
+WHERE cct1.kind ='cast'
+  AND cct2.kind ='complete+verified'
+  AND ci.note IN ('(voice)',
+                  '(voice: Japanese version)',
+                  '(voice) (uncredited)',
+                  '(voice: English version)')
+  AND cn.country_code ='[us]'
+  AND it1.info = 'release dates'
+  AND it2.info = 'trivia'
+  AND k.keyword = 'computer-animation'
+  AND mi.info IS NOT NULL
+  AND (mi.info LIKE 'Japan:%200%'
+    OR mi.info LIKE 'USA:%200%')
+  AND n.gender ='f'
+  AND n.name LIKE '%An%'
+  AND rt.role ='actress'
+  AND t.production_year BETWEEN 2000 AND 2010
+  AND t.movie_id = mi.movie_id
+  AND t.movie_id = mc.movie_id
+  AND t.movie_id = ci.movie_id
+  AND t.movie_id = mk.movie_id
+  AND t.movie_id = cc.movie_id
+  AND mc.movie_id = ci.movie_id
+  AND mc.movie_id = mi.movie_id
+  AND mc.movie_id = mk.movie_id
+  AND mc.movie_id = cc.movie_id
+  AND mi.movie_id = ci.movie_id
+  AND mi.movie_id = mk.movie_id
+  AND mi.movie_id = cc.movie_id
+  AND ci.movie_id = mk.movie_id
+  AND ci.movie_id = cc.movie_id
+  AND mk.movie_id = cc.movie_id
+  AND cn.company_id = mc.company_id
+  AND it1.info_type_id = mi.info_type_id
+  AND n.person_id = ci.person_id
+  AND rt.role_id = ci.role_id
+  AND n.person_id = an.person_id
+  AND ci.person_id = an.person_id
+  AND chn.person_role_id = ci.person_role_id
+  AND n.person_id = pi.person_id
+  AND ci.person_id = pi.person_id
+  AND it2.info_type_id = pi.info_type_id
+  AND k.keyword_id = mk.keyword_id
+  AND cct1.subject_id = cc.subject_id
+  AND cct2.subject_id = cc.status_id;
+
+
 
 -- Q30a
 --- 757
@@ -2394,7 +3210,7 @@ FROM imdb.complete_cast AS cc,
      imdb.title AS t
 WHERE cct1.kind IN ('cast',
                     'crew')
-  AND cct2.kind ='complete+verified'
+  AND cct2.kind = 'complete+verified'
   AND ci.note IN ('(writer)',
                   '(head writer)',
                   '(written by)',
@@ -2436,19 +3252,29 @@ WHERE cct1.kind IN ('cast',
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM
-imdb.q30a_comp_cast_type1 natural join
-imdb.q30a_comp_cast_type2 natural join
-imdb.q30a_cast_info natural join
-imdb.q30a_info_type1 natural join
-imdb.q30a_info_type2 natural join
-imdb.q30a_keyword natural join
-imdb.q30a_movie_info natural join
-imdb.q30a_name natural join
-imdb.q30a_title natural join
-imdb_int.complete_cast natural join
-imdb.q30a_movie_info_idx2 natural join
-imdb_int.movie_keyword;
+FROM imdb.q30a_comp_cast_type1
+         natural join
+     imdb.q30a_comp_cast_type2
+         natural join
+     imdb.q30a_cast_info
+         natural join
+     imdb.q30a_info_type1
+         natural join
+     imdb.q30a_info_type2
+         natural join
+     imdb.q30a_keyword
+         natural join
+     imdb.q30a_movie_info
+         natural join
+     imdb.q30a_name
+         natural join
+     imdb.q30a_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb.q30a_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q30b
 --- 28
@@ -2467,7 +3293,7 @@ FROM imdb.complete_cast AS cc,
      imdb.title AS t
 WHERE cct1.kind IN ('cast',
                     'crew')
-  AND cct2.kind ='complete+verified'
+  AND cct2.kind = 'complete+verified'
   AND ci.note IN ('(writer)',
                   '(head writer)',
                   '(written by)',
@@ -2512,19 +3338,29 @@ WHERE cct1.kind IN ('cast',
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM
-    imdb.q30b_comp_cast_type1 natural join
-    imdb.q30b_comp_cast_type2 natural join
-    imdb.q30b_cast_info natural join
-    imdb.q30b_info_type1 natural join
-    imdb.q30b_info_type2 natural join
-    imdb.q30b_keyword natural join
-    imdb.q30b_movie_info natural join
-    imdb.q30b_name natural join
-    imdb.q30b_title natural join
-    imdb_int.complete_cast natural join
-    imdb.q30b_movie_info_idx2 natural join
-    imdb_int.movie_keyword;
+FROM imdb.q30b_comp_cast_type1
+         natural join
+     imdb.q30b_comp_cast_type2
+         natural join
+     imdb.q30b_cast_info
+         natural join
+     imdb.q30b_info_type1
+         natural join
+     imdb.q30b_info_type2
+         natural join
+     imdb.q30b_keyword
+         natural join
+     imdb.q30b_movie_info
+         natural join
+     imdb.q30b_name
+         natural join
+     imdb.q30b_title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb.q30b_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword;
 
 -- Q30c
 --- 8024
@@ -2542,7 +3378,7 @@ FROM imdb.complete_cast AS cc,
      imdb.name AS n,
      imdb.title AS t
 WHERE cct1.kind = 'cast'
-  AND cct2.kind ='complete+verified'
+  AND cct2.kind = 'complete+verified'
   AND ci.note IN ('(writer)',
                   '(head writer)',
                   '(written by)',
@@ -2587,19 +3423,29 @@ WHERE cct1.kind = 'cast'
   AND cct2.subject_id = cc.status_id;
 
 SELECT count(*)
-FROM
-    imdb.q30c_comp_cast_type1 natural join
-    imdb.q30c_comp_cast_type2 natural join
-    imdb.q30c_cast_info natural join
-    imdb.q30c_info_type1 natural join
-    imdb.q30c_info_type2 natural join
-    imdb.q30c_keyword natural join
-    imdb.q30c_movie_info natural join
-    imdb.q30c_name natural join
-    imdb_int.title natural join
-    imdb_int.complete_cast natural join
-    imdb.q30c_movie_info_idx2 natural join
-    imdb_int.movie_keyword;
+FROM imdb.q30c_comp_cast_type1
+         natural join
+     imdb.q30c_comp_cast_type2
+         natural join
+     imdb.q30c_cast_info
+         natural join
+     imdb.q30c_info_type1
+         natural join
+     imdb.q30c_info_type2
+         natural join
+     imdb.q30c_keyword
+         natural join
+     imdb.q30c_movie_info
+         natural join
+     imdb.q30c_name
+         natural join
+     imdb_int.title
+         natural join
+     imdb_int.complete_cast
+         natural join
+     imdb.q30c_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword;
 
 
 -- Q31a
@@ -2656,18 +3502,27 @@ WHERE ci.note IN ('(writer)',
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM
-    imdb.q31a_cast_info natural join
-    imdb.q31a_company_name natural join
-    imdb.q31a_info_type1 natural join
-    imdb.q31a_info_type2 natural join
-    imdb.q31a_keyword natural join
-    imdb.q31a_movie_info natural join
-    imdb.q31a_name natural join
-    imdb_int.movie_companies natural join
-    imdb.q31a_movie_info_idx2 natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.title;
+FROM imdb.q31a_cast_info
+         natural join
+     imdb.q31a_company_name
+         natural join
+     imdb.q31a_info_type1
+         natural join
+     imdb.q31a_info_type2
+         natural join
+     imdb.q31a_keyword
+         natural join
+     imdb.q31a_movie_info
+         natural join
+     imdb.q31a_name
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q31a_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.title;
 
 -- Q31b
 --- 84
@@ -2728,18 +3583,27 @@ WHERE ci.note IN ('(writer)',
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM
-    imdb.q31b_cast_info natural join
-    imdb.q31b_company_name natural join
-    imdb.q31b_info_type1 natural join
-    imdb.q31b_info_type2 natural join
-    imdb.q31b_keyword natural join
-    imdb.q31b_movie_info natural join
-    imdb.q31b_name natural join
-    imdb.q31b_movie_companies natural join
-    imdb.q31b_movie_info_idx2 natural join
-    imdb_int.movie_keyword natural join
-    imdb.q31b_title;
+FROM imdb.q31b_cast_info
+         natural join
+     imdb.q31b_company_name
+         natural join
+     imdb.q31b_info_type1
+         natural join
+     imdb.q31b_info_type2
+         natural join
+     imdb.q31b_keyword
+         natural join
+     imdb.q31b_movie_info
+         natural join
+     imdb.q31b_name
+         natural join
+     imdb.q31b_movie_companies
+         natural join
+     imdb.q31b_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb.q31b_title;
 
 -- Q31c
 --- 2825
@@ -2798,18 +3662,27 @@ WHERE ci.note IN ('(writer)',
   AND cn.company_id = mc.company_id;
 
 SELECT count(*)
-FROM
-    imdb.q31c_cast_info natural join
-    imdb.q31c_company_name natural join
-    imdb.q31c_info_type1 natural join
-    imdb.q31c_info_type2 natural join
-    imdb.q31c_keyword natural join
-    imdb.q31c_movie_info natural join
-    imdb_int.name natural join
-    imdb_int.movie_companies natural join
-    imdb.q31c_movie_info_idx2 natural join
-    imdb_int.movie_keyword natural join
-    imdb_int.title;
+FROM imdb.q31c_cast_info
+         natural join
+     imdb.q31c_company_name
+         natural join
+     imdb.q31c_info_type1
+         natural join
+     imdb.q31c_info_type2
+         natural join
+     imdb.q31c_keyword
+         natural join
+     imdb.q31c_movie_info
+         natural join
+     imdb_int.name
+         natural join
+     imdb_int.movie_companies
+         natural join
+     imdb.q31c_movie_info_idx2
+         natural join
+     imdb_int.movie_keyword
+         natural join
+     imdb_int.title;
 
 -- Q32b
 --- 4388
@@ -2820,7 +3693,7 @@ FROM imdb.keyword AS k,
      imdb.movie_link AS ml,
      imdb.title AS t1,
      imdb.title AS t2
-WHERE k.keyword ='character-name-in-title'
+WHERE k.keyword = 'character-name-in-title'
   AND mk.keyword_id = k.keyword_id
   AND t1.movie_id = mk.movie_id
   AND ml.movie_id = t1.movie_id
@@ -2829,11 +3702,16 @@ WHERE k.keyword ='character-name-in-title'
   AND mk.movie_id = t1.movie_id;
 
 SELECT count(*)
-FROM imdb.q32b_keyword natural join
-     imdb.q32b_title1 natural join
-     imdb.q32b_title2 natural join
-     imdb_int.link_type natural join
-     imdb_int.movie_keyword natural join
+FROM imdb.q32b_keyword
+         natural join
+     imdb.q32b_title1
+         natural join
+     imdb.q32b_title2
+         natural join
+     imdb_int.link_type
+         natural join
+     imdb_int.movie_keyword
+         natural join
      imdb_int.movie_link;
 
 
@@ -2887,19 +3765,31 @@ WHERE cn1.country_code != '[us]'
   AND mi_idx2.movie_id = mc2.movie_id;
 
 SELECT count(*)
-FROM
-imdb.q33c_company_name1 natural join
-imdb.q33c_company_name2 natural join
-imdb.q33c_info_type1 natural join
-imdb.q33c_info_type2 natural join
-imdb.q33c_kind_type1 natural join
-imdb.q33c_kind_type2 natural join
-imdb.q33c_link_type natural join
-imdb.q33c_movie_info_idx1 natural join
-imdb.q33c_movie_info_idx2 natural join
-imdb.q33c_title1 natural join
-imdb.q33c_title2 natural join
-imdb.q33c_movie_companies1 natural join
-imdb.q33c_movie_companies2 natural join
-imdb_int.movie_link;
+FROM imdb.q33c_company_name1
+         natural join
+     imdb.q33c_company_name2
+         natural join
+     imdb.q33c_info_type1
+         natural join
+     imdb.q33c_info_type2
+         natural join
+     imdb.q33c_kind_type1
+         natural join
+     imdb.q33c_kind_type2
+         natural join
+     imdb.q33c_link_type
+         natural join
+     imdb.q33c_movie_info_idx1
+         natural join
+     imdb.q33c_movie_info_idx2
+         natural join
+     imdb.q33c_title1
+         natural join
+     imdb.q33c_title2
+         natural join
+     imdb.q33c_movie_companies1
+         natural join
+     imdb.q33c_movie_companies2
+         natural join
+     imdb_int.movie_link;
 

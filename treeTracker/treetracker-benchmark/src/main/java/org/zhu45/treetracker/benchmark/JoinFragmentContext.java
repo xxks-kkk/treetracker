@@ -1,5 +1,6 @@
 package org.zhu45.treetracker.benchmark;
 
+import lombok.Getter;
 import org.zhu45.treetracker.jdbc.JdbcClient;
 import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.operator.JoinOperator;
@@ -13,7 +14,9 @@ import org.zhu45.treetracker.relational.operator.TupleBaseTreeTrackerOneBetaHash
 import org.zhu45.treetracker.relational.operator.TupleBaseTreeTrackerOneBetaTableScanOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedHashJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTableScanOperator;
-import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableIntNoDPOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedIntHashJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiBloomJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiHashJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedSSBLIPHashJoinOperator;
@@ -43,6 +46,8 @@ public class JoinFragmentContext
     private String queryName;
     private boolean stopAfterFullReducer;
     private JdbcClient jdbcClient;
+    @Getter
+    private boolean disablePTOptimizationTrick;
 
     // Specific to the impact of backjumping experiments
     private long backjumpedRelationSize;
@@ -50,7 +55,7 @@ public class JoinFragmentContext
 
     public static Builder hashJoinContextBuilder = JoinFragmentContext.builder()
             .setOperatorMap(createMap(Optional.of(TupleBasedTableScanOperator.class),
-                    Optional.of(TupleBasedHashJoinOperator.class)))
+                    Optional.of(TupleBasedIntHashJoinOperator.class)))
             .setNoGoodList(PlainNoGoodList.create())
             .setAlgorithm(JoinOperator.HASH_JOIN);
     public static Builder lipContextBuilder = JoinFragmentContext.builder()
@@ -74,6 +79,11 @@ public class JoinFragmentContext
                     Optional.of(TupleBasedHashJoinOperator.class)))
             .setNoGoodList(PlainNoGoodList.create())
             .setAlgorithm(JoinOperator.YannakakisVanilla);
+    public static Builder yannakakis1PassContextBuilder = JoinFragmentContext.builder()
+            .setOperatorMap(createMap(Optional.of(TupleBasedTableScanOperator.class),
+                    Optional.of(TupleBasedIntHashJoinOperator.class)))
+            .setNoGoodList(PlainNoGoodList.create())
+            .setAlgorithm(JoinOperator.Yannakakis1Pass);
     public static Builder pTOContextBuilder = JoinFragmentContext.builder()
             .setOperatorMap(createMap(Optional.of(TupleBasedTableScanOperator.class),
                     Optional.of(TupleBasedHashJoinOperator.class)))
@@ -81,14 +91,24 @@ public class JoinFragmentContext
             .setAlgorithm(JoinOperator.PTO);
     public static Builder ttjHPContextBuilder = JoinFragmentContext.builder()
             .setOperatorMap(createMap(Optional.of(TupleBasedHighPerfTableScanOperator.class),
-                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.class)))
+                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator.class)))
             .setNoGoodList(PlainNoGoodList.create())
             .setAlgorithm(JoinOperator.TTJHP);
     public static Builder ttjHPNONGContextBuilder = JoinFragmentContext.builder()
             .setOperatorMap(createMap(Optional.of(TupleBasedTableScanOperator.class),
-                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.class)))
+                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator.class)))
             .setNoGoodList(PlainNoGoodList.create())
             .setAlgorithm(JoinOperator.TTJHP_NO_NG);
+    public static Builder ttjHPNoDPContextBuilder = JoinFragmentContext.builder()
+            .setOperatorMap(createMap(Optional.of(TupleBasedHighPerfTableScanOperator.class),
+                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntNoDPOperator.class)))
+            .setNoGoodList(PlainNoGoodList.create())
+            .setAlgorithm(JoinOperator.TTJHP_NO_DP);
+    public static Builder ttjHPVanillaContextBuilder = JoinFragmentContext.builder()
+            .setOperatorMap(createMap(Optional.of(TupleBasedTableScanOperator.class),
+                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntNoDPOperator.class)))
+            .setNoGoodList(PlainNoGoodList.create())
+            .setAlgorithm(JoinOperator.TTJHP_VANILLA);
     public static Builder ttjHPBFContextBuilder = JoinFragmentContext.builder()
             .setOperatorMap(createMap(Optional.of(TupleBasedTableScanOperator.class),
                     Optional.of(TreeTrackerBFJoinOperator.class)))
@@ -136,6 +156,7 @@ public class JoinFragmentContext
         this.backjumpedRelationSize = builder.backjumpedRelationSize;
         this.algorithm = builder.algorithm;
         this.queryName = builder.queryName;
+        this.disablePTOptimizationTrick = builder.disablePTOptimizationTrick;
     }
 
     public JdbcClient getJdbcClient()
@@ -205,6 +226,7 @@ public class JoinFragmentContext
         private String queryName;
         private boolean stopAfterFullReducer;
         private JdbcClient jdbcClient;
+        private boolean disablePTOptimizationTrick;
 
         public Builder()
         {
@@ -270,6 +292,12 @@ public class JoinFragmentContext
         public Builder setStopAfterFullReducer(boolean stopAfterFullReducer)
         {
             this.stopAfterFullReducer = stopAfterFullReducer;
+            return this;
+        }
+
+        public Builder disablePTOptimizationTrick(boolean disablePTOptimizationTrick)
+        {
+            this.disablePTOptimizationTrick = disablePTOptimizationTrick;
             return this;
         }
 

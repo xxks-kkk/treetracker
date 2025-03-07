@@ -49,6 +49,7 @@ public class TupleBasedLIPHashJoinOperator
     // This is only used to fast construct jav for the Bloom filter of base relation.
     private HashMap<Integer, Integer> joinIdxTmp;
     private List<String> baseRelationAttributes;
+    protected Operator factTableOperator;
 
     private long buildBloomFiltersTimeMarker;
     private long buildBloomFiltersTime;
@@ -85,8 +86,7 @@ public class TupleBasedLIPHashJoinOperator
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage("baseRelationAttributes: " + properPrintList(baseRelationAttributes)));
-            traceLogger.trace(formatTraceMessage("factTableRAttributes: " + properPrintList(planBuildContext
-                    .getLeftMostPlanNodeOperator().getColumns().stream().map(ColumnHandle::getColumnName).collect(Collectors.toList()))));
+            traceLogger.trace(formatTraceMessage("factTableRAttributes: " + properPrintList(factTableOperator.getColumns().stream().map(ColumnHandle::getColumnName).collect(Collectors.toList()))));
             traceLogger.trace(formatTraceMessage("factTableJoinAttributeIdx: " + properPrintList(factTableJoinAttributeIdx)));
         }
 
@@ -193,7 +193,6 @@ public class TupleBasedLIPHashJoinOperator
         factTableJoinAttributeIdx = new ArrayList<>();
         joinIdxTmp = new HashMap<>();
         requireNonNull(planBuildContext, "planBuildContext is null");
-        Operator factTableOperator = planBuildContext.getLeftMostPlanNodeOperator();
         List<? extends ColumnHandle> factTableHandles = factTableOperator.getColumns();
         List<String> factTableAttributes = factTableHandles.stream().map(ColumnHandle::getColumnName).collect(Collectors.toList());
         List<Type> factTableTypes = factTableHandles.stream().map(ColumnHandle::getColumnType).collect(Collectors.toList());
@@ -228,5 +227,11 @@ public class TupleBasedLIPHashJoinOperator
     public <C> void accept(OperatorVisitor<C> visitor, C context)
     {
         visitor.visitTupleBasedLIPHashJoinOperator(this, context);
+    }
+
+    @Override
+    public void setFactTableOperator(Operator operator)
+    {
+        this.factTableOperator = operator;
     }
 }

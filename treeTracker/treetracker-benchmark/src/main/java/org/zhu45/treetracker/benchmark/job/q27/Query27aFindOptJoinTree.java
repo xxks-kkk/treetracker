@@ -52,21 +52,21 @@ public class Query27aFindOptJoinTree
         MultiwayJoinNode linkTypeNode = getLinkTypeInt(JOBQueries.Q27a);
         MultiwayJoinNode movieInfoNode = getMovieInfoInt(JOBQueries.Q27a);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieLinkNode, linkTypeNode, movieInfoNode, titleNode, completeCastNode, compCastTypeNode2, compCastTypeNode1, movieCompaniesNode, companyNameNode, companyTypeNode, movieKeywordNode, keywordNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieCompaniesNode, companyNameNode, titleNode, companyTypeNode, completeCastNode, compCastTypeNode1, compCastTypeNode2, movieLinkNode, linkTypeNode, movieKeywordNode, keywordNode, movieInfoNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(movieLinkNode.getSchemaTableName(),
-                linkTypeNode.getSchemaTableName(),
-                movieInfoNode.getSchemaTableName(),
-                titleNode.getSchemaTableName(),
-                completeCastNode.getSchemaTableName(),
-                compCastTypeNode2.getSchemaTableName(),
-                compCastTypeNode1.getSchemaTableName(),
-                movieCompaniesNode.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(movieCompaniesNode.getSchemaTableName(),
                 companyNameNode.getSchemaTableName(),
+                titleNode.getSchemaTableName(),
                 companyTypeNode.getSchemaTableName(),
+                completeCastNode.getSchemaTableName(),
+                compCastTypeNode1.getSchemaTableName(),
+                compCastTypeNode2.getSchemaTableName(),
+                movieLinkNode.getSchemaTableName(),
+                linkTypeNode.getSchemaTableName(),
                 movieKeywordNode.getSchemaTableName(),
-                keywordNode.getSchemaTableName()));
+                keywordNode.getSchemaTableName(),
+                movieInfoNode.getSchemaTableName()));
         return pair;
     }
 }

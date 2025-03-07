@@ -20,11 +20,16 @@ public class SSBDatabase
     private static final String ssbIntSchemaName = "ssb_int";
     private static final String ssbSchemaName = "ssb";
 
-    private static final String customer = "customer";
-    private static final String part = "part";
-    private static final String supplier = "supplier";
-    private static final String date = "date";
-    private static final String lineorder = "lineorder";
+    public static final String customer = "customer";
+    public static final String part = "part";
+    public static final String supplier = "supplier";
+    public static final String date = "date";
+    public static final String lineorder = "lineorder";
+
+    public static List<String> getTableNames()
+    {
+        return List.of(customer, part, supplier, date, lineorder);
+    }
 
     public static class CodeGen
     {

@@ -12,14 +12,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import ticker, transforms
 
-from plot.constants import DATA_SOURCE_CSV, HJ, TTJ, Yannakakis, LIP, YannakakisB
+from plot.constants import DATA_SOURCE_CSV, HJ, TTJ, Yannakakis, LIP, YannakakisB, Yannakakis1Pass
 from plot.utility import to_float
 
 input_size_after_evaluation = "input_size_after_evaluation"
 total_intermediate_results_produced = "total_intermediate_results_produced"
 
 def get_ssb_full_path(csv_name):
-    return Path.home() / "projects" / "treetracker2-local" / "results" / "others" / "simple-cost-model-with-predicates" / csv_name
+    return Path.home() / "projects" / "treetracker2" / "results" / "others" / "simple-cost-model-with-predicates" / csv_name
 
 
 def extract_data_from_agg_csv(DATA_SOURCE_CSV, get_full_path_func):
@@ -47,7 +47,8 @@ def processing():
                           HJ: "HASH_JOIN_SSB_aggregagateStatistics.csv",
                           Yannakakis : "Yannakakis_SSB_aggregagateStatistics.csv",
                           LIP : "LIP_SSB_aggregagateStatistics.csv",
-                          YannakakisB: "YannakakisB_SSB_aggregagateStatistics.csv"}
+                          YannakakisB: "YannakakisB_SSB_aggregagateStatistics.csv",
+                          Yannakakis1Pass: "Yannakakis1Pass_SSB_aggregagateStatistics.csv"}
     }
     prem_data = extract_data_from_agg_csv(conf[DATA_SOURCE_CSV], get_ssb_full_path)
 
@@ -68,14 +69,14 @@ def processing():
 
 def plot_ssb(ratio, filename, ylabel):
     def bar_plot(ax, data, labels, colors=None, total_width=0.8, single_width=1, legend=True, fontdict=None):
-        patterns = ["\\", "-", "/", ""]
+        patterns = ["\\", "-", "/", "", "*"]
 
         if colors is None:
             colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         n_bars = len(data)
         bar_width = total_width / n_bars
         bars = []
-        for i, name in enumerate([TTJ, Yannakakis, LIP, YannakakisB]):
+        for i, name in enumerate([TTJ, Yannakakis, Yannakakis1Pass, LIP, YannakakisB]):
             values = data[name]
             x_offset = (i - n_bars / 2) * bar_width + bar_width / 2
             for x, y in enumerate(values):
@@ -84,7 +85,7 @@ def plot_ssb(ratio, filename, ylabel):
                              edgecolor='black')
             bars.append(bar[0])
         if legend:
-            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{LIP}$', r'$\mathsf{PT}$'], frameon=False, fontsize=15, ncol=2,
+            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{YA}^+$', r'$\mathsf{PT}$', r'$\mathsf{LIP}$'], frameon=False, fontsize=15, ncol=2,
                       loc='best')
 
         x = np.arange(len(labels))
@@ -118,7 +119,7 @@ def plot_ssb(ratio, filename, ylabel):
 
     font = {'family': 'Helvetica',
             'size': 10}
-    bar_plot(axs, ratio, labels=labels, colors=['#00994D', '#FF9933', '#9933FF',  "#00C3E3"], total_width=.7,
+    bar_plot(axs, ratio, labels=labels, colors=['#00994D', '#FF9933', '#EA2283', "#00C3E3", '#9933FF'], total_width=.7,
              single_width=1,
              fontdict=font)
     font2 = {'family': 'Helvetica',
@@ -132,14 +133,14 @@ def plot_ssb(ratio, filename, ylabel):
 
 def plot_ssb2(ratio, filename, ylabel):
     def bar_plot(ax, data, labels, colors=None, total_width=0.8, single_width=1, legend=True, fontdict=None):
-        patterns = ["\\", "-", "/", ""]
+        patterns = ["\\", "-", "/", "*", ""]
 
         if colors is None:
             colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
         n_bars = len(data)
         bar_width = total_width / n_bars
         bars = []
-        for i, name in enumerate([TTJ, Yannakakis, LIP, YannakakisB]):
+        for i, name in enumerate([TTJ, Yannakakis, Yannakakis1Pass, LIP, YannakakisB]):
             values = data[name]
             x_offset = (i - n_bars / 2) * bar_width + bar_width / 2
             for x, y in enumerate(values):
@@ -148,7 +149,7 @@ def plot_ssb2(ratio, filename, ylabel):
                              edgecolor='black')
             bars.append(bar[0])
         if legend:
-            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{LIP}$', r'$\mathsf{PT}$'], frameon=False, fontsize=10, ncol=4,
+            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{YA}^+$', r'$\mathsf{LIP}$', r'$\mathsf{PT}$'], frameon=False, fontsize=10, ncol=4,
                       loc='best')
 
         x = np.arange(len(labels))
@@ -182,7 +183,7 @@ def plot_ssb2(ratio, filename, ylabel):
 
     font = {'family': 'Helvetica',
             'size': 10}
-    bar_plot(axs, ratio, labels=labels, colors=['#00994D', '#FF9933', '#9933FF',  "#00C3E3"], total_width=.7,
+    bar_plot(axs, ratio, labels=labels, colors=['#00994D', '#FF9933', '#EA2283', '#9933FF', "#00C3E3"], total_width=.7,
              single_width=1,
              fontdict=font)
     font2 = {'family': 'Helvetica',

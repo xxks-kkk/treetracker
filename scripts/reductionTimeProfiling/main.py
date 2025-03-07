@@ -14,7 +14,7 @@ from plot.utility import check_argument
 from reductionTimeProfiling.profile import create_profile_script, execute_profile_script, construct_profile_result, \
     get_profile_result_dir
 from reductionTimeProfiling.proggen import generate_java, Benchmark, Algorithm, SSBQuery, get_mvn_root_dir, \
-    list_all_public_fields, TTJTPCH, YannakakisTPCH, YannakakisBTPCH
+    list_all_public_fields, TTJTPCH, YannakakisTPCH, YannakakisBTPCH, TTJHPJOB, Yannakakis1PassJOB, HASHJOINJOB
 
 
 def mvn_bld():
@@ -79,7 +79,21 @@ def profile_tpch():
                                       yannakakisB_tpch_queries,
                                       True)
 
+def profile_job():
+    # ttjhp_job_queries = list_all_public_fields(TTJHPJOB)
+    # generate_aggregate_statistics_csv(Benchmark.job, Algorithm.TTJ,
+    #                                   ttjhp_job_queries,
+    #                                   True)
+    yannakakis1Pass_job_queries = list_all_public_fields(Yannakakis1PassJOB)
+    generate_aggregate_statistics_csv(Benchmark.job, Algorithm.Yannakakis1Pass,
+                                      yannakakis1Pass_job_queries,
+                                      True)
+    # hj_job_queries = list_all_public_fields(HASHJOINJOB)
+    # generate_aggregate_statistics_csv(Benchmark.job, Algorithm.HJ,
+    #                                   hj_job_queries,
+    #                                   True)
 
 if __name__ == "__main__":
     # profile_tpch()
-    profile_ssb()
+    # profile_ssb()
+    profile_job()

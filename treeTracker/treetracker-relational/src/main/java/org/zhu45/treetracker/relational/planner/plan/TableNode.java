@@ -1,5 +1,6 @@
 package org.zhu45.treetracker.relational.planner.plan;
 
+import lombok.Getter;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.jdbc.JdbcClient;
@@ -16,28 +17,23 @@ import static java.util.Objects.requireNonNull;
 public class TableNode
         extends PlanNode
 {
-    private final SchemaTableName schemaTableName;
     private static final OptType NODE_PLAN_NODE_TYPE = OptType.table;
     private JdbcClient jdbcClient;
-    private final MultiwayJoinNode multiwayJoinNode;
+    @Getter
+    private MultiwayJoinNode multiwayJoinNode;
 
-    public TableNode(PlanNodeId id, SchemaTableName schemaTableName)
+    public TableNode(PlanNodeId id, SchemaTableName schemaTableName, Side side)
     {
-        super(id);
+        super(id, side);
 
-        this.jdbcClient = null;
         this.schemaTableName = schemaTableName;
-        this.multiwayJoinNode = null;
     }
 
-    public TableNode(PlanNodeId id, MultiwayJoinNode multiwayJoinNode)
+    public TableNode(PlanNodeId id, MultiwayJoinNode multiwayJoinNode, Side side)
     {
-        super(id);
-        requireNonNull(multiwayJoinNode, "multiwayJoinNode is null");
-
-        this.jdbcClient = null;
+        super(id, side);
+        this.multiwayJoinNode = requireNonNull(multiwayJoinNode, "multiwayJoinNode is null");
         this.schemaTableName = multiwayJoinNode.getSchemaTableName();
-        this.multiwayJoinNode = multiwayJoinNode;
     }
 
     @Override
@@ -64,13 +60,9 @@ public class TableNode
         this.jdbcClient = jdbcClient;
     }
 
-    public SchemaTableName getSchemaTableName()
+    @Override
+    public String toString()
     {
-        return this.schemaTableName;
-    }
-
-    public MultiwayJoinNode getMultiwayJoinNode()
-    {
-        return this.multiwayJoinNode;
+        return schemaTableName.toString();
     }
 }

@@ -367,6 +367,68 @@ public class TestTTJAggregateStatisticsInformation
         }
     }
 
+    public static class TestNumberOfHashTableProbeCases
+            implements TestCases
+    {
+        private String schemaName;
+        private JdbcClient jdbcClient;
+        private TestingPhysicalPlanBase base;
+
+        public TestNumberOfHashTableProbeCases(TestingPhysicalPlanBase base)
+        {
+            this.schemaName = base.getDatabase().getSchemaName();
+            this.jdbcClient = base.getDatabase().getJdbcClient();
+            this.base = base;
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableProbe()
+        {
+            TestEstimateCostOfTTJCases cases = new TestEstimateCostOfTTJCases(base);
+            Triple<Plan, List<Operator>, Integer> testCase = cases.physicalPlanForTestEstimateCostOfTTJ();
+            // Due to the no-good list, number of hash table probe from C is 4. The number of hash table
+            // probe on B is |C \join R| = 5. Number of hash table probe on G is |C \join R \join B| = 2.
+            // To sum up, 4 + 5 + 2 = 11. However, due to what Remy called "deletion propagation", we have extra
+            // hash table probe whenever join failure happens. For example, once all R(2,3) are removed due to join failure
+            // with B, we will use C(3) to probe hash table on R again to see if there are more joined tuples. In this case,
+            // it is not, then additional deleteDT() will be triggered to remove C(3) by adding it to no-good list.
+            // Using trace, we can see the number of hash table is 14, which is greater than
+            // totalIntermediateResultsProducedWithoutNULL, which is 11 (interestingly, this matches the number of hash table
+            // probe in TTJ without "deletion propagation").
+            return Triple.of(testCase.getLeft(), testCase.getMiddle(), 14);
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableProbe2()
+        {
+            TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases cases = new TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases(base);
+            Pair<Plan, List<Operator>> pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseFour();
+            // Due to the no-good list, number of hash table probe from T is 2. Number of hash table probe
+            // for B is |T \join S| = 2. Number of hash table probe for R is |T \join S \join B| = 2.
+            // Now consider "deletion propagation" effect. Once join fails at R, TTJ backtracks to S and removes (red,1,2).
+            // The next tuple to try is (red,3,2), which doesn't need hash probe due to it is already in MatchingTuples.
+            // (red,3,2) joins with B(2) and R(3,2) and form the join result. In other words, in this case, "deletion propagation"
+            // has not introduced additional number of hash table probes. Thus, the total number of hash table probes
+            // equals to totalIntermediateResultsProducedWithoutNULL, which is 6.
+            return Triple.of(pair.getLeft(), pair.getRight(), 6);
+        }
+    }
+
+    private Object[][] testNumberOfHashTableProbeDataProvider()
+    {
+        return twoDlistTo2DArray(buildSpecificTestCases(base, List.of(TestNumberOfHashTableProbeCases.class)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testNumberOfHashTableProbeDataProvider")
+    public void testNumberOfHashTableProbe(Triple<Plan, List<Operator>, Integer> triple)
+    {
+        int expectedValue = triple.getRight();
+        if (traceLogger.isDebugEnabled()) {
+            traceLogger.debug("expectedValue:\n" + expectedValue);
+        }
+        TTJAggregateStatisticsInformation aggregateStatisticsInformation = testStatistics(triple);
+        assertEquals(expectedValue, aggregateStatisticsInformation.getNumberOfHashTableProbe());
+    }
+
     private Object[][] testNumberOfNoGoodTuplesDataProvider()
     {
         return twoDlistTo2DArray(buildSpecificTestCases(base, List.of(TestJoinTreeCostEstProvider.TestCostModelCases.class)));

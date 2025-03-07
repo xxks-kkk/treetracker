@@ -60,8 +60,9 @@ public class MultiwayJoinOrderedGraph
         for (int i = 0; i < depth; ++i) {
             builder.append("|");
         }
-        List<String> attributes =
-                JdbcSupplier.postgresJdbcClientSupplier.get().getAttributes(root.getSchemaTableName());
+        List<String> attributes = root.getAttributes() == null ?
+                JdbcSupplier.postgresJdbcClientSupplier.get().getAttributes(root.getSchemaTableName()) :
+                root.getAttributes();
         builder.append(root)
                 .append("(")
                 .append(String.join(",", attributes))
@@ -105,5 +106,16 @@ public class MultiwayJoinOrderedGraph
             node.setConnected(connected.get(node));
         }
         return new MultiwayJoinGraph(edgeList);
+    }
+
+    public void setDepth()
+    {
+        this.getDepth().clear();
+        generateDepth(this.getRoot(), 0);
+    }
+
+    public void setTraversalList(List<MultiwayJoinNode> traversalList)
+    {
+        this.traversalList = traversalList;
     }
 }

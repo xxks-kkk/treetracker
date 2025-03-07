@@ -14,7 +14,7 @@ from plot.job import extract_data_from_csv, construct_fig_name
 from plot.utility import check_argument, convert_time, TimeUnits
 
 def get_tpch_full_path(csv_name):
-    return Path.home() / "projects" / "treetracker2-local" / "results" / "tpch" / "with_predicates" / csv_name
+    return Path.home() / "projects" / "treetracker2" / "results" / "tpch" / "with_predicates" / csv_name
 
 def tpch_speedup_with_predicates():
     tpch_plot_with_predicates = {

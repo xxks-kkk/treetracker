@@ -19,7 +19,7 @@ import org.zhu45.treetracker.relational.operator.JoinOperator;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.openjdk.jmh.annotations.Mode.AverageTime;
-import static org.zhu45.treetracker.benchmark.Benchmarks.SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.benchmark;
 import static org.zhu45.treetracker.benchmark.QueryProvider.createStatisticsJson;
 import static org.zhu45.treetracker.benchmark.QueryProvider.queryProvider;
@@ -37,20 +37,19 @@ public class BenchmarkHvTSSB
     public static class BenchState
     {
         @SuppressWarnings("checkstyle:AnnotationUseStyle")
-        @Param({"Yannakakis", "YannakakisB", "TTJHP", "HASH_JOIN", "LIP"})
+        @Param({"Yannakakis1Pass", "TTJHP", "HASH_JOIN"})
         public JoinOperator joinOperator;
-        @SuppressWarnings("checkstyle:AnnotationUseStyle")
         @Param({"Q1P1", "Q1P2", "Q1P3", "Q2P1", "Q2P2", "Q2P3", "Q3P1", "Q3P2", "Q3P3", "Q3P4", "Q4P1", "Q4P2", "Q4P3"})
         public SSBQueries ssbQueries;
         JoinFragmentType query;
 
-        @Setup(Level.Iteration)
+        @Setup(Level.Trial)
         public void setUp()
         {
             query = queryProvider(joinOperator, ssbQueries, duckDBJdbcClientSupplier.get());
         }
 
-        @TearDown(Level.Iteration)
+        @TearDown(Level.Trial)
         public void tearDown()
         {
             query.cleanUp();
@@ -61,13 +60,13 @@ public class BenchmarkHvTSSB
     public void bench(BenchState state)
             throws InterruptedException
     {
-        createStatisticsJson(state.query, SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH);
+        createStatisticsJson(state.query, SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH);
         Thread.sleep(2000);
     }
 
     public static void main(String[] args)
             throws RunnerException
     {
-        benchmark(BenchmarkHvTSSB.class, SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH).run();
+        benchmark(BenchmarkHvTSSB.class, SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH).run();
     }
 }

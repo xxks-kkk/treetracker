@@ -20,7 +20,6 @@ import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.execution.ExecutionNormal;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodList;
 import org.zhu45.treetracker.relational.operator.noGoodList.PlainNoGoodList;
-import org.zhu45.treetracker.relational.operator.noGoodList.RedissonNoGoodList;
 import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.TestingPhysicalPlanBase;
 
@@ -109,7 +108,7 @@ public class TestTupleBaseTreeTrackerOneBetaHashTableOperator
 
     private Stream<NoGoodList> testNoGoodListAndTuplesRemovedFromHashTableDataProvider()
     {
-        return Stream.of(PlainNoGoodList.create(), RedissonNoGoodList.create());
+        return Stream.of(PlainNoGoodList.create());
     }
 
     // NOTE: Further improvement see https://gitlab.com/xxks-kkk/challenge-set/-/issues/152

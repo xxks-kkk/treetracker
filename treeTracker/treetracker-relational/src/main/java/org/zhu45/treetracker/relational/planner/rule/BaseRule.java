@@ -8,6 +8,7 @@ import org.zhu45.treetracker.relational.planner.PlanNode;
 import org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.zhu45.treetracker.relational.planner.PlanBuildContext.builder;
 
@@ -62,5 +63,13 @@ public abstract class BaseRule
         Plan logicalPlan = planBuilder.build();
         RandomPhysicalPlanBuilder physicalPlanBuilder = new RandomPhysicalPlanBuilder(context);
         return physicalPlanBuilder.build(logicalPlan.getRoot());
+    }
+
+    protected static RuleType checkIfRuleTypeIsAllowed(Set<RuleType> allowedRuleType, RuleType specifiedRuleType)
+    {
+        if (!allowedRuleType.contains(specifiedRuleType)) {
+            throw new RuntimeException("SpecifiedRuleType: " + specifiedRuleType + "is not allowed");
+        }
+        return specifiedRuleType;
     }
 }

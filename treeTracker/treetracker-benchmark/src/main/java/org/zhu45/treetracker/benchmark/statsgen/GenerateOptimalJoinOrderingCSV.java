@@ -112,7 +112,7 @@ public class GenerateOptimalJoinOrderingCSV
         /**
          * Assuming "HASH_JOIN_org.zhu45.treetracker.benchmark.job.q1.Query1a_planStatistics.json"
          */
-        private String setQueryName(String file)
+        public static String setQueryName(String file)
         {
             String[] tokens = file.split("\\.");
             String target = tokens[tokens.length - 2];

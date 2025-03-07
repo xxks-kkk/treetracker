@@ -57,6 +57,7 @@ public class AttachFullReducer
 
     Class<? extends TupleBasedJoinOperator> semiJoinClazz = TupleBasedLeftSemiHashJoinOperator.class;
     boolean disablePTOptimizationTrick;
+    boolean skipTopDownSemijoins;
 
     private PlanBuildContext context;
     private FullReducerOperator fullReducerOperator;
@@ -69,6 +70,14 @@ public class AttachFullReducer
     //FIXME: temporarily workaround for SSB benchmarking setup (BenchmarkSSB)
     public AttachFullReducer(Class<? extends TupleBasedJoinOperator> semiJoinClazz)
     {
+        this.semiJoinClazz = semiJoinClazz;
+    }
+
+    //FIXME: temporarily workaround for SSB benchmarking setup (BenchmarkSSB)
+    public AttachFullReducer(boolean skipTopDownSemijoins,
+                             Class<? extends TupleBasedJoinOperator> semiJoinClazz)
+    {
+        this.skipTopDownSemijoins = skipTopDownSemijoins;
         this.semiJoinClazz = semiJoinClazz;
     }
 
@@ -110,6 +119,7 @@ public class AttachFullReducer
             fullReducerOperator.setSemijoins(generateSemiJoinsFromDAG(orderedGraph, false, node2Operators), false);
         }
         else {
+            fullReducerOperator.setSkipTopDownSemijoins(this.context.getSkipTopDownSemijoins() || skipTopDownSemijoins);
             if (semiJoinOrdering == null) {
                 if (disablePTOptimizationTrick) {
                     fullReducerOperator.setSemijoins(generateFullReducerVanilla(orderedGraph, true, node2Operators), true);

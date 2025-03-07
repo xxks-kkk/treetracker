@@ -1,8 +1,10 @@
 package org.zhu45.treetracker.jdbc.testing;
 
 import org.apache.commons.collections4.MultiSet;
+import org.apache.commons.collections4.multiset.HashMultiSet;
 import org.zhu45.treetracker.common.Column;
 import org.zhu45.treetracker.common.Relation;
+import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.ObjectRow;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.common.row.RowSet;
@@ -12,6 +14,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.zhu45.treetracker.common.Utils.collectionCompare;
 
@@ -66,6 +69,13 @@ public class TestUtils
 
     public static boolean rowCompare(MultiSet<Row> expected, MultiSet<Row> actual)
     {
+        if (!actual.isEmpty()) {
+            // This block handles the case of comparing a collection IntRows with a collection of ObjectRows
+            if (actual.iterator().next().getClass() == IntRow.class) {
+                MultiSet<ObjectRow> converted = new HashMultiSet<>(actual.stream().map(r -> ((IntRow) r).toObjectRow()).collect(Collectors.toList()));
+                return collectionCompare(expected, converted, ObjectRow::equalsIgnoreOrder);
+            }
+        }
         // In this comparison, we ignore the column ordering. That is, Postgres result set
         // might have different column ordering than the one computed by TT joins. This depends
         // on the join order.

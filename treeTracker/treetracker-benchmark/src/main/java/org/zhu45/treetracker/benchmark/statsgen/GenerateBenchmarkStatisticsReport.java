@@ -43,20 +43,20 @@ import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
+import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SAME_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_TRUE_CARD_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_RESULT_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.common.TestConstants.TREETRACKER_DEBUG;
 import static org.zhu45.treetracker.common.TestConstants.checkEnvVariableSet;
 import static org.zhu45.treetracker.relational.operator.JoinOperator.HASH_JOIN;
-import static org.zhu45.treetracker.relational.operator.JoinOperator.LIP;
 import static org.zhu45.treetracker.relational.operator.JoinOperator.TTJHP;
-import static org.zhu45.treetracker.relational.operator.JoinOperator.TTJHP_NO_NG;
-import static org.zhu45.treetracker.relational.operator.JoinOperator.Yannakakis;
-import static org.zhu45.treetracker.relational.operator.JoinOperator.YannakakisB;
+import static org.zhu45.treetracker.relational.operator.JoinOperator.Yannakakis1Pass;
 
 /**
  * We generate statistics report that consists of two part:
@@ -114,6 +114,12 @@ public class GenerateBenchmarkStatisticsReport
             case TTJHP_NO_NG:
                 patterns.add("TTJHP_NO_NG");
                 break;
+            case TTJHP_VANILLA:
+                patterns.add("TTJHP_VANILLA");
+                break;
+            case TTJHP_NO_DP:
+                patterns.add("TTJHP_NO_DP");
+                break;
             case LIP:
                 patterns.add("LIP");
                 break;
@@ -126,6 +132,9 @@ public class GenerateBenchmarkStatisticsReport
                 patterns.add("TTJHP_BG");
             case YannakakisB:
                 patterns.add("YannakakisB");
+                break;
+            case Yannakakis1Pass:
+                patterns.add("Yannakakis1Pass");
                 break;
             default:
                 throw new RuntimeException("Unsupported joinOperator: " + joinOperator);
@@ -163,7 +172,8 @@ public class GenerateBenchmarkStatisticsReport
                     return Stream.of(finalPatterns.toArray(new String[0]))
                             .allMatch(name::contains) &&
                             name.endsWith(".json") &&
-                            !name.contains("YannakakisB");
+                            !name.contains("YannakakisB") &&
+                            !name.contains("Yannakakis1Pass");
                 }
             }
         });
@@ -174,7 +184,7 @@ public class GenerateBenchmarkStatisticsReport
                                                             TargetStatsConstraints targetStatsConstraints)
             throws IOException, ParseException
     {
-        return generateAggregateStatisticsReport(decideAggStatsPath(targetStatsConstraints.sameOrdering, targetStatsConstraints.useTrueCard),
+        return generateAggregateStatisticsReport(decideAggStatsPath(targetStatsConstraints, benchmark),
                 benchmark,
                 joinOperator,
                 targetStatsConstraints);
@@ -571,6 +581,7 @@ public class GenerateBenchmarkStatisticsReport
         long totalTuplesRemovedInnerRelations;
         long totalTuplesFiltered;
         long totalIntermediateResultsProduced;
+        long totalIntermediateResultsProducedWithoutNULL;
         long numberOfPassContextCalls;
         long numberOfPassContextCallsInnerRelations;
         long numberOfPassContextCallsRk;
@@ -586,6 +597,8 @@ public class GenerateBenchmarkStatisticsReport
         long evaluationMemoryCostInBytes;
         long noGoodListSizeInBytes;
         long noGoodListSize;
+        long numberOfHashTableProbe;
+        long numberOfHashTableProbeWithinFullReducer;
 
         final String queryName;
 
@@ -627,14 +640,26 @@ public class GenerateBenchmarkStatisticsReport
                     catch (NullPointerException ignored) {
                         // TODO: once all the data are generated, we can safely remove this try ... catch
                     }
+                    numberOfHashTableProbe = (long) (aggStats).get("numberOfHashTableProbe");
+                    totalIntermediateResultsProducedWithoutNULL = (long) (aggStats).get("totalIntermediateResultsProducedWithoutNULL");
                     break;
                 case LIP:
                     bloomFiltersProbingTime = (long) (aggStats).get("bloomFiltersProbingTime (ms)");
                     buildBloomFiltersTime = (long) (aggStats).get("buildBloomFiltersTime (ms)");
                     break;
                 case Yannakakis:
+                case Yannakakis1Pass:
                     fullReducerTime = (long) (aggStats).get("fullReducerTime (ms)");
+                    numberOfHashTableProbeWithinFullReducer = (long) (aggStats).get("numberOfHashTableProbeWithinFullReducer");
+                    numberOfHashTableProbe = (long) (aggStats).get("numberOfHashTableProbe");
+                    totalIntermediateResultsProducedWithoutNULL = (long) (aggStats).get("totalIntermediateResultsProducedWithoutNULL");
                     break;
+                case HASH_JOIN:
+                    numberOfHashTableProbe = (long) (aggStats).get("numberOfHashTableProbe");
+                    totalIntermediateResultsProducedWithoutNULL = (long) (aggStats).get("totalIntermediateResultsProducedWithoutNULL");
+                    break;
+                default:
+                    throw new RuntimeException("Unknown join operator: " + joinOperator);
             }
         }
 
@@ -727,7 +752,8 @@ public class GenerateBenchmarkStatisticsReport
                 queryPatterns = List.of("jobQueries");
                 break;
             case TPCH:
-                queryPatterns = List.of("tpchQueries", "tpchQueriesFindOptJoinTree", "tpchQueriesYannakakis", "tpchQueriesYannakakisB", "tpchQueriesYannakakisV", "tpchQueriesPTO");
+                queryPatterns = List.of("tpchQueries", "tpchQueriesFindOptJoinTree", "tpchQueriesYannakakis",
+                        "tpchQueriesYannakakis1Pass", "tpchQueriesYannakakisB", "tpchQueriesYannakakisV", "tpchQueriesPTO");
                 break;
             case SSB:
                 queryPatterns = List.of("ssbQueries", "ssbQueriesFindOptJoinTree");
@@ -850,22 +876,34 @@ public class GenerateBenchmarkStatisticsReport
         produceIntermediateResultsImprovRatioTable(csvDir, joinOperators, benchmark, csvMeta);
     }
 
-    private static void analyzeAggregateStatisticsReport(boolean sameOrdering,
-                                                         List<JoinOperator> joinOperators,
+    private static void analyzeAggregateStatisticsReport(List<JoinOperator> joinOperators,
                                                          Benchmarks benchmark,
-                                                         boolean useTrueCard,
-                                                         CSVMeta csvMeta)
+                                                         CSVMeta csvMeta,
+                                                         TargetStatsConstraints constraints)
             throws IOException
     {
-        String path = decideAggStatsPath(sameOrdering, useTrueCard);
+        String path = decideAggStatsPath(constraints, benchmark);
         analyzeAggregateStatisticsReport(path, joinOperators, benchmark, csvMeta);
     }
 
-    private static String decideAggStatsPath(boolean sameOrdering, boolean useTrueCard)
+    private static String decideAggStatsPath(TargetStatsConstraints targetStatsConstraints,
+                                             Benchmarks benchmark)
     {
-        String path = sameOrdering ? SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SAME_ORDERING_STORED_PATH :
+        if (targetStatsConstraints.sqliteOrdering) {
+            switch (benchmark) {
+                case SSB:
+                    return SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+                case TPCH:
+                    return TPCH_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+                case JOB:
+                    return JOB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+                default:
+                    throw new RuntimeException("Unsupported benchmark: " + benchmark);
+            }
+        }
+        String path = targetStatsConstraints.sameOrdering ? SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SAME_ORDERING_STORED_PATH :
                 SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH;
-        return useTrueCard ? SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_TRUE_CARD_STORED_PATH : path;
+        return targetStatsConstraints.useTrueCard ? SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_TRUE_CARD_STORED_PATH : path;
     }
 
     private static List<String> constructPaths(List<String> jsonFileNames, Benchmarks benchmark)
@@ -888,6 +926,7 @@ public class GenerateBenchmarkStatisticsReport
         private final boolean useTrueCard;
         private final boolean hashJoinOnTTJOrdering;
         private final boolean hashJoinOnYAOrdering;
+        private final boolean sqliteOrdering;
 
         private TargetStatsConstraints(Builder builder)
         {
@@ -895,6 +934,7 @@ public class GenerateBenchmarkStatisticsReport
             this.useTrueCard = builder.useTrueCard;
             this.hashJoinOnTTJOrdering = builder.hashJoinOnTTJOrdering;
             this.hashJoinOnYAOrdering = builder.hashJoinOnYAOrdering;
+            this.sqliteOrdering = builder.sqliteOrdering;
         }
 
         public static Builder builder()
@@ -908,6 +948,7 @@ public class GenerateBenchmarkStatisticsReport
             private boolean useTrueCard;
             private boolean hashJoinOnTTJOrdering;
             private boolean hashJoinOnYAOrdering;
+            private boolean sqliteOrdering;
 
             public Builder()
             {
@@ -937,6 +978,12 @@ public class GenerateBenchmarkStatisticsReport
                 return this;
             }
 
+            public Builder setSqliteOrdering(boolean sqliteOrdering)
+            {
+                this.sqliteOrdering = sqliteOrdering;
+                return this;
+            }
+
             public TargetStatsConstraints build()
             {
                 return new TargetStatsConstraints(this);
@@ -944,61 +991,27 @@ public class GenerateBenchmarkStatisticsReport
         }
     }
 
-    private static void generateReportSSB()
+    private static void generateStatsReport(Benchmarks benchmark,
+                                            TargetStatsConstraints targetStatsConstraints,
+                                            List<JoinOperator> operators)
             throws IOException, ParseException
     {
-        List<JoinOperator> ssbJoinOperators = List.of(LIP, HASH_JOIN, Yannakakis, TTJHP, YannakakisB);
+        CSVMeta csvMeta = generateAggregateStatisticsReport(benchmark, operators, targetStatsConstraints);
+    }
+
+    private static void generateReportJOBSQLiteOrdering()
+            throws IOException, ParseException
+    {
+        List<JoinOperator> jobJoinOperators = List.of(HASH_JOIN, TTJHP, Yannakakis1Pass);
         TargetStatsConstraints constraints = TargetStatsConstraints.builder()
                 .setSameOrdering(false)
                 .setUseTrueCard(false)
-                .build();
-        CSVMeta csvMeta = generateAggregateStatisticsReport(Benchmarks.SSB, ssbJoinOperators,
-                constraints);
-//        analyzeAggregateStatisticsReport(false, ssbJoinOperators, Benchmarks.SSB, false, csvMeta);
-    }
-
-    private static void generateReportTPCH()
-            throws IOException, ParseException
-    {
-        List<JoinOperator> tpchJoinOperators;
-        CSVMeta csvMeta;
-        TargetStatsConstraints constraints;
-        tpchJoinOperators = List.of(HASH_JOIN, TTJHP, Yannakakis, YannakakisB);
-        constraints = TargetStatsConstraints.builder()
-                .setSameOrdering(false)
-                .setUseTrueCard(false)
-                .build();
-        csvMeta = generateAggregateStatisticsReport(Benchmarks.TPCH, tpchJoinOperators,
-                constraints);
-        tpchJoinOperators = List.of(HASH_JOIN);
-        constraints = TargetStatsConstraints.builder()
-                .setSameOrdering(false)
-                .setUseTrueCard(false)
-                .setHashJoinOnTTJOrdering(true)
-                .build();
-        csvMeta = generateAggregateStatisticsReport(Benchmarks.TPCH, tpchJoinOperators,
-                constraints);
-        constraints = TargetStatsConstraints.builder()
-                .setSameOrdering(false)
-                .setUseTrueCard(false)
-                .setHashJoinOnYAOrdering(true)
-                .build();
-        csvMeta = generateAggregateStatisticsReport(Benchmarks.TPCH, tpchJoinOperators,
-                constraints);
-    }
-
-    private static void generateReportJOB()
-            throws IOException, ParseException
-    {
-        List<JoinOperator> jobJoinOperators = List.of(HASH_JOIN, TTJHP, TTJHP_NO_NG);
-        TargetStatsConstraints constraints = TargetStatsConstraints.builder()
-                .setSameOrdering(false)
-                .setUseTrueCard(false)
+                .setSqliteOrdering(true)
                 .build();
         CSVMeta csvMeta = generateAggregateStatisticsReport(Benchmarks.JOB,
                 jobJoinOperators,
                 constraints);
-        analyzeAggregateStatisticsReport(false, jobJoinOperators, Benchmarks.JOB, false, csvMeta);
+        analyzeAggregateStatisticsReport(jobJoinOperators, Benchmarks.JOB, csvMeta, constraints);
     }
 
     public static void main(String[] args)
@@ -1007,7 +1020,7 @@ public class GenerateBenchmarkStatisticsReport
         if (checkEnvVariableSet(TREETRACKER_DEBUG)) {
             Configurator.setAllLevels(GenerateBenchmarkStatisticsReport.class.getName(), Level.DEBUG);
         }
-        generateReportJOB();
+        generateReportJOBSQLiteOrdering();
         generatePerformanceReport(constructPaths(List.of("benchmarkjobwithpredicatesdifferentordering-result-2023-06-23t17:47:56.224875.json",
                         // Fixed 14a result
                         "benchmarkjobwithpredicatesdifferentordering-result-2023-06-26t16:34:57.399775.json",
@@ -1043,7 +1056,9 @@ public class GenerateBenchmarkStatisticsReport
                         // Update YA (after optimization) results with one query from each query flight
                         "benchmarkjobwithpredicatesdifferentordering-result-2023-12-21t00:00:54.637272.json",
                         // TTJHP, HJ, Yannakakis, YannakakisB (HJPhysicalHeuristics is enabled)
-                        "benchmarkjobwithpredicatesdifferentordering-result-2023-12-30t16:43:27.406285.json"), Benchmarks.JOB),
+                        "benchmarkjobwithpredicatesdifferentordering-result-2023-12-30t16:43:27.406285.json",
+                        // Yannakakis1Pass results
+                        "benchmarkjobwithpredicatesdifferentordering-result-2024-03-08t12:03:13.986671.json"), Benchmarks.JOB),
                 Benchmarks.JOB, true, false);
         // We need to run a separate generatePerformanceReport() for fixed HJ ordering because fixed HJ ordering has
         // TTJHP, which will override TTJHP on different ordering results when building joinOperator2Perf if fixed HJ ordering
@@ -1053,6 +1068,56 @@ public class GenerateBenchmarkStatisticsReport
                         "benchmarkjobwithpredicatesdifferentordering-result-2023-12-30t16:43:27.406285.json",
                         // TTHP on fixed HJ ordering
                         Paths.get("hj_ordering_opt_jointree", "benchmarkjobwithpredicatesfixedhjordering-result-2024-01-07t00:12:12.344309.json").toString()), Benchmarks.JOB),
+                Benchmarks.JOB, true, false);
+        generatePerformanceReport(constructPaths(List.of(
+                        // TTJHP, HJ, Yannakakis, YannakakisB (HJPhysicalHeuristics is enabled)
+                        "benchmarkjobwithpredicatesdifferentordering-result-2023-12-30t16:43:27.406285.json",
+                        // TTHP, Yannakakis1Pass on fixed HJ ordering and share the same join tree
+                        Paths.get("hj_ordering_shallow_opt_jointree", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-06-26t23:18:58.342609.json").toString(),
+                        // Yannakakis1Pass Missing queries
+                        Paths.get("hj_ordering_shallow_opt_jointree", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-06-29t22:58:42.514418.json")
+                                .toString()), Benchmarks.JOB),
+                Benchmarks.JOB, true, false);
+        generatePerformanceReport(constructPaths(List.of(
+                        // TTHP, Yannakakis1Pass, HJ on fixed HJ ordering from SQLite and share the same join tree
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-07-07t17:19:27.127911.json").toString(),
+                        // Due to fixing original JOB queries for SQLite syntax and semantics, 16 query SQLite ordering has changed. As a result, we regenerate performance
+                        // for those queries.
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-07-22t16:51:01.516062.json").toString(),
+                        // TTJHP_NO_NG result
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-07-26t21:35:14.000091.json").toString(),
+                        // Re-run HASH_JOIN and TTJHP based on TupleBasedIntHashJoinOperator and TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator, respectively with 5 forks and 2 warmups.
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-10-30t16:41:19.699995.json").toString(),
+                        // Re-run Yannakakis1Pass based on TupleBasedIntHashJoinOperator with 5 forks and 2 warmups.
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-01t21:38:29.619248.json").toString(),
+                        // Re-run Yannakakis1Pass based on TupleBasedIntHashJoinOperator and TupleBasedLeftSemiHashJoinIntOperator with 5 forks and 2 warmups.
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-02t20:38:55.905401.json").toString(),
+                        // Re-run TTJHP on 17c with normal run configuration to reduce run variant. We pick 17c is because it's the slowest query for TTJ compared to HJ.
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-15t00:12:28.414995.json").toString(),
+                        // Re-run HJ on 17c with normal run configuration
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-15t00:25:35.668039.json").toString(),
+                        // Re-run TTJ on 7b with no-good list disabled under normal configuration
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-15t01:39:31.992965.json").toString(),
+                        // TTJHP_NO_NG
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-21t17:26:12.002451.json").toString(),
+                        // TTJHP_NO_DP and TTJHP_VANILLA
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-22t20:29:07.918444.json").toString(),
+                        // TTJHP, HASH_JOIN, Yannakakis1Pass
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-12-17t17:05:02.410515.json").toString()), Benchmarks.JOB),
+                Benchmarks.JOB, true, false);
+        generatePerformanceReport(constructPaths(List.of(
+                        // HJ based on Postgres plans (preliminary run: 5 forks and 2 warmups)
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-10-26t20:58:20.937739.json").toString(),
+                        // Re-run HJ based on Postgres plans (preliminary run) using TupleBasedIntHashJoinOperator
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-10-30t00:24:56.479785.json").toString(),
+                        // TTJHP based on Postgres plans (preliminary run) using TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-20t01:09:56.041456.json").toString(),
+                        // Re-run HJ due to previous run is based on Postgres plans that may have non-hash-join implementation (this run is based on Postgres plans with hash-join enforced). Preliminary run.
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-20t20:19:39.8547.json").toString(),
+                        // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, and TTJHP_NO_DP
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-24t19:29:37.720742.json").toString(),
+                        // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, and TTJHP_NO_DP without IntRow Optimization (disable this line if we want to see IntRow Optimization results)
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-27t21:18:56.67516.json").toString()), Benchmarks.JOB),
                 Benchmarks.JOB, true, false);
         generatePerformanceReport(constructPaths(List.of("benchmarktpchwithpredicatesdifferentordering-result-2023-07-06t17:42:23.652904.json",
                         // Fixed 15 implementation result
@@ -1080,9 +1145,30 @@ public class GenerateBenchmarkStatisticsReport
                         // Fixed TTJHP, HJ, Yannakakis, and YannakakisB on 19aW, 19bW, 19cW due to query implementation error (HJPhysicalHeuristics enabled)
                         "benchmarktpchwithpredicatesdifferentordering-result-2024-01-10t11:25:55.997022.json",
                         // Fixed HJ ordering on 18W due to overestimation (HJPhysicalHeuristics enabled)
-                        "benchmarktpchwithpredicatesdifferentordering-result-2024-01-11t21:43:14.826502.json"), Benchmarks.TPCH),
+                        "benchmarktpchwithpredicatesdifferentordering-result-2024-01-11t21:43:14.826502.json",
+                        // Yannakakis1Pass results
+                        "benchmarktpchwithpredicatesdifferentordering-result-2024-03-04t18:06:54.808029.json"), Benchmarks.TPCH),
                 Benchmarks.TPCH, true, false);
-        generateReportTPCH();
+        generatePerformanceReport(constructPaths(List.of(
+                        // TTHP, Yannakakis1Pass, HJ on fixed HJ ordering from SQLite and share the same join tree
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-07-15t01:00:56.113842.json").toString(),
+                        // Missing Q8: TTJHP, YannakakisPass, HJ  on HJ ordering from my own optimizer and share the same join tree
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-07-20t16:41:53.030291.json").toString(),
+                        // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, TTJHP_NO_DP, and Yannakakis1Pass (Note TTJHP_NO_DP 9W is missing due to it uses DefaultNoGoodListMap and updateNoGoodListMap is not implemented)
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-02t22:19:48.739238.json").toString(),
+                        // Add TTJHP_NO_DP 9W result
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-03t18:23:03.791067.json").toString(),
+                        // Add TTJHP and TTJHP_NO_DP on 9W due to use DefaultIntRowNoGoodListMap
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-05t14:30:33.533514.json").toString(),
+                        // Re-run 18W on TTJHP_NO_DP because it has -7% slowdown, which I believe due to measurement variants (re-run indeed eliminates the variant)
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-05t16:29:24.190913.json").toString()), Benchmarks.TPCH),
+                Benchmarks.TPCH, true, false);
+        generatePerformanceReport(constructPaths(List.of(
+                        // TTHP and HJ on the native Postgres plans
+                        Paths.get("perf_on_postgres_plans", "benchmarktpchpostgresplansshallow-result-2025-02-16t22:28:11.550059.json").toString()
+                ), Benchmarks.TPCH),
+                Benchmarks.TPCH, true, false);
+        generateStatsReport(Benchmarks.TPCH, TargetStatsConstraints.builder().setSqliteOrdering(true).build(), List.of(HASH_JOIN, TTJHP, Yannakakis1Pass));
         generatePerformanceReport(constructPaths(List.of("benchmarkssb-result-2023-10-26t12:14:04.768421.json",
                         // Benchmark result use SSB-specific LIP implementation
                         "benchmarkssb-result-2023-12-08t23:44:40.399941.json",
@@ -1095,8 +1181,27 @@ public class GenerateBenchmarkStatisticsReport
                         // Yannakakis and YannakakisB results after fixing pipelining bug
                         "benchmarkssb-result-2023-12-19t01:39:55.3923.json",
                         // LIP results on Blocked Bloom
-                        "benchmarkssb-result-2024-01-04t23:46:46.3084.json"),
+                        "benchmarkssb-result-2024-01-04t23:46:46.3084.json",
+                        // Yannakakis1Pass results
+                        "benchmarkssb-result-2024-03-03t18:17:56.43071.json"),
                 Benchmarks.SSB), Benchmarks.SSB, true, false);
-        generateReportSSB();
+        generatePerformanceReport(constructPaths(List.of(
+                        // TTHP, Yannakakis1Pass, HJ on fixed HJ ordering from SQLite and share the same join tree
+                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-07-15t23:56:26.1061.json").toString(),
+                        // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, TTJHP_NO_DP, and Yannakakis1Pass (SF=1)
+                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-09t17:27:00.748485.json").toString(),
+                        // Yannakakis1Pass with disablePTOptimizationTrick to true (same across other benchmarks) (SF=1)
+                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-23t17:19:44.362555.json").toString()
+                        // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, TTJHP_NO_DP, and Yannakakis1Pass (disabling IntRow optimization). Uncomment this
+                        // line if we want to use IntRow optimization enabled results. (SF=1) Note Yannakakis1Pass has disablePTOptimizationTrick false.
+//                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-11t01:07:14.181061.json").toString()
+                ), Benchmarks.SSB),
+                Benchmarks.SSB, true, false);
+        generatePerformanceReport(constructPaths(List.of(
+                        // TTHP and HJ on the native Postgres plans
+                        Paths.get("perf_on_postgres_plans", "benchmarkssbpostgresplansshallow-result-2025-02-14t22:33:39.163677.json").toString()
+                ), Benchmarks.SSB),
+                Benchmarks.SSB, true, false);
+        generateStatsReport(Benchmarks.SSB, TargetStatsConstraints.builder().setSqliteOrdering(true).build(), List.of(HASH_JOIN, TTJHP, Yannakakis1Pass));
     }
 }

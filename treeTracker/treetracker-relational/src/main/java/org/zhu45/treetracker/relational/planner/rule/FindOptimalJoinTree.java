@@ -6,12 +6,12 @@ import org.apache.logging.log4j.Logger;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.relational.OptType;
-import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator;
 import org.zhu45.treetracker.relational.planner.JoinTreeGenerator;
 import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNode;
 import org.zhu45.treetracker.relational.planner.cost.JoinTreeCostProvider;
+import org.zhu45.treetracker.relational.planner.cost.JoinTreeCostReturn;
 import org.zhu45.treetracker.relational.planner.plan.JoinNode;
 
 import java.util.HashMap;
@@ -19,6 +19,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 import static org.zhu45.treetracker.relational.planner.Plan.getSchemaTableNames;
+import static org.zhu45.treetracker.relational.planner.PlanBuilder.findRootOperatorPlanNode;
 
 /**
  * Find the optimal join tree by executing all possible join trees for the given join ordering
@@ -60,20 +61,26 @@ public class FindOptimalJoinTree
     public Plan applyToPhysicalPlan(PlanNode node, RuleContext context)
     {
         ruleContext = context;
-        List<SchemaTableName> schemaTableNameList = getSchemaTableNames(node);
+        List<SchemaTableName> schemaTableNameList =
+                context.getPlanBuildContext().getSchemaTableNameList() == null ? getSchemaTableNames(node) : context.getPlanBuildContext().getSchemaTableNameList();
         joinOrdering = new JoinOrdering(schemaTableNameList);
         JoinTreeGenerator joinTreeGenerator = new JoinTreeGenerator(context.getPlanBuildContext());
         List<MultiwayJoinOrderedGraph> allJoinTrees = joinTreeGenerator.generateJoinTrees(schemaTableNameList);
         MultiwayJoinOrderedGraph optimalJoinTree = findTheMinimumExecutionCostJoinTree(allJoinTrees);
-        // It's easier to just return a new Plan instead of modifying the existing plan
-        Plan newPlan = createPhysicalPlanFromJoinOrdering(joinOrdering, optimalJoinTree);
-        // Because multiple rules can be applied before this, we copy the existing plan planStatistics to the new plan so that we don't lose
-        // the statistics coming from application of previous rules
-        newPlan.setPlanStatistics(context.getPlanStatistics());
         ruleStatistics = builder
                 .optimalJoinOrdering(joinOrdering)
                 .build();
-        return newPlan;
+        if (!context.isNotGeneratePlan()) {
+            // It's easier to just return a new Plan instead of modifying the existing plan
+            Plan newPlan = createPhysicalPlanFromJoinOrdering(joinOrdering, optimalJoinTree);
+            // Because multiple rules can be applied before this, we copy the existing plan planStatistics to the new plan so that we don't lose
+            // the statistics coming from application of previous rules
+            newPlan.setPlanStatistics(context.getPlanStatistics());
+            return newPlan;
+        }
+        else {
+            return null;
+        }
     }
 
     private MultiwayJoinOrderedGraph findTheMinimumExecutionCostJoinTree(List<MultiwayJoinOrderedGraph> joinTrees)
@@ -81,17 +88,21 @@ public class FindOptimalJoinTree
         MultiwayJoinOrderedGraph minimumExecutionCostJoinTree = null;
         HashMap<MultiwayJoinOrderedGraph, Double> searchedJoinTrees = new HashMap<>();
         double minCost = Double.MAX_VALUE;
+        JoinTreeCostReturn minCostReturn = null;
         for (MultiwayJoinOrderedGraph joinTree : joinTrees) {
-            double cost = costProvider.getCost(joinOrdering, joinTree, ruleContext.getPlanBuildContext()).getCost();
+            JoinTreeCostReturn costReturn = costProvider.getCost(joinOrdering, joinTree, ruleContext.getPlanBuildContext());
+            double cost = costReturn.getCost();
             searchedJoinTrees.put(joinTree, cost);
             if (cost < minCost) {
                 minCost = cost;
                 minimumExecutionCostJoinTree = joinTree;
+                minCostReturn = costReturn;
             }
         }
         checkState(minimumExecutionCostJoinTree != null, "minimumExecutionCostJoinTree cannot be null");
         builder = builder.searchedJoinTrees(searchedJoinTrees)
                 .optimalJoinTree(minimumExecutionCostJoinTree)
+                .semijoinOrdering(minCostReturn.getSemiJoinOrdering())
                 .cost(minCost);
         return minimumExecutionCostJoinTree;
     }
@@ -105,10 +116,13 @@ public class FindOptimalJoinTree
     @Override
     public boolean checkForRulePrecondition(PlanNode node)
     {
-        return node.isRoot() &&
-                node.getNodeType() == OptType.join && // Root node of the given plan has to be a join
-                (((JoinNode) node).getLeft().getNodeType() == OptType.join ||
-                        (((JoinNode) node).getLeft().getNodeType() == OptType.table && ((JoinNode) node).getRight().getNodeType() == OptType.table)) &&  // The given plan is a left-deep plan
-                TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.class.isAssignableFrom(node.getOperator().getClass()); // enforce the rule is only applicable to TTJ
+        JoinNode joinNode = (JoinNode) node;
+        return node.getNodeType() == OptType.join && // Root node of the given plan has to be a join
+                ((joinNode.getLeft().getNodeType() == OptType.join ||
+                        (joinNode.getLeft().getNodeType() == OptType.table &&
+                                joinNode.getRight().getNodeType() == OptType.table)) // The given plan is a left-deep plan
+                        // In the case of bushy plans (non-left-deep plans), the RootOperatorPlanNode has to have SchemaTableName set indicating
+                        // we can treat it as a relation instead of join.
+                        || findRootOperatorPlanNode(joinNode.getRight()).getSchemaTableName() != null);
     }
 }

@@ -391,4 +391,224 @@ public class TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases
 
         return base.createFixedPhysicalPlanFromQueryGraph(orderedGraph, Optional.empty(), Optional.empty());
     }
+
+    /**
+     * Running example 1 in the SIGMOD draft (also in Arxiv).
+     */
+    public Pair<Plan, List<Operator>> testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseEight()
+    {
+        String schemaName = base.getDatabase().getSchemaName();
+        String relationNamePrefix = "caseeight_";
+        String relationT = relationNamePrefix + "_T";
+        SchemaTableName schemaTableNameT = new SchemaTableName(schemaName, relationT);
+        List<String> attributesT = List.of("x");
+        if (jdbcClient.getTableHandle(schemaTableNameT) == null) {
+            List<List<RelationalValue>> relationValT = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(StringValue.of("red")),
+                    Arrays.asList(StringValue.of("blue"))));
+            jdbcClient.ingestRelation(schemaName, relationT, attributesT, new ArrayList<>(Arrays.asList(VARCHAR)), relationValT);
+        }
+        MultiwayJoinNode nodeT = new MultiwayJoinNode(schemaTableNameT, attributesT, new MultiwayJoinDomain());
+
+        String relationS = relationNamePrefix + "_S";
+        SchemaTableName schemaTableNameS = new SchemaTableName(schemaName, relationS);
+        List<String> attributesS = List.of("x", "y", "z");
+        if (jdbcClient.getTableHandle(schemaTableNameS) == null) {
+            List<List<RelationalValue>> relationValS = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(StringValue.of("red"), IntegerValue.of(1), IntegerValue.of(2)),
+                    Arrays.asList(StringValue.of("blue"), IntegerValue.of(3), IntegerValue.of(2))));
+            jdbcClient.ingestRelation(schemaName, relationS, attributesS, new ArrayList<>(Arrays.asList(VARCHAR, INTEGER, INTEGER)), relationValS);
+        }
+        MultiwayJoinNode nodeS = new MultiwayJoinNode(schemaTableNameS, attributesS, new MultiwayJoinDomain());
+
+        String relationR = relationNamePrefix + "_R";
+        SchemaTableName schemaTableNameR = new SchemaTableName(schemaName, relationR);
+        List<String> attributesR = List.of("y", "z");
+        if (jdbcClient.getTableHandle(schemaTableNameR) == null) {
+            List<List<RelationalValue>> relationValR = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(new IntegerValue(3), new IntegerValue(2))));
+            jdbcClient.ingestRelation(schemaName, relationR, attributesR, new ArrayList<>(Arrays.asList(INTEGER, INTEGER)), relationValR);
+        }
+        MultiwayJoinNode nodeR = new MultiwayJoinNode(schemaTableNameR, attributesR, new MultiwayJoinDomain());
+
+        String relationB = relationNamePrefix + "_B";
+        SchemaTableName schemaTableNameB = new SchemaTableName(schemaName, relationB);
+        List<String> attributesB = List.of("z");
+        if (jdbcClient.getTableHandle(schemaTableNameB) == null) {
+            List<List<RelationalValue>> relationValB = new ArrayList<>(Arrays.asList(Arrays.asList(new IntegerValue(2))));
+            jdbcClient.ingestRelation(schemaName, relationB, attributesB, new ArrayList<>(Arrays.asList(INTEGER)), relationValB);
+        }
+        MultiwayJoinNode nodeB = new MultiwayJoinNode(schemaTableNameB, attributesB, new MultiwayJoinDomain());
+
+        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(new ArrayList<>(Arrays.asList(
+                asEdge(nodeT, nodeS),
+                asEdge(nodeS, nodeB),
+                asEdge(nodeS, nodeR))), nodeT);
+
+        return base.createFixedPhysicalPlanFromQueryGraph(orderedGraph,
+                Optional.of(new LinkedList<>(List.of(schemaTableNameT, schemaTableNameS, schemaTableNameB, schemaTableNameR))),
+                Optional.empty());
+    }
+
+    /**
+     * IntRow version of Running example 1 in the SIGMOD draft (also in Arxiv).
+     */
+    public Pair<Plan, List<Operator>> testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseNine()
+    {
+        String schemaName = base.getDatabase().getSchemaName();
+        String relationNamePrefix = "casenine_";
+        String relationT = relationNamePrefix + "_T";
+        SchemaTableName schemaTableNameT = new SchemaTableName(schemaName, relationT);
+        List<String> attributesT = List.of("x");
+        if (jdbcClient.getTableHandle(schemaTableNameT) == null) {
+            List<List<RelationalValue>> relationValT = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(IntegerValue.of(1)),
+                    Arrays.asList(IntegerValue.of(2))));
+            jdbcClient.ingestRelation(schemaName, relationT, attributesT, new ArrayList<>(Arrays.asList(INTEGER)), relationValT);
+        }
+        MultiwayJoinNode nodeT = new MultiwayJoinNode(schemaTableNameT, attributesT, new MultiwayJoinDomain());
+
+        String relationS = relationNamePrefix + "_S";
+        SchemaTableName schemaTableNameS = new SchemaTableName(schemaName, relationS);
+        List<String> attributesS = List.of("x", "y", "z");
+        if (jdbcClient.getTableHandle(schemaTableNameS) == null) {
+            List<List<RelationalValue>> relationValS = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(IntegerValue.of(1), IntegerValue.of(1), IntegerValue.of(2)),
+                    Arrays.asList(IntegerValue.of(2), IntegerValue.of(3), IntegerValue.of(2))));
+            jdbcClient.ingestRelation(schemaName, relationS, attributesS, new ArrayList<>(Arrays.asList(INTEGER, INTEGER, INTEGER)), relationValS);
+        }
+        MultiwayJoinNode nodeS = new MultiwayJoinNode(schemaTableNameS, attributesS, new MultiwayJoinDomain());
+
+        String relationR = relationNamePrefix + "_R";
+        SchemaTableName schemaTableNameR = new SchemaTableName(schemaName, relationR);
+        List<String> attributesR = List.of("y", "z");
+        if (jdbcClient.getTableHandle(schemaTableNameR) == null) {
+            List<List<RelationalValue>> relationValR = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(new IntegerValue(3), new IntegerValue(2))));
+            jdbcClient.ingestRelation(schemaName, relationR, attributesR, new ArrayList<>(Arrays.asList(INTEGER, INTEGER)), relationValR);
+        }
+        MultiwayJoinNode nodeR = new MultiwayJoinNode(schemaTableNameR, attributesR, new MultiwayJoinDomain());
+
+        String relationB = relationNamePrefix + "_B";
+        SchemaTableName schemaTableNameB = new SchemaTableName(schemaName, relationB);
+        List<String> attributesB = List.of("z");
+        if (jdbcClient.getTableHandle(schemaTableNameB) == null) {
+            List<List<RelationalValue>> relationValB = new ArrayList<>(Arrays.asList(Arrays.asList(new IntegerValue(2))));
+            jdbcClient.ingestRelation(schemaName, relationB, attributesB, new ArrayList<>(Arrays.asList(INTEGER)), relationValB);
+        }
+        MultiwayJoinNode nodeB = new MultiwayJoinNode(schemaTableNameB, attributesB, new MultiwayJoinDomain());
+
+        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(new ArrayList<>(Arrays.asList(
+                asEdge(nodeT, nodeS),
+                asEdge(nodeS, nodeB),
+                asEdge(nodeS, nodeR))), nodeT);
+
+        return base.createFixedPhysicalPlanFromQueryGraph(orderedGraph,
+                Optional.of(new LinkedList<>(List.of(schemaTableNameT, schemaTableNameS, schemaTableNameB, schemaTableNameR))),
+                Optional.empty());
+    }
+
+    /**
+     * Test disable deletion propagation. This test case aims to expose some NullPointerException by the introduction of disabling
+     * deletion propagation code logic.
+     */
+    public Pair<Plan, List<Operator>> testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseTen()
+    {
+        String schemaName = base.getDatabase().getSchemaName();
+        String relationNamePrefix = "caseten_";
+        String relationT = relationNamePrefix + "_T";
+        SchemaTableName schemaTableNameT = new SchemaTableName(schemaName, relationT);
+        List<String> attributesT = List.of("a", "b");
+        if (jdbcClient.getTableHandle(schemaTableNameT) == null) {
+            List<List<RelationalValue>> relationValT = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(IntegerValue.of(1), IntegerValue.of(2))));
+            jdbcClient.ingestRelation(schemaName, relationT, attributesT, new ArrayList<>(Arrays.asList(INTEGER, INTEGER)), relationValT);
+        }
+        MultiwayJoinNode nodeT = new MultiwayJoinNode(schemaTableNameT, attributesT, new MultiwayJoinDomain());
+
+        String relationS = relationNamePrefix + "_S";
+        SchemaTableName schemaTableNameS = new SchemaTableName(schemaName, relationS);
+        List<String> attributesS = List.of("b", "d");
+        if (jdbcClient.getTableHandle(schemaTableNameS) == null) {
+            List<List<RelationalValue>> relationValS = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(IntegerValue.of(2), IntegerValue.of(3)),
+                    Arrays.asList(IntegerValue.of(3), IntegerValue.of(4))));
+            jdbcClient.ingestRelation(schemaName, relationS, attributesS, new ArrayList<>(Arrays.asList(INTEGER, INTEGER)), relationValS);
+        }
+        MultiwayJoinNode nodeS = new MultiwayJoinNode(schemaTableNameS, attributesS, new MultiwayJoinDomain());
+
+        String relationR = relationNamePrefix + "_R";
+        SchemaTableName schemaTableNameR = new SchemaTableName(schemaName, relationR);
+        List<String> attributesR = List.of("d", "e");
+        if (jdbcClient.getTableHandle(schemaTableNameR) == null) {
+            List<List<RelationalValue>> relationValR = new ArrayList<>(Arrays.asList(
+                    Arrays.asList(new IntegerValue(4), new IntegerValue(2))));
+            jdbcClient.ingestRelation(schemaName, relationR, attributesR, new ArrayList<>(Arrays.asList(INTEGER, INTEGER)), relationValR);
+        }
+        MultiwayJoinNode nodeR = new MultiwayJoinNode(schemaTableNameR, attributesR, new MultiwayJoinDomain());
+
+        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(new ArrayList<>(Arrays.asList(
+                asEdge(nodeT, nodeS),
+                asEdge(nodeS, nodeR))), nodeT);
+
+        return base.createFixedPhysicalPlanFromQueryGraph(orderedGraph,
+                Optional.of(new LinkedList<>(List.of(schemaTableNameT, schemaTableNameS, schemaTableNameR))),
+                Optional.empty());
+    }
+
+    /**
+     * Purpose of this test see testRemoveMatchingTuplesAndHashTable() test in TestTupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.
+     */
+    public Pair<Plan, List<Operator>> testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseEleven()
+    {
+        String relationNamePrefix = "rmMatchTest";
+        String relationA = relationNamePrefix + "_A";
+        SchemaTableName schemaTableNameA = new SchemaTableName(schemaName, relationA);
+        if (jdbcClient.getTableHandle(schemaTableNameA) == null) {
+            List<List<RelationalValue>> relationValA = List.of(Collections.singletonList(IntegerValue.of(1)));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationA,
+                    new ArrayList<>(Arrays.asList("a")),
+                    new ArrayList<>(Arrays.asList(INTEGER)),
+                    relationValA);
+        }
+        MultiwayJoinNode nodeA = new MultiwayJoinNode(schemaTableNameA, new MultiwayJoinDomain());
+
+        String relationB = relationNamePrefix + "_B";
+        SchemaTableName schemaTableNameB = new SchemaTableName(schemaName, relationB);
+        if (jdbcClient.getTableHandle(schemaTableNameB) == null) {
+            List<List<RelationalValue>> relationValB = List.of(
+                    Arrays.asList(IntegerValue.of(1), IntegerValue.of(2)),
+                    Arrays.asList(IntegerValue.of(1), IntegerValue.of(3)));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationB,
+                    new ArrayList<>(Arrays.asList("a", "b")),
+                    new ArrayList<>(Arrays.asList(INTEGER, INTEGER)),
+                    relationValB);
+        }
+        MultiwayJoinNode nodeB = new MultiwayJoinNode(schemaTableNameB, new MultiwayJoinDomain());
+
+        String relationC = relationNamePrefix + "_C";
+        SchemaTableName schemaTableNameC = new SchemaTableName(schemaName, relationC);
+        if (jdbcClient.getTableHandle(schemaTableNameC) == null) {
+            List<List<RelationalValue>> relationValC = List.of(Arrays.asList(IntegerValue.of(3), IntegerValue.of(4)));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationC,
+                    new ArrayList<>(Arrays.asList("b", "c")),
+                    new ArrayList<>(Arrays.asList(INTEGER, INTEGER)),
+                    relationValC);
+        }
+        MultiwayJoinNode nodeC = new MultiwayJoinNode(schemaTableNameC, new MultiwayJoinDomain());
+
+        MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(new ArrayList<>(Arrays.asList(
+                asEdge(nodeA, nodeB),
+                asEdge(nodeB, nodeC))), nodeA);
+
+        return base.createFixedPhysicalPlanFromQueryGraph(orderedGraph,
+                Optional.of(new LinkedList<>(List.of(schemaTableNameA, schemaTableNameB, schemaTableNameC))),
+                Optional.empty());
+    }
 }

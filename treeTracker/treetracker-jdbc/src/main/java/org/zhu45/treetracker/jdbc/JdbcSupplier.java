@@ -3,6 +3,7 @@ package org.zhu45.treetracker.jdbc;
 import com.google.common.base.Suppliers;
 import org.duckdb.DuckDBDriver;
 import org.postgresql.Driver;
+import org.sqlite.JDBC;
 import org.zhu45.treetracker.common.TreeTrackerException;
 import org.zhu45.treetracker.jdbc.testing.NaturalJoinJdbcClient;
 
@@ -19,7 +20,9 @@ import static org.zhu45.treetracker.jdbc.testing.TestUtils.getProperties;
  */
 public class JdbcSupplier
 {
-    private JdbcSupplier() {}
+    private JdbcSupplier()
+    {
+    }
 
     public static Supplier<JdbcClient> postgresJdbcClientSupplier = Suppliers.memoize(() ->
             createTestSqlClient(PostgreSqlClient.class, "db.properties"));
@@ -30,6 +33,9 @@ public class JdbcSupplier
     // For benchmarking
     public static Supplier<JdbcClient> duckDBJdbcClientSupplier = Suppliers.memoize(() ->
             createTestSqlClient(DuckDBSqlClient.class, "duckdb.properties"));
+
+    public static Supplier<JdbcClient> sqlLiteJdbcClientSupplier = Suppliers.memoize(() ->
+            createTestSqlClient(SQLiteSqlClient.class, "sqlite.properties"));
 
     // For testing
     public static Supplier<JdbcClient> duckDBTestJdbcClientSupplier = Suppliers.memoize(() ->
@@ -53,6 +59,9 @@ public class JdbcSupplier
             }
             else if (jdbcClientClazz.equals(DuckDBSqlClient.class)) {
                 driver = new DuckDBDriver();
+            }
+            else if (jdbcClientClazz.equals(SQLiteSqlClient.class)) {
+                driver = new JDBC();
             }
             return (JdbcClient) constructor.newInstance(
                     expected,

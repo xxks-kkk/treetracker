@@ -22,7 +22,7 @@ WHERE cct1.kind = 'cast';
 CREATE VIEW imdb.q27c_comp_cast_type2 as
 SELECT subject_id as status_id
 FROM imdb.comp_cast_type as cct2
-WHERE cct2.kind = 'complete';
+WHERE cct2.kind LIKE 'complete%';
 
 CREATE VIEW imdb.q27c_company_name as
 SELECT company_id

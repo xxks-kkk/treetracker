@@ -23,7 +23,11 @@ import org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutVio
 import org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree;
 import org.zhu45.treetracker.relational.planner.rule.JoinOrdering;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.zhu45.treetracker.common.TestConstants.TREETRACKER_DEBUG;
@@ -65,7 +69,8 @@ public class TestPlanStatistics
     }
 
     @Test
-    public void testPlanStatistics() {
+    public void testPlanStatistics()
+    {
         String schemaName = base.getDatabase().getSchemaName();
         JdbcClient jdbcClient = base.getDatabase().getJdbcClient();
 
@@ -100,10 +105,10 @@ public class TestPlanStatistics
         Pair<Plan, List<Operator>> plan = base.createPhysicalPlanFromJoinOrdering(joinOrdering);
         base.testPhysicalPlanExecution(plan);
         // FIXME: FindOptimalJoinTree doesn't consider DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee during
-        // the search of the optimal join tree, which may need to fix (e.g., FindOptimalJoinTree can maintain a list of
-        // rules that can be considered during its application, i.e., compatible rules). This situation also implies
-        // an extra dimension to conisder (whether to use no-good list) when finding join ordering and join tree for TTJ
-        assertEquals(1,plan.getKey().getPlanStatistics().getRulesApplied().size());
+        //  the search of the optimal join tree, which may need to fix (e.g., FindOptimalJoinTree can maintain a list of
+        //  rules that can be considered during its application, i.e., compatible rules). This situation also implies
+        //  an extra dimension to conisder (whether to use no-good list) when finding join ordering and join tree for TTJ
+        assertEquals(1, plan.getKey().getPlanStatistics().getRulesApplied().size());
     }
 
     @AfterAll

@@ -91,4 +91,9 @@ public class IntRow
     {
         return Arrays.toString(vals);
     }
+
+    public ObjectRow toObjectRow()
+    {
+        return new ObjectRow(this.attributes, getVals());
+    }
 }

@@ -7,6 +7,7 @@ import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.relational.JoinValueContainerKey;
+import org.zhu45.treetracker.relational.OptType;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
         }
     }
 
-    private static final LookUpHResult lookUpHResult = new LookUpHResult(null, false);
+    protected static final LookUpHResult lookUpHResult = new LookUpHResult(null, false);
 
     public TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator()
     {
@@ -53,7 +54,6 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
         }
         Context context = (Context) info;
         MultiwayJoinNode currNode = context.getJoinNode();
-        MultiwayJoinNode r2Node = r2Operator.getMultiwayJoinNode();
         MultiwayJoinOrderedGraph multiwayJoinOrderedGraph = planBuildContext.getOrderedGraph();
         if (multiwayJoinOrderedGraph.getParent().get(currNode).get(0).equals(r2Node)) {
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -192,6 +192,12 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
                 }
                 if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                     traceLogger.trace(formatTraceMessage("r1 attributes: " + r1.getAttributes()));
+                    if (r1Operator.getOperatorType() == OptType.table) {
+                        traceLogger.trace(formatTraceMessage("r1Operator: " + r1Operator.getMultiwayJoinNode().getSchemaTableName()));
+                    }
+                    else {
+                        traceLogger.trace(formatTraceMessage("r1Operator: " + r1Operator.getOperatorName()));
+                    }
                     traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".r1 = " + r1));
                     traceLogger.trace(formatTraceMessage("initiate PassContext: " + context));
                 }
@@ -220,7 +226,7 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
         }
     }
 
-    private void lookUpHNew()
+    protected void lookUpHNew()
     {
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".lookUpH()"));
@@ -232,6 +238,11 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
             long probeHashTableTime;
             if (Switches.STATS) {
                 probeHashTableTime = System.nanoTime();
+                statisticsInformation.incrementNumberOfHashTableProbe();
+                if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+                    traceLogger.trace(formatTraceMessage(getTraceOperatorName() + "incrementNumberOfHashTableProbe"));
+                    traceLogger.trace(formatTraceMessage(getTraceOperatorName() + "numberOfHashTableProbe: " + statisticsInformation.getNumberOfHashTableProbe()));
+                }
             }
             JoinValueContainerKey jav = extract(r1, true);
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -346,6 +357,11 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
     @Override
     public void initializeContextObject()
     {
-        context = new Context(r2Operator.getMultiwayJoinNode());
+        context = r2Operator.getChildMultiwayJoinNode() == null ?
+                new Context(r2Operator.getMultiwayJoinNode()) :
+                new Context(r2Operator.getChildMultiwayJoinNode());
+        r2Node = r2Operator.getChildMultiwayJoinNode() == null ?
+                r2Operator.getMultiwayJoinNode() :
+                r2Operator.getChildMultiwayJoinNode();
     }
 }

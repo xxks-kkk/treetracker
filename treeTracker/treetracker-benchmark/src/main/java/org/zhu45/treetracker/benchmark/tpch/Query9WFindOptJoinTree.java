@@ -39,15 +39,15 @@ public class Query9WFindOptJoinTree
         MultiwayJoinNode partNode = getPart(TPCHQueries.Q9W);
         MultiwayJoinNode partSuppNode = getPartsupp(TPCHQueries.Q9W);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(supplierNode, nationNode, partSuppNode, partNode, lineItemNode, ordersNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(lineItemNode, partSuppNode, partNode, ordersNode, supplierNode, nationNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(supplierNode.getSchemaTableName(),
-                nationNode.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(lineItemNode.getSchemaTableName(),
                 partSuppNode.getSchemaTableName(),
                 partNode.getSchemaTableName(),
-                lineItemNode.getSchemaTableName(),
-                ordersNode.getSchemaTableName()));
+                ordersNode.getSchemaTableName(),
+                supplierNode.getSchemaTableName(),
+                nationNode.getSchemaTableName()));
         return pair;
     }
 }

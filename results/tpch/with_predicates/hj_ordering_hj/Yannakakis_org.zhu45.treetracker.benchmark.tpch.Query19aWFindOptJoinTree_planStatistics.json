@@ -1,0 +1,56 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch",
+      "tableName" : "q19aw_lineitem"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q19aw_part"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch.q19aw_lineitem(orderkey,partkey,suppkey)\n|tpch.q19aw_part(partkey)" : 2.0
+  },
+  "optimalJoinTree" : "tpch.q19aw_lineitem(orderkey,partkey,suppkey)\n|tpch.q19aw_part(partkey)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch",
+        "tableName" : "q19aw_lineitem"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q19aw_part"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "tpch.q19aw_lineitem(orderkey,partkey,suppkey)\n|tpch.q19aw_part(partkey)" : 2.0
+    },
+    "optimalJoinTree" : "tpch.q19aw_lineitem(orderkey,partkey,suppkey)\n|tpch.q19aw_part(partkey)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch.q19aw_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q19aw_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q19aw_part",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q19aw_part"
+          },
+          "attributes" : [ "partkey" ]
+        }
+      } ]
+    }
+  } ]
+}

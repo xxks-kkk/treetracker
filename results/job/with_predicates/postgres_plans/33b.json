@@ -1,0 +1,878 @@
+ [                                                                                                                                                        
+   {                                                                                                                                                      
+     "Plan": {                                                                                                                                            
+       "Node Type": "Aggregate",                                                                                                                          
+       "Strategy": "Plain",                                                                                                                               
+       "Partial Mode": "Finalize",                                                                                                                        
+       "Parallel Aware": false,                                                                                                                           
+       "Startup Cost": 240982.92,                                                                                                                         
+       "Total Cost": 240982.93,                                                                                                                           
+       "Plan Rows": 1,                                                                                                                                    
+       "Plan Width": 192,                                                                                                                                 
+       "Actual Startup Time": 1162.270,                                                                                                                   
+       "Actual Total Time": 1162.515,                                                                                                                     
+       "Actual Rows": 1,                                                                                                                                  
+       "Actual Loops": 1,                                                                                                                                 
+       "Plans": [                                                                                                                                         
+         {                                                                                                                                                
+           "Node Type": "Gather",                                                                                                                         
+           "Parent Relationship": "Outer",                                                                                                                
+           "Parallel Aware": false,                                                                                                                       
+           "Startup Cost": 240982.79,                                                                                                                     
+           "Total Cost": 240982.90,                                                                                                                       
+           "Plan Rows": 1,                                                                                                                                
+           "Plan Width": 192,                                                                                                                             
+           "Actual Startup Time": 1162.262,                                                                                                               
+           "Actual Total Time": 1162.507,                                                                                                                 
+           "Actual Rows": 1,                                                                                                                              
+           "Actual Loops": 1,                                                                                                                             
+           "Workers Planned": 1,                                                                                                                          
+           "Workers Launched": 0,                                                                                                                         
+           "Single Copy": false,                                                                                                                          
+           "Plans": [                                                                                                                                     
+             {                                                                                                                                            
+               "Node Type": "Aggregate",                                                                                                                  
+               "Strategy": "Plain",                                                                                                                       
+               "Partial Mode": "Partial",                                                                                                                 
+               "Parent Relationship": "Outer",                                                                                                            
+               "Parallel Aware": false,                                                                                                                   
+               "Startup Cost": 239982.79,                                                                                                                 
+               "Total Cost": 239982.80,                                                                                                                   
+               "Plan Rows": 1,                                                                                                                            
+               "Plan Width": 192,                                                                                                                         
+               "Actual Startup Time": 1161.732,                                                                                                           
+               "Actual Total Time": 1161.749,                                                                                                             
+               "Actual Rows": 1,                                                                                                                          
+               "Actual Loops": 1,                                                                                                                         
+               "Workers": [                                                                                                                               
+               ],                                                                                                                                         
+               "Plans": [                                                                                                                                 
+                 {                                                                                                                                        
+                   "Node Type": "Hash Join",                                                                                                              
+                   "Parent Relationship": "Outer",                                                                                                        
+                   "Parallel Aware": false,                                                                                                               
+                   "Join Type": "Inner",                                                                                                                  
+                   "Startup Cost": 235087.04,                                                                                                             
+                   "Total Cost": 239982.78,                                                                                                               
+                   "Plan Rows": 1,                                                                                                                        
+                   "Plan Width": 84,                                                                                                                      
+                   "Actual Startup Time": 1141.053,                                                                                                       
+                   "Actual Total Time": 1161.734,                                                                                                         
+                   "Actual Rows": 4,                                                                                                                      
+                   "Actual Loops": 1,                                                                                                                     
+                   "Inner Unique": false,                                                                                                                 
+                   "Hash Cond": "(t1.kind_id = kt1.id)",                                                                                                  
+                   "Workers": [                                                                                                                           
+                   ],                                                                                                                                     
+                   "Plans": [                                                                                                                             
+                     {                                                                                                                                    
+                       "Node Type": "Hash Join",                                                                                                          
+                       "Parent Relationship": "Outer",                                                                                                    
+                       "Parallel Aware": true,                                                                                                            
+                       "Join Type": "Inner",                                                                                                              
+                       "Startup Cost": 235064.23,                                                                                                         
+                       "Total Cost": 239959.95,                                                                                                           
+                       "Plan Rows": 1,                                                                                                                    
+                       "Plan Width": 88,                                                                                                                  
+                       "Actual Startup Time": 1104.790,                                                                                                   
+                       "Actual Total Time": 1125.468,                                                                                                     
+                       "Actual Rows": 4,                                                                                                                  
+                       "Actual Loops": 1,                                                                                                                 
+                       "Inner Unique": false,                                                                                                             
+                       "Hash Cond": "(cn2.id = mc2.company_id)",                                                                                          
+                       "Workers": [                                                                                                                       
+                       ],                                                                                                                                 
+                       "Plans": [                                                                                                                         
+                         {                                                                                                                                
+                           "Node Type": "Seq Scan",                                                                                                       
+                           "Parent Relationship": "Outer",                                                                                                
+                           "Parallel Aware": true,                                                                                                        
+                           "Relation Name": "company_name",                                                                                               
+                           "Alias": "cn2",                                                                                                                
+                           "Startup Cost": 0.00,                                                                                                          
+                           "Total Cost": 4377.34,                                                                                                         
+                           "Plan Rows": 138234,                                                                                                           
+                           "Plan Width": 23,                                                                                                              
+                           "Actual Startup Time": 0.001,                                                                                                  
+                           "Actual Total Time": 9.918,                                                                                                    
+                           "Actual Rows": 234997,                                                                                                         
+                           "Actual Loops": 1,                                                                                                             
+                           "Workers": [                                                                                                                   
+                           ]                                                                                                                              
+                         },                                                                                                                               
+                         {                                                                                                                                
+                           "Node Type": "Hash",                                                                                                           
+                           "Parent Relationship": "Inner",                                                                                                
+                           "Parallel Aware": true,                                                                                                        
+                           "Startup Cost": 235064.22,                                                                                                     
+                           "Total Cost": 235064.22,                                                                                                       
+                           "Plan Rows": 1,                                                                                                                
+                           "Plan Width": 73,                                                                                                              
+                           "Actual Startup Time": 1104.354,                                                                                               
+                           "Actual Total Time": 1104.368,                                                                                                 
+                           "Actual Rows": 4,                                                                                                              
+                           "Actual Loops": 1,                                                                                                             
+                           "Hash Buckets": 1024,                                                                                                          
+                           "Original Hash Buckets": 1024,                                                                                                 
+                           "Hash Batches": 1,                                                                                                             
+                           "Original Hash Batches": 1,                                                                                                    
+                           "Peak Memory Usage": 40,                                                                                                       
+                           "Workers": [                                                                                                                   
+                           ],                                                                                                                             
+                           "Plans": [                                                                                                                     
+                             {                                                                                                                            
+                               "Node Type": "Hash Join",                                                                                                  
+                               "Parent Relationship": "Outer",                                                                                            
+                               "Parallel Aware": true,                                                                                                    
+                               "Join Type": "Inner",                                                                                                      
+                               "Startup Cost": 195170.96,                                                                                                 
+                               "Total Cost": 235064.22,                                                                                                   
+                               "Plan Rows": 1,                                                                                                            
+                               "Plan Width": 73,                                                                                                          
+                               "Actual Startup Time": 883.060,                                                                                            
+                               "Actual Total Time": 1104.365,                                                                                             
+                               "Actual Rows": 4,                                                                                                          
+                               "Actual Loops": 1,                                                                                                         
+                               "Inner Unique": false,                                                                                                     
+                               "Hash Cond": "(mc2.movie_id = t2.id)",                                                                                     
+                               "Workers": [                                                                                                               
+                               ],                                                                                                                         
+                               "Plans": [                                                                                                                 
+                                 {                                                                                                                        
+                                   "Node Type": "Seq Scan",                                                                                               
+                                   "Parent Relationship": "Outer",                                                                                        
+                                   "Parallel Aware": true,                                                                                                
+                                   "Relation Name": "movie_companies",                                                                                    
+                                   "Alias": "mc2",                                                                                                        
+                                   "Startup Cost": 0.00,                                                                                                  
+                                   "Total Cost": 34137.82,                                                                                                
+                                   "Plan Rows": 1534782,                                                                                                  
+                                   "Plan Width": 8,                                                                                                       
+                                   "Actual Startup Time": 0.001,                                                                                          
+                                   "Actual Total Time": 105.635,                                                                                          
+                                   "Actual Rows": 2609129,                                                                                                
+                                   "Actual Loops": 1,                                                                                                     
+                                   "Workers": [                                                                                                           
+                                   ]                                                                                                                      
+                                 },                                                                                                                       
+                                 {                                                                                                                        
+                                   "Node Type": "Hash",                                                                                                   
+                                   "Parent Relationship": "Inner",                                                                                        
+                                   "Parallel Aware": true,                                                                                                
+                                   "Startup Cost": 195170.94,                                                                                             
+                                   "Total Cost": 195170.94,                                                                                               
+                                   "Plan Rows": 1,                                                                                                        
+                                   "Plan Width": 81,                                                                                                      
+                                   "Actual Startup Time": 882.354,                                                                                        
+                                   "Actual Total Time": 882.368,                                                                                          
+                                   "Actual Rows": 1,                                                                                                      
+                                   "Actual Loops": 1,                                                                                                     
+                                   "Hash Buckets": 1024,                                                                                                  
+                                   "Original Hash Buckets": 1024,                                                                                         
+                                   "Hash Batches": 1,                                                                                                     
+                                   "Original Hash Batches": 1,                                                                                            
+                                   "Peak Memory Usage": 40,                                                                                               
+                                   "Workers": [                                                                                                           
+                                   ],                                                                                                                     
+                                   "Plans": [                                                                                                             
+                                     {                                                                                                                    
+                                       "Node Type": "Hash Join",                                                                                          
+                                       "Parent Relationship": "Outer",                                                                                    
+                                       "Parallel Aware": false,                                                                                           
+                                       "Join Type": "Inner",                                                                                              
+                                       "Startup Cost": 176073.87,                                                                                         
+                                       "Total Cost": 195170.94,                                                                                           
+                                       "Plan Rows": 1,                                                                                                    
+                                       "Plan Width": 81,                                                                                                  
+                                       "Actual Startup Time": 766.755,                                                                                    
+                                       "Actual Total Time": 882.365,                                                                                      
+                                       "Actual Rows": 1,                                                                                                  
+                                       "Actual Loops": 1,                                                                                                 
+                                       "Inner Unique": false,                                                                                             
+                                       "Hash Cond": "(mi_idx1.info_type_id = it1.id)",                                                                    
+                                       "Workers": [                                                                                                       
+                                       ],                                                                                                                 
+                                       "Plans": [                                                                                                         
+                                         {                                                                                                                
+                                           "Node Type": "Hash Join",                                                                                      
+                                           "Parent Relationship": "Outer",                                                                                
+                                           "Parallel Aware": true,                                                                                        
+                                           "Join Type": "Inner",                                                                                          
+                                           "Startup Cost": 176071.45,                                                                                     
+                                           "Total Cost": 195168.51,                                                                                       
+                                           "Plan Rows": 1,                                                                                                
+                                           "Plan Width": 85,                                                                                              
+                                           "Actual Startup Time": 766.731,                                                                                
+                                           "Actual Total Time": 882.339,                                                                                  
+                                           "Actual Rows": 3,                                                                                              
+                                           "Actual Loops": 1,                                                                                             
+                                           "Inner Unique": false,                                                                                         
+                                           "Hash Cond": "(mi_idx1.movie_id = t1.id)",                                                                     
+                                           "Workers": [                                                                                                   
+                                           ],                                                                                                             
+                                           "Plans": [                                                                                                     
+                                             {                                                                                                            
+                                               "Node Type": "Seq Scan",                                                                                   
+                                               "Parent Relationship": "Outer",                                                                            
+                                               "Parallel Aware": true,                                                                                    
+                                               "Relation Name": "movie_info_idx",                                                                         
+                                               "Alias": "mi_idx1",                                                                                        
+                                               "Startup Cost": 0.00,                                                                                      
+                                               "Total Cost": 16052.85,                                                                                    
+                                               "Plan Rows": 811785,                                                                                       
+                                               "Plan Width": 14,                                                                                          
+                                               "Actual Startup Time": 0.002,                                                                              
+                                               "Actual Total Time": 53.772,                                                                               
+                                               "Actual Rows": 1380035,                                                                                    
+                                               "Actual Loops": 1,                                                                                         
+                                               "Workers": [                                                                                               
+                                               ]                                                                                                          
+                                             },                                                                                                           
+                                             {                                                                                                            
+                                               "Node Type": "Hash",                                                                                       
+                                               "Parent Relationship": "Inner",                                                                            
+                                               "Parallel Aware": true,                                                                                    
+                                               "Startup Cost": 176071.44,                                                                                 
+                                               "Total Cost": 176071.44,                                                                                   
+                                               "Plan Rows": 1,                                                                                            
+                                               "Plan Width": 87,                                                                                          
+                                               "Actual Startup Time": 766.009,                                                                            
+                                               "Actual Total Time": 766.020,                                                                              
+                                               "Actual Rows": 1,                                                                                          
+                                               "Actual Loops": 1,                                                                                         
+                                               "Hash Buckets": 1024,                                                                                      
+                                               "Original Hash Buckets": 1024,                                                                             
+                                               "Hash Batches": 1,                                                                                         
+                                               "Original Hash Batches": 1,                                                                                
+                                               "Peak Memory Usage": 40,                                                                                   
+                                               "Workers": [                                                                                               
+                                               ],                                                                                                         
+                                               "Plans": [                                                                                                 
+                                                 {                                                                                                        
+                                                   "Node Type": "Hash Join",                                                                              
+                                                   "Parent Relationship": "Outer",                                                                        
+                                                   "Parallel Aware": true,                                                                                
+                                                   "Join Type": "Inner",                                                                                  
+                                                   "Startup Cost": 171343.35,                                                                             
+                                                   "Total Cost": 176071.44,                                                                               
+                                                   "Plan Rows": 1,                                                                                        
+                                                   "Plan Width": 87,                                                                                      
+                                                   "Actual Startup Time": 753.274,                                                                        
+                                                   "Actual Total Time": 766.017,                                                                          
+                                                   "Actual Rows": 1,                                                                                      
+                                                   "Actual Loops": 1,                                                                                     
+                                                   "Inner Unique": false,                                                                                 
+                                                   "Hash Cond": "(cn1.id = mc1.company_id)",                                                              
+                                                   "Workers": [                                                                                           
+                                                   ],                                                                                                     
+                                                   "Plans": [                                                                                             
+                                                     {                                                                                                    
+                                                       "Node Type": "Seq Scan",                                                                           
+                                                       "Parent Relationship": "Outer",                                                                    
+                                                       "Parallel Aware": true,                                                                            
+                                                       "Relation Name": "company_name",                                                                   
+                                                       "Alias": "cn1",                                                                                    
+                                                       "Startup Cost": 0.00,                                                                              
+                                                       "Total Cost": 4722.92,                                                                             
+                                                       "Plan Rows": 1376,                                                                                 
+                                                       "Plan Width": 23,                                                                                  
+                                                       "Actual Startup Time": 0.009,                                                                      
+                                                       "Actual Total Time": 12.723,                                                                       
+                                                       "Actual Rows": 2340,                                                                               
+                                                       "Actual Loops": 1,                                                                                 
+                                                       "Filter": "((country_code)::text = '[nl]'::text)",                                                 
+                                                       "Rows Removed by Filter": 232657,                                                                  
+                                                       "Workers": [                                                                                       
+                                                       ]                                                                                                  
+                                                     },                                                                                                   
+                                                     {                                                                                                    
+                                                       "Node Type": "Hash",                                                                               
+                                                       "Parent Relationship": "Inner",                                                                    
+                                                       "Parallel Aware": true,                                                                            
+                                                       "Startup Cost": 171343.33,                                                                         
+                                                       "Total Cost": 171343.33,                                                                           
+                                                       "Plan Rows": 1,                                                                                    
+                                                       "Plan Width": 72,                                                                                  
+                                                       "Actual Startup Time": 753.161,                                                                    
+                                                       "Actual Total Time": 753.171,                                                                      
+                                                       "Actual Rows": 4,                                                                                  
+                                                       "Actual Loops": 1,                                                                                 
+                                                       "Hash Buckets": 1024,                                                                              
+                                                       "Original Hash Buckets": 1024,                                                                     
+                                                       "Hash Batches": 1,                                                                                 
+                                                       "Original Hash Batches": 1,                                                                        
+                                                       "Peak Memory Usage": 40,                                                                           
+                                                       "Workers": [                                                                                       
+                                                       ],                                                                                                 
+                                                       "Plans": [                                                                                         
+                                                         {                                                                                                
+                                                           "Node Type": "Hash Join",                                                                      
+                                                           "Parent Relationship": "Outer",                                                                
+                                                           "Parallel Aware": true,                                                                        
+                                                           "Join Type": "Inner",                                                                          
+                                                           "Startup Cost": 131450.07,                                                                     
+                                                           "Total Cost": 171343.33,                                                                       
+                                                           "Plan Rows": 1,                                                                                
+                                                           "Plan Width": 72,                                                                              
+                                                           "Actual Startup Time": 499.635,                                                                
+                                                           "Actual Total Time": 753.165,                                                                  
+                                                           "Actual Rows": 4,                                                                              
+                                                           "Actual Loops": 1,                                                                             
+                                                           "Inner Unique": false,                                                                         
+                                                           "Hash Cond": "(mc1.movie_id = t1.id)",                                                         
+                                                           "Workers": [                                                                                   
+                                                           ],                                                                                             
+                                                           "Plans": [                                                                                     
+                                                             {                                                                                            
+                                                               "Node Type": "Seq Scan",                                                                   
+                                                               "Parent Relationship": "Outer",                                                            
+                                                               "Parallel Aware": true,                                                                    
+                                                               "Relation Name": "movie_companies",                                                        
+                                                               "Alias": "mc1",                                                                            
+                                                               "Startup Cost": 0.00,                                                                      
+                                                               "Total Cost": 34137.82,                                                                    
+                                                               "Plan Rows": 1534782,                                                                      
+                                                               "Plan Width": 8,                                                                           
+                                                               "Actual Startup Time": 0.003,                                                              
+                                                               "Actual Total Time": 129.676,                                                              
+                                                               "Actual Rows": 2609129,                                                                    
+                                                               "Actual Loops": 1,                                                                         
+                                                               "Workers": [                                                                               
+                                                               ]                                                                                          
+                                                             },                                                                                           
+                                                             {                                                                                            
+                                                               "Node Type": "Hash",                                                                       
+                                                               "Parent Relationship": "Inner",                                                            
+                                                               "Parallel Aware": true,                                                                    
+                                                               "Startup Cost": 131450.06,                                                                 
+                                                               "Total Cost": 131450.06,                                                                   
+                                                               "Plan Rows": 1,                                                                            
+                                                               "Plan Width": 64,                                                                          
+                                                               "Actual Startup Time": 498.845,                                                            
+                                                               "Actual Total Time": 498.854,                                                              
+                                                               "Actual Rows": 2,                                                                          
+                                                               "Actual Loops": 1,                                                                         
+                                                               "Hash Buckets": 1024,                                                                      
+                                                               "Original Hash Buckets": 1024,                                                             
+                                                               "Hash Batches": 1,                                                                         
+                                                               "Original Hash Batches": 1,                                                                
+                                                               "Peak Memory Usage": 40,                                                                   
+                                                               "Workers": [                                                                               
+                                                               ],                                                                                         
+                                                               "Plans": [                                                                                 
+                                                                 {                                                                                        
+                                                                   "Node Type": "Hash Join",                                                              
+                                                                   "Parent Relationship": "Outer",                                                        
+                                                                   "Parallel Aware": true,                                                                
+                                                                   "Join Type": "Inner",                                                                  
+                                                                   "Startup Cost": 75002.47,                                                              
+                                                                   "Total Cost": 131450.06,                                                               
+                                                                   "Plan Rows": 1,                                                                        
+                                                                   "Plan Width": 64,                                                                      
+                                                                   "Actual Startup Time": 280.468,                                                        
+                                                                   "Actual Total Time": 498.849,                                                          
+                                                                   "Actual Rows": 2,                                                                      
+                                                                   "Actual Loops": 1,                                                                     
+                                                                   "Inner Unique": false,                                                                 
+                                                                   "Hash Cond": "(t1.id = ml.movie_id)",                                                  
+                                                                   "Workers": [                                                                           
+                                                                   ],                                                                                     
+                                                                   "Plans": [                                                                             
+                                                                     {                                                                                    
+                                                                       "Node Type": "Seq Scan",                                                           
+                                                                       "Parent Relationship": "Outer",                                                    
+                                                                       "Parallel Aware": true,                                                            
+                                                                       "Relation Name": "title",                                                          
+                                                                       "Alias": "t1",                                                                     
+                                                                       "Startup Cost": 0.00,                                                              
+                                                                       "Total Cost": 50870.42,                                                            
+                                                                       "Plan Rows": 1487242,                                                              
+                                                                       "Plan Width": 25,                                                                  
+                                                                       "Actual Startup Time": 0.002,                                                      
+                                                                       "Actual Total Time": 108.617,                                                      
+                                                                       "Actual Rows": 2528312,                                                            
+                                                                       "Actual Loops": 1,                                                                 
+                                                                       "Workers": [                                                                       
+                                                                       ]                                                                                  
+                                                                     },                                                                                   
+                                                                     {                                                                                    
+                                                                       "Node Type": "Hash",                                                               
+                                                                       "Parent Relationship": "Inner",                                                    
+                                                                       "Parallel Aware": true,                                                            
+                                                                       "Startup Cost": 75002.46,                                                          
+                                                                       "Total Cost": 75002.46,                                                            
+                                                                       "Plan Rows": 1,                                                                    
+                                                                       "Plan Width": 39,                                                                  
+                                                                       "Actual Startup Time": 271.052,                                                    
+                                                                       "Actual Total Time": 271.060,                                                      
+                                                                       "Actual Rows": 2,                                                                  
+                                                                       "Actual Loops": 1,                                                                 
+                                                                       "Hash Buckets": 1024,                                                              
+                                                                       "Original Hash Buckets": 1024,                                                     
+                                                                       "Hash Batches": 1,                                                                 
+                                                                       "Original Hash Batches": 1,                                                        
+                                                                       "Peak Memory Usage": 40,                                                           
+                                                                       "Workers": [                                                                       
+                                                                       ],                                                                                 
+                                                                       "Plans": [                                                                         
+                                                                         {                                                                                
+                                                                           "Node Type": "Hash Join",                                                      
+                                                                           "Parent Relationship": "Outer",                                                
+                                                                           "Parallel Aware": false,                                                       
+                                                                           "Join Type": "Inner",                                                          
+                                                                           "Startup Cost": 55475.31,                                                      
+                                                                           "Total Cost": 75002.46,                                                        
+                                                                           "Plan Rows": 1,                                                                
+                                                                           "Plan Width": 39,                                                              
+                                                                           "Actual Startup Time": 136.304,                                                
+                                                                           "Actual Total Time": 271.050,                                                  
+                                                                           "Actual Rows": 2,                                                              
+                                                                           "Actual Loops": 1,                                                             
+                                                                           "Inner Unique": false,                                                         
+                                                                           "Hash Cond": "(mi_idx2.info_type_id = it2.id)",                                
+                                                                           "Workers": [                                                                   
+                                                                           ],                                                                             
+                                                                           "Plans": [                                                                     
+                                                                             {                                                                            
+                                                                               "Node Type": "Hash Join",                                                  
+                                                                               "Parent Relationship": "Outer",                                            
+                                                                               "Parallel Aware": true,                                                    
+                                                                               "Join Type": "Inner",                                                      
+                                                                               "Startup Cost": 55472.89,                                                  
+                                                                               "Total Cost": 75000.02,                                                    
+                                                                               "Plan Rows": 1,                                                            
+                                                                               "Plan Width": 43,                                                          
+                                                                               "Actual Startup Time": 135.807,                                            
+                                                                               "Actual Total Time": 271.036,                                              
+                                                                               "Actual Rows": 21,                                                         
+                                                                               "Actual Loops": 1,                                                         
+                                                                               "Inner Unique": false,                                                     
+                                                                               "Hash Cond": "(mi_idx2.movie_id = t2.id)",                                 
+                                                                               "Workers": [                                                               
+                                                                               ],                                                                         
+                                                                               "Plans": [                                                                 
+                                                                                 {                                                                        
+                                                                                   "Node Type": "Seq Scan",                                               
+                                                                                   "Parent Relationship": "Outer",                                        
+                                                                                   "Parallel Aware": true,                                                
+                                                                                   "Relation Name": "movie_info_idx",                                     
+                                                                                   "Alias": "mi_idx2",                                                    
+                                                                                   "Startup Cost": 0.00,                                                  
+                                                                                   "Total Cost": 18082.32,                                                
+                                                                                   "Plan Rows": 385282,                                                   
+                                                                                   "Plan Width": 14,                                                      
+                                                                                   "Actual Startup Time": 0.013,                                          
+                                                                                   "Actual Total Time": 111.481,                                          
+                                                                                   "Actual Rows": 654961,                                                 
+                                                                                   "Actual Loops": 1,                                                     
+                                                                                   "Filter": "((info)::text < '3.0'::text)",                              
+                                                                                   "Rows Removed by Filter": 725074,                                      
+                                                                                   "Workers": [                                                           
+                                                                                   ]                                                                      
+                                                                                 },                                                                       
+                                                                                 {                                                                        
+                                                                                   "Node Type": "Hash",                                                   
+                                                                                   "Parent Relationship": "Inner",                                        
+                                                                                   "Parallel Aware": true,                                                
+                                                                                   "Startup Cost": 55472.87,                                              
+                                                                                   "Total Cost": 55472.87,                                                
+                                                                                   "Plan Rows": 1,                                                        
+                                                                                   "Plan Width": 29,                                                      
+                                                                                   "Actual Startup Time": 135.334,                                        
+                                                                                   "Actual Total Time": 135.339,                                          
+                                                                                   "Actual Rows": 20,                                                     
+                                                                                   "Actual Loops": 1,                                                     
+                                                                                   "Hash Buckets": 1024,                                                  
+                                                                                   "Original Hash Buckets": 1024,                                         
+                                                                                   "Hash Batches": 1,                                                     
+                                                                                   "Original Hash Batches": 1,                                            
+                                                                                   "Peak Memory Usage": 40,                                               
+                                                                                   "Workers": [                                                           
+                                                                                   ],                                                                     
+                                                                                   "Plans": [                                                             
+                                                                                     {                                                                    
+                                                                                       "Node Type": "Hash Join",                                          
+                                                                                       "Parent Relationship": "Outer",                                    
+                                                                                       "Parallel Aware": false,                                           
+                                                                                       "Join Type": "Inner",                                              
+                                                                                       "Startup Cost": 620.53,                                            
+                                                                                       "Total Cost": 55472.87,                                            
+                                                                                       "Plan Rows": 1,                                                    
+                                                                                       "Plan Width": 29,                                                  
+                                                                                       "Actual Startup Time": 6.755,                                      
+                                                                                       "Actual Total Time": 135.328,                                      
+                                                                                       "Actual Rows": 20,                                                 
+                                                                                       "Actual Loops": 1,                                                 
+                                                                                       "Inner Unique": false,                                             
+                                                                                       "Hash Cond": "(t2.kind_id = kt2.id)",                              
+                                                                                       "Workers": [                                                       
+                                                                                       ],                                                                 
+                                                                                       "Plans": [                                                         
+                                                                                         {                                                                
+                                                                                           "Node Type": "Hash Join",                                      
+                                                                                           "Parent Relationship": "Outer",                                
+                                                                                           "Parallel Aware": false,                                       
+                                                                                           "Join Type": "Inner",                                          
+                                                                                           "Startup Cost": 597.72,                                        
+                                                                                           "Total Cost": 55450.04,                                        
+                                                                                           "Plan Rows": 4,                                                
+                                                                                           "Plan Width": 33,                                              
+                                                                                           "Actual Startup Time": 6.750,                                  
+                                                                                           "Actual Total Time": 135.316,                                  
+                                                                                           "Actual Rows": 37,                                             
+                                                                                           "Actual Loops": 1,                                             
+                                                                                           "Inner Unique": false,                                         
+                                                                                           "Hash Cond": "(t2.id = ml.linked_movie_id)",                   
+                                                                                           "Workers": [                                                   
+                                                                                           ],                                                             
+                                                                                           "Plans": [                                                     
+                                                                                             {                                                            
+                                                                                               "Node Type": "Seq Scan",                                   
+                                                                                               "Parent Relationship": "Outer",                            
+                                                                                               "Parallel Aware": true,                                    
+                                                                                               "Relation Name": "title",                                  
+                                                                                               "Alias": "t2",                                             
+                                                                                               "Startup Cost": 0.00,                                      
+                                                                                               "Total Cost": 54588.53,                                    
+                                                                                               "Plan Rows": 70332,                                        
+                                                                                               "Plan Width": 25,                                          
+                                                                                               "Actual Startup Time": 0.024,                              
+                                                                                               "Actual Total Time": 125.770,                              
+                                                                                               "Actual Rows": 119565,                                     
+                                                                                               "Actual Loops": 1,                                         
+                                                                                               "Filter": "(production_year = 2007)",                      
+                                                                                               "Rows Removed by Filter": 2408747,                         
+                                                                                               "Workers": [                                               
+                                                                                               ]                                                          
+                                                                                             },                                                           
+                                                                                             {                                                            
+                                                                                               "Node Type": "Hash",                                       
+                                                                                               "Parent Relationship": "Inner",                            
+                                                                                               "Parallel Aware": false,                                   
+                                                                                               "Startup Cost": 595.85,                                    
+                                                                                               "Total Cost": 595.85,                                      
+                                                                                               "Plan Rows": 150,                                          
+                                                                                               "Plan Width": 8,                                           
+                                                                                               "Actual Startup Time": 3.335,                              
+                                                                                               "Actual Total Time": 3.337,                                
+                                                                                               "Actual Rows": 2315,                                       
+                                                                                               "Actual Loops": 1,                                         
+                                                                                               "Hash Buckets": 4096,                                      
+                                                                                               "Original Hash Buckets": 1024,                             
+                                                                                               "Hash Batches": 1,                                         
+                                                                                               "Original Hash Batches": 1,                                
+                                                                                               "Peak Memory Usage": 123,                                  
+                                                                                               "Workers": [                                               
+                                                                                               ],                                                         
+                                                                                               "Plans": [                                                 
+                                                                                                 {                                                        
+                                                                                                   "Node Type": "Hash Join",                              
+                                                                                                   "Parent Relationship": "Outer",                        
+                                                                                                   "Parallel Aware": false,                               
+                                                                                                   "Join Type": "Inner",                                  
+                                                                                                   "Startup Cost": 18.89,                                 
+                                                                                                   "Total Cost": 595.85,                                  
+                                                                                                   "Plan Rows": 150,                                      
+                                                                                                   "Plan Width": 8,                                       
+                                                                                                   "Actual Startup Time": 0.019,                          
+                                                                                                   "Actual Total Time": 3.201,                            
+                                                                                                   "Actual Rows": 2315,                                   
+                                                                                                   "Actual Loops": 1,                                     
+                                                                                                   "Inner Unique": false,                                 
+                                                                                                   "Hash Cond": "(ml.link_type_id = lt.id)",              
+                                                                                                   "Workers": [                                           
+                                                                                                   ],                                                     
+                                                                                                   "Plans": [                                             
+                                                                                                     {                                                    
+                                                                                                       "Node Type": "Seq Scan",                           
+                                                                                                       "Parent Relationship": "Outer",                    
+                                                                                                       "Parallel Aware": false,                           
+                                                                                                       "Relation Name": "movie_link",                     
+                                                                                                       "Alias": "ml",                                     
+                                                                                                       "Startup Cost": 0.00,                              
+                                                                                                       "Total Cost": 462.97,                              
+                                                                                                       "Plan Rows": 29997,                                
+                                                                                                       "Plan Width": 12,                                  
+                                                                                                       "Actual Startup Time": 0.007,                      
+                                                                                                       "Actual Total Time": 1.570,                        
+                                                                                                       "Actual Rows": 29997,                              
+                                                                                                       "Actual Loops": 1,                                 
+                                                                                                       "Workers": [                                       
+                                                                                                       ]                                                  
+                                                                                                     },                                                   
+                                                                                                     {                                                    
+                                                                                                       "Node Type": "Hash",                               
+                                                                                                       "Parent Relationship": "Inner",                    
+                                                                                                       "Parallel Aware": false,                           
+                                                                                                       "Startup Cost": 18.88,                             
+                                                                                                       "Total Cost": 18.88,                               
+                                                                                                       "Plan Rows": 1,                                    
+                                                                                                       "Plan Width": 4,                                   
+                                                                                                       "Actual Startup Time": 0.006,                      
+                                                                                                       "Actual Total Time": 0.007,                        
+                                                                                                       "Actual Rows": 2,                                  
+                                                                                                       "Actual Loops": 1,                                 
+                                                                                                       "Hash Buckets": 1024,                              
+                                                                                                       "Original Hash Buckets": 1024,                     
+                                                                                                       "Hash Batches": 1,                                 
+                                                                                                       "Original Hash Batches": 1,                        
+                                                                                                       "Peak Memory Usage": 9,                            
+                                                                                                       "Workers": [                                       
+                                                                                                       ],                                                 
+                                                                                                       "Plans": [                                         
+                                                                                                         {                                                
+                                                                                                           "Node Type": "Seq Scan",                       
+                                                                                                           "Parent Relationship": "Outer",                
+                                                                                                           "Parallel Aware": false,                       
+                                                                                                           "Relation Name": "link_type",                  
+                                                                                                           "Alias": "lt",                                 
+                                                                                                           "Startup Cost": 0.00,                          
+                                                                                                           "Total Cost": 18.88,                           
+                                                                                                           "Plan Rows": 1,                                
+                                                                                                           "Plan Width": 4,                               
+                                                                                                           "Actual Startup Time": 0.005,                  
+                                                                                                           "Actual Total Time": 0.006,                    
+                                                                                                           "Actual Rows": 2,                              
+                                                                                                           "Actual Loops": 1,                             
+                                                                                                           "Filter": "((link)::text ~~ '%follow%'::text)",
+                                                                                                           "Rows Removed by Filter": 16,                  
+                                                                                                           "Workers": [                                   
+                                                                                                           ]                                              
+                                                                                                         }                                                
+                                                                                                       ]                                                  
+                                                                                                     }                                                    
+                                                                                                   ]                                                      
+                                                                                                 }                                                        
+                                                                                               ]                                                          
+                                                                                             }                                                            
+                                                                                           ]                                                              
+                                                                                         },                                                               
+                                                                                         {                                                                
+                                                                                           "Node Type": "Hash",                                           
+                                                                                           "Parent Relationship": "Inner",                                
+                                                                                           "Parallel Aware": false,                                       
+                                                                                           "Startup Cost": 22.75,                                         
+                                                                                           "Total Cost": 22.75,                                           
+                                                                                           "Plan Rows": 5,                                                
+                                                                                           "Plan Width": 4,                                               
+                                                                                           "Actual Startup Time": 0.003,                                  
+                                                                                           "Actual Total Time": 0.003,                                    
+                                                                                           "Actual Rows": 1,                                              
+                                                                                           "Actual Loops": 1,                                             
+                                                                                           "Hash Buckets": 1024,                                          
+                                                                                           "Original Hash Buckets": 1024,                                 
+                                                                                           "Hash Batches": 1,                                             
+                                                                                           "Original Hash Batches": 1,                                    
+                                                                                           "Peak Memory Usage": 9,                                        
+                                                                                           "Workers": [                                                   
+                                                                                           ],                                                             
+                                                                                           "Plans": [                                                     
+                                                                                             {                                                            
+                                                                                               "Node Type": "Seq Scan",                                   
+                                                                                               "Parent Relationship": "Outer",                            
+                                                                                               "Parallel Aware": false,                                   
+                                                                                               "Relation Name": "kind_type",                              
+                                                                                               "Alias": "kt2",                                            
+                                                                                               "Startup Cost": 0.00,                                      
+                                                                                               "Total Cost": 22.75,                                       
+                                                                                               "Plan Rows": 5,                                            
+                                                                                               "Plan Width": 4,                                           
+                                                                                               "Actual Startup Time": 0.002,                              
+                                                                                               "Actual Total Time": 0.002,                                
+                                                                                               "Actual Rows": 1,                                          
+                                                                                               "Actual Loops": 1,                                         
+                                                                                               "Filter": "((kind)::text = 'tv series'::text)",            
+                                                                                               "Rows Removed by Filter": 6,                               
+                                                                                               "Workers": [                                               
+                                                                                               ]                                                          
+                                                                                             }                                                            
+                                                                                           ]                                                              
+                                                                                         }                                                                
+                                                                                       ]                                                                  
+                                                                                     }                                                                    
+                                                                                   ]                                                                      
+                                                                                 }                                                                        
+                                                                               ]                                                                          
+                                                                             },                                                                           
+                                                                             {                                                                            
+                                                                               "Node Type": "Hash",                                                       
+                                                                               "Parent Relationship": "Inner",                                            
+                                                                               "Parallel Aware": false,                                                   
+                                                                               "Startup Cost": 2.41,                                                      
+                                                                               "Total Cost": 2.41,                                                        
+                                                                               "Plan Rows": 1,                                                            
+                                                                               "Plan Width": 4,                                                           
+                                                                               "Actual Startup Time": 0.006,                                              
+                                                                               "Actual Total Time": 0.006,                                                
+                                                                               "Actual Rows": 1,                                                          
+                                                                               "Actual Loops": 1,                                                         
+                                                                               "Hash Buckets": 1024,                                                      
+                                                                               "Original Hash Buckets": 1024,                                             
+                                                                               "Hash Batches": 1,                                                         
+                                                                               "Original Hash Batches": 1,                                                
+                                                                               "Peak Memory Usage": 9,                                                    
+                                                                               "Workers": [                                                               
+                                                                               ],                                                                         
+                                                                               "Plans": [                                                                 
+                                                                                 {                                                                        
+                                                                                   "Node Type": "Seq Scan",                                               
+                                                                                   "Parent Relationship": "Outer",                                        
+                                                                                   "Parallel Aware": false,                                               
+                                                                                   "Relation Name": "info_type",                                          
+                                                                                   "Alias": "it2",                                                        
+                                                                                   "Startup Cost": 0.00,                                                  
+                                                                                   "Total Cost": 2.41,                                                    
+                                                                                   "Plan Rows": 1,                                                        
+                                                                                   "Plan Width": 4,                                                       
+                                                                                   "Actual Startup Time": 0.005,                                          
+                                                                                   "Actual Total Time": 0.006,                                            
+                                                                                   "Actual Rows": 1,                                                      
+                                                                                   "Actual Loops": 1,                                                     
+                                                                                   "Filter": "((info)::text = 'rating'::text)",                           
+                                                                                   "Rows Removed by Filter": 112,                                         
+                                                                                   "Workers": [                                                           
+                                                                                   ]                                                                      
+                                                                                 }                                                                        
+                                                                               ]                                                                          
+                                                                             }                                                                            
+                                                                           ]                                                                              
+                                                                         }                                                                                
+                                                                       ]                                                                                  
+                                                                     }                                                                                    
+                                                                   ]                                                                                      
+                                                                 }                                                                                        
+                                                               ]                                                                                          
+                                                             }                                                                                            
+                                                           ]                                                                                              
+                                                         }                                                                                                
+                                                       ]                                                                                                  
+                                                     }                                                                                                    
+                                                   ]                                                                                                      
+                                                 }                                                                                                        
+                                               ]                                                                                                          
+                                             }                                                                                                            
+                                           ]                                                                                                              
+                                         },                                                                                                               
+                                         {                                                                                                                
+                                           "Node Type": "Hash",                                                                                           
+                                           "Parent Relationship": "Inner",                                                                                
+                                           "Parallel Aware": false,                                                                                       
+                                           "Startup Cost": 2.41,                                                                                          
+                                           "Total Cost": 2.41,                                                                                            
+                                           "Plan Rows": 1,                                                                                                
+                                           "Plan Width": 4,                                                                                               
+                                           "Actual Startup Time": 0.019,                                                                                  
+                                           "Actual Total Time": 0.020,                                                                                    
+                                           "Actual Rows": 1,                                                                                              
+                                           "Actual Loops": 1,                                                                                             
+                                           "Hash Buckets": 1024,                                                                                          
+                                           "Original Hash Buckets": 1024,                                                                                 
+                                           "Hash Batches": 1,                                                                                             
+                                           "Original Hash Batches": 1,                                                                                    
+                                           "Peak Memory Usage": 9,                                                                                        
+                                           "Workers": [                                                                                                   
+                                           ],                                                                                                             
+                                           "Plans": [                                                                                                     
+                                             {                                                                                                            
+                                               "Node Type": "Seq Scan",                                                                                   
+                                               "Parent Relationship": "Outer",                                                                            
+                                               "Parallel Aware": false,                                                                                   
+                                               "Relation Name": "info_type",                                                                              
+                                               "Alias": "it1",                                                                                            
+                                               "Startup Cost": 0.00,                                                                                      
+                                               "Total Cost": 2.41,                                                                                        
+                                               "Plan Rows": 1,                                                                                            
+                                               "Plan Width": 4,                                                                                           
+                                               "Actual Startup Time": 0.018,                                                                              
+                                               "Actual Total Time": 0.019,                                                                                
+                                               "Actual Rows": 1,                                                                                          
+                                               "Actual Loops": 1,                                                                                         
+                                               "Filter": "((info)::text = 'rating'::text)",                                                               
+                                               "Rows Removed by Filter": 112,                                                                             
+                                               "Workers": [                                                                                               
+                                               ]                                                                                                          
+                                             }                                                                                                            
+                                           ]                                                                                                              
+                                         }                                                                                                                
+                                       ]                                                                                                                  
+                                     }                                                                                                                    
+                                   ]                                                                                                                      
+                                 }                                                                                                                        
+                               ]                                                                                                                          
+                             }                                                                                                                            
+                           ]                                                                                                                              
+                         }                                                                                                                                
+                       ]                                                                                                                                  
+                     },                                                                                                                                   
+                     {                                                                                                                                    
+                       "Node Type": "Hash",                                                                                                               
+                       "Parent Relationship": "Inner",                                                                                                    
+                       "Parallel Aware": false,                                                                                                           
+                       "Startup Cost": 22.75,                                                                                                             
+                       "Total Cost": 22.75,                                                                                                               
+                       "Plan Rows": 5,                                                                                                                    
+                       "Plan Width": 4,                                                                                                                   
+                       "Actual Startup Time": 36.233,                                                                                                     
+                       "Actual Total Time": 36.234,                                                                                                       
+                       "Actual Rows": 1,                                                                                                                  
+                       "Actual Loops": 1,                                                                                                                 
+                       "Hash Buckets": 1024,                                                                                                              
+                       "Original Hash Buckets": 1024,                                                                                                     
+                       "Hash Batches": 1,                                                                                                                 
+                       "Original Hash Batches": 1,                                                                                                        
+                       "Peak Memory Usage": 9,                                                                                                            
+                       "Workers": [                                                                                                                       
+                       ],                                                                                                                                 
+                       "Plans": [                                                                                                                         
+                         {                                                                                                                                
+                           "Node Type": "Seq Scan",                                                                                                       
+                           "Parent Relationship": "Outer",                                                                                                
+                           "Parallel Aware": false,                                                                                                       
+                           "Relation Name": "kind_type",                                                                                                  
+                           "Alias": "kt1",                                                                                                                
+                           "Startup Cost": 0.00,                                                                                                          
+                           "Total Cost": 22.75,                                                                                                           
+                           "Plan Rows": 5,                                                                                                                
+                           "Plan Width": 4,                                                                                                               
+                           "Actual Startup Time": 36.231,                                                                                                 
+                           "Actual Total Time": 36.232,                                                                                                   
+                           "Actual Rows": 1,                                                                                                              
+                           "Actual Loops": 1,                                                                                                             
+                           "Filter": "((kind)::text = 'tv series'::text)",                                                                                
+                           "Rows Removed by Filter": 6,                                                                                                   
+                           "Workers": [                                                                                                                   
+                           ]                                                                                                                              
+                         }                                                                                                                                
+                       ]                                                                                                                                  
+                     }                                                                                                                                    
+                   ]                                                                                                                                      
+                 }                                                                                                                                        
+               ]                                                                                                                                          
+             }                                                                                                                                            
+           ]                                                                                                                                              
+         }                                                                                                                                                
+       ]                                                                                                                                                  
+     },                                                                                                                                                   
+     "Planning Time": 1370.551,                                                                                                                           
+     "Triggers": [                                                                                                                                        
+     ],                                                                                                                                                   
+     "JIT": {                                                                                                                                             
+       "Functions": 130,                                                                                                                                  
+       "Options": {                                                                                                                                       
+         "Inlining": false,                                                                                                                               
+         "Optimization": false,                                                                                                                           
+         "Expressions": true,                                                                                                                             
+         "Deforming": true                                                                                                                                
+       },                                                                                                                                                 
+       "Timing": {                                                                                                                                        
+         "Generation": 8.494,                                                                                                                             
+         "Inlining": 0.000,                                                                                                                               
+         "Optimization": 1.391,                                                                                                                           
+         "Emission": 34.326,                                                                                                                              
+         "Total": 44.211                                                                                                                                  
+       }                                                                                                                                                  
+     },                                                                                                                                                   
+     "Execution Time": 1201.120                                                                                                                           
+   }                                                                                                                                                      
+ ]
+

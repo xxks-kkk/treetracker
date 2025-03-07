@@ -17,9 +17,9 @@ public class JoinNode
     private PlanNode right;
     private static final OptType NODE_PLAN_NODE_TYPE = OptType.join;
 
-    public JoinNode(PlanNodeId id, PlanNode left, PlanNode right)
+    public JoinNode(PlanNodeId id, PlanNode left, PlanNode right, Side side)
     {
-        super(id);
+        super(id, side);
 
         requireNonNull(left, "left is null");
         requireNonNull(right, "right is null");
@@ -64,5 +64,11 @@ public class JoinNode
     public OptType getNodeType()
     {
         return NODE_PLAN_NODE_TYPE;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(" + left.toString() + " JOIN " + right.toString() + ")";
     }
 }

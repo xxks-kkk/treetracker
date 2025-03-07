@@ -1,6 +1,7 @@
 package org.zhu45.treetracker.relational.operator;
 
 import org.zhu45.treetracker.common.Domain;
+import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +66,13 @@ public class StatisticsInformationPrinter
             }
 
             @Override
+            void visitTupleBasedTreeTrackerOneBetaHashTableIntOperator(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator operator, Void context)
+            {
+                process(operator.r1Operator, context);
+                process(operator.r2Operator, context);
+            }
+
+            @Override
             public void visitTupleBasedTableScanOperator(TupleBasedTableScanOperator operator, Void context)
             {
                 output.append(String.format("Table scan operator (%s: %s): \n", operator.getOperatorID(), operator.getTraceOperatorName()));
@@ -74,7 +82,10 @@ public class StatisticsInformationPrinter
                 output.append("RecordTupleSourceClazzName: ")
                         .append(operator.getStatisticsInformation().getRecordTupleSourceClazzName())
                         .append("\n");
-                if (operator.isLeftMostOperatorInPlan() && operator.getNoGoodListMap() != null) {
+                if (operator.getSide() == Side.OUTER && operator.getNoGoodListMap() != null) {
+                    output.append("noGoodListClazz: ")
+                            .append(operator.getNoGoodListMap().getClass().getSimpleName())
+                            .append("\n");
                     output.append("numberOfNoGoodTuples: ")
                             .append(operator.getNoGoodListMap().getStatisticsInformation().getNumberOfNoGoodTuples())
                             .append("\n");

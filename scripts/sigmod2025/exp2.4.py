@@ -9,6 +9,7 @@ from pathlib import Path
 import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt, transforms, ticker
+from scipy.stats import gmean
 
 from plot.constants import HJ, COLUMN_RIGHT_BOUND, ALGORITHMS_TO_PLOT, DATA_SOURCE_CSV, TTJ, Yannakakis, \
     TTJ_FIXED_HJ_ORDERING
@@ -18,6 +19,27 @@ from plot.utility import check_argument
 
 def get_job_full_path(csv_name):
     return Path.home() / "projects" / "treetracker2-local" / "results" / "job" / "with_predicates" / csv_name
+
+
+def speedup_analysis(data_speedup, labels):
+    """
+    Compute max, min, geometric mean of speedups for each algorithm
+    """
+    for algorithm in data_speedup:
+        speed_vals = np.array(data_speedup[algorithm])
+        min_idx = np.argmin(speed_vals)
+        min_val = np.min(speed_vals)
+        max_idx = np.argmax(speed_vals)
+        max_val = np.max(speed_vals)
+        geo_mean = gmean(speed_vals)
+        print(f"""
+        algorithm : {algorithm}
+        min       : {min_val}
+        min_query : {labels[min_idx]}
+        max       : {max_val}
+        max_query : {labels[max_idx]}
+        geo_mean  : {geo_mean}
+        """)
 
 
 def job_speedup():
@@ -256,6 +278,8 @@ def job_speedup():
         data_speedup[algorithm] = \
             [round(hj_time / algorithm_time, 1) for hj_time, algorithm_time in zip(hj, grouped_data[algorithm])]
     del data_speedup[HJ]
+
+    speedup_analysis(data_speedup, labels)
 
     # data_speedup = dict()
     # for algorithm, dps in grouped_data.items():

@@ -87,15 +87,8 @@ public class TestYannakakisAggregateStatisticsInformation
         if (traceLogger.isDebugEnabled()) {
             traceLogger.debug("expectedValue:\n" + expectedValue);
         }
-        base.testPhysicalPlanExecution(Pair.of(triple.getLeft(), triple.getMiddle()));
-        Operator rootOperator = triple.getLeft().getRoot().getOperator();
-        AggregateStatisticsInformationContext aggregateStatisticsInformationContext = AggregateStatisticsInformationContext.builder()
-                .setRootOperator(rootOperator)
-                .setJoinOperator(JoinOperator.Yannakakis)
-                .build();
-        AggregateStatisticsInformationFactory factory = new AggregateStatisticsInformationFactory(aggregateStatisticsInformationContext);
-        YannakakisAggregateStatisticsInformation aggregateStatisticsInformation = (YannakakisAggregateStatisticsInformation) factory.get();
-        assertEquals(expectedValue, aggregateStatisticsInformation.getNumberOfR1Assignments());
+        YannakakisAggregateStatisticsInformation yannakakisAggregateStatisticsInformation = testStatistics(triple);
+        assertEquals(expectedValue, yannakakisAggregateStatisticsInformation.getNumberOfR1Assignments());
     }
 
     public static class TestNumberOfR1AssignmentCases
@@ -122,6 +115,188 @@ public class TestYannakakisAggregateStatisticsInformation
             // See cost-model4.pdf
             return Triple.of(pair.getLeft(), pair.getRight(), 50);
         }
+    }
+
+    public static class TestNumberOfHashTableProbeCases
+            implements TestCases
+    {
+        private TestingPhysicalPlanBase base;
+
+        public TestNumberOfHashTableProbeCases(TestingPhysicalPlanBase base)
+        {
+            this.base = base;
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableProbe()
+        {
+            TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases cases = new TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases(base);
+            Triple<Plan, List<Operator>, Integer> testCase = cases.physicalPlanForTestEstimateCostOfTTJ();
+            // the total number of hash table probe within full reducer + total number of hash table within the join plan
+            return Triple.of(testCase.getLeft(), testCase.getMiddle(), 21);
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableProbe2()
+        {
+            TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases cases = new TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases(base);
+            Pair<Plan, List<Operator>> pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseFour();
+            // the total number of hash table probe within full reducer + total number of hash table with the join plan
+            return Triple.of(pair.getLeft(), pair.getRight(), 13);
+        }
+    }
+
+    private Object[][] testNumberOfHashTableProbeDataProvider()
+    {
+        return twoDlistTo2DArray(buildSpecificTestCases(base, List.of(TestNumberOfHashTableProbeCases.class)));
+    }
+
+    private YannakakisAggregateStatisticsInformation testStatistics(Triple<Plan, List<Operator>, Integer> triple)
+    {
+        base.testPhysicalPlanExecution(Pair.of(triple.getLeft(), triple.getMiddle()));
+        Operator rootOperator = triple.getLeft().getRoot().getOperator();
+        AggregateStatisticsInformationContext aggregateStatisticsInformationContext = AggregateStatisticsInformationContext.builder()
+                .setRootOperator(rootOperator)
+                .setJoinOperator(JoinOperator.Yannakakis)
+                .build();
+        AggregateStatisticsInformationFactory factory = new AggregateStatisticsInformationFactory(aggregateStatisticsInformationContext);
+        return (YannakakisAggregateStatisticsInformation) factory.get();
+    }
+
+    @ParameterizedTest
+    @MethodSource("testNumberOfHashTableProbeDataProvider")
+    public void testNumberOfHashTableProbe(Triple<Plan, List<Operator>, Integer> triple)
+    {
+        int expectedValue = triple.getRight();
+        if (traceLogger.isDebugEnabled()) {
+            traceLogger.debug("expectedValue:\n" + expectedValue);
+        }
+        YannakakisAggregateStatisticsInformation yannakakisAggregateStatisticsInformation = testStatistics(triple);
+        assertEquals(expectedValue, yannakakisAggregateStatisticsInformation.getNumberOfHashTableProbe());
+    }
+
+    public static class TestNumberOfHashTableProbeWithFullReducerCases
+            implements TestCases
+    {
+        private TestingPhysicalPlanBase base;
+
+        public TestNumberOfHashTableProbeWithFullReducerCases(TestingPhysicalPlanBase base)
+        {
+            this.base = base;
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableProbe()
+        {
+            TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases cases = new TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases(base);
+            Triple<Plan, List<Operator>, Integer> testCase = cases.physicalPlanForTestEstimateCostOfTTJ();
+            return Triple.of(testCase.getLeft(), testCase.getMiddle(), 18);
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableProbe2()
+        {
+            TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases cases = new TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases(base);
+            Pair<Plan, List<Operator>> pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseFour();
+            return Triple.of(pair.getLeft(), pair.getRight(), 10);
+        }
+    }
+
+    private Object[][] testNumberOfHashTableProbeWithinFullReducerDataProvider()
+    {
+        return twoDlistTo2DArray(buildSpecificTestCases(base, List.of(TestNumberOfHashTableProbeWithFullReducerCases.class)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testNumberOfHashTableProbeWithinFullReducerDataProvider")
+    public void testNumberOfHashTableProbeWithinFullReducer(Triple<Plan, List<Operator>, Integer> triple)
+    {
+        int expectedValue = triple.getRight();
+        if (traceLogger.isDebugEnabled()) {
+            traceLogger.debug("expectedValue:\n" + expectedValue);
+        }
+        YannakakisAggregateStatisticsInformation yannakakisAggregateStatisticsInformation = testStatistics(triple);
+        assertEquals(expectedValue, yannakakisAggregateStatisticsInformation.getNumberOfHashTableProbeWithinFullReducer());
+    }
+
+    public static class TestNumberOfHashTableBuildTuplesWithinFullReducerCases
+            implements TestCases
+    {
+        private TestingPhysicalPlanBase base;
+
+        public TestNumberOfHashTableBuildTuplesWithinFullReducerCases(TestingPhysicalPlanBase base)
+        {
+            this.base = base;
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableBuildTuplesWithinFullReducer()
+        {
+            TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases cases = new TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases(base);
+            Triple<Plan, List<Operator>, Integer> testCase = cases.physicalPlanForTestEstimateCostOfTTJ();
+            return Triple.of(testCase.getLeft(), testCase.getMiddle(), 7);
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestNumberOfHashTableBuildTuplesWithinFullReducer2()
+        {
+            TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases cases = new TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases(base);
+            Pair<Plan, List<Operator>> pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseFour();
+            return Triple.of(pair.getLeft(), pair.getRight(), 6);
+        }
+    }
+
+    private Object[][] testNumberOfHashTableBuildTuplesWithinFullReducerDataProvider()
+    {
+        return twoDlistTo2DArray(buildSpecificTestCases(base, List.of(TestNumberOfHashTableBuildTuplesWithinFullReducerCases.class)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testNumberOfHashTableBuildTuplesWithinFullReducerDataProvider")
+    public void testNumberOfHashTableBuildTuplesWithinFullReducer(Triple<Plan, List<Operator>, Integer> triple)
+    {
+        int expectedValue = triple.getRight();
+        if (traceLogger.isDebugEnabled()) {
+            traceLogger.debug("expectedValue:\n" + expectedValue);
+        }
+        YannakakisAggregateStatisticsInformation yannakakisAggregateStatisticsInformation = testStatistics(triple);
+        assertEquals(expectedValue, yannakakisAggregateStatisticsInformation.getNumberOfHashTableBuildTuplesWithinFullReducer());
+    }
+
+    public static class TestTotalDomainSizeCases
+            implements TestCases
+    {
+        private TestingPhysicalPlanBase base;
+
+        public TestTotalDomainSizeCases(TestingPhysicalPlanBase base)
+        {
+            this.base = base;
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestTotalDomainSize()
+        {
+            TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases cases = new TestTTJAggregateStatisticsInformation.TestEstimateCostOfTTJCases(base);
+            Triple<Plan, List<Operator>, Integer> testCase = cases.physicalPlanForTestEstimateCostOfTTJ();
+            return Triple.of(testCase.getLeft(), testCase.getMiddle(), 4);
+        }
+
+        public Triple<Plan, List<Operator>, Integer> physicalPlanForTestTotalDomainSize2()
+        {
+            TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases cases = new TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases(base);
+            Pair<Plan, List<Operator>> pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseFour();
+            return Triple.of(pair.getLeft(), pair.getRight(), 3);
+        }
+    }
+
+    private Object[][] testTotalDomainSizeDataProvider()
+    {
+        return twoDlistTo2DArray(buildSpecificTestCases(base, List.of(TestTotalDomainSizeCases.class)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testTotalDomainSizeDataProvider")
+    public void testTotalDomainSize(Triple<Plan, List<Operator>, Integer> triple)
+    {
+        int expectedValue = triple.getRight();
+        if (traceLogger.isDebugEnabled()) {
+            traceLogger.debug("expectedValue:\n" + expectedValue);
+        }
+        YannakakisAggregateStatisticsInformation yannakakisAggregateStatisticsInformation = testStatistics(triple);
+        assertEquals(expectedValue, yannakakisAggregateStatisticsInformation.getInnerDomainSize());
     }
 
     @Test

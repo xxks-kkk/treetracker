@@ -1,0 +1,79 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch",
+      "tableName" : "q3w_lineitem"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q3w_orders"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q3w_customer"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch.q3w_lineitem(orderkey,partkey,suppkey)\n|tpch.q3w_orders(orderkey,custkey)\n||tpch.q3w_customer(custkey)" : 3.0
+  },
+  "optimalJoinTree" : "tpch.q3w_lineitem(orderkey,partkey,suppkey)\n|tpch.q3w_orders(orderkey,custkey)\n||tpch.q3w_customer(custkey)",
+  "cost" : 3.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch",
+        "tableName" : "q3w_lineitem"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q3w_orders"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q3w_customer"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "tpch.q3w_lineitem(orderkey,partkey,suppkey)\n|tpch.q3w_orders(orderkey,custkey)\n||tpch.q3w_customer(custkey)" : 3.0
+    },
+    "optimalJoinTree" : "tpch.q3w_lineitem(orderkey,partkey,suppkey)\n|tpch.q3w_orders(orderkey,custkey)\n||tpch.q3w_customer(custkey)",
+    "cost" : 3.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch.q3w_orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q3w_orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q3w_customer",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q3w_customer"
+          },
+          "attributes" : [ "custkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch.q3w_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q3w_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q3w_orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q3w_orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        }
+      } ]
+    }
+  } ]
+}

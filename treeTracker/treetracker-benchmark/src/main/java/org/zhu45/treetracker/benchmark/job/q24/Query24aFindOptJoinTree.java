@@ -52,20 +52,20 @@ public class Query24aFindOptJoinTree
         MultiwayJoinNode infoTypeNode = getInfoTypeInt(JOBQueries.Q24a, null);
         MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q24a, null);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieInfoNode, infoTypeNode, titleNode, castInfoNode, nameNode, roleTypeNode, movieKeywordNode, keywordNode, charNameNode, movieCompaniesNode, companyNameNode, akaNameNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(castInfoNode, titleNode, nameNode, roleTypeNode, charNameNode, movieInfoNode, infoTypeNode, movieCompaniesNode, companyNameNode, movieKeywordNode, keywordNode, akaNameNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(movieInfoNode.getSchemaTableName(),
-                infoTypeNode.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(castInfoNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
-                castInfoNode.getSchemaTableName(),
                 nameNode.getSchemaTableName(),
                 roleTypeNode.getSchemaTableName(),
-                movieKeywordNode.getSchemaTableName(),
-                keywordNode.getSchemaTableName(),
                 charNameNode.getSchemaTableName(),
+                movieInfoNode.getSchemaTableName(),
+                infoTypeNode.getSchemaTableName(),
                 movieCompaniesNode.getSchemaTableName(),
                 companyNameNode.getSchemaTableName(),
+                movieKeywordNode.getSchemaTableName(),
+                keywordNode.getSchemaTableName(),
                 akaNameNode.getSchemaTableName()));
         return pair;
     }

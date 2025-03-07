@@ -10,13 +10,14 @@ import numpy as np
 from matplotlib import pyplot as plt, transforms, ticker
 from scipy.stats import gmean
 
-from plot.constants import DATA_SOURCE_CSV, ALGORITHMS_TO_PLOT, HJ, TTJ, Yannakakis, COLUMN_RIGHT_BOUND, YannakakisB
+from plot.constants import DATA_SOURCE_CSV, ALGORITHMS_TO_PLOT, HJ, TTJ, Yannakakis, COLUMN_RIGHT_BOUND, YannakakisB, \
+    Yannakakis1Pass
 from plot.cost_model4 import extract_data_from_csv
 from plot.utility import check_argument
 
 
 def get_job_full_path(csv_name):
-    return Path.home() / "projects" / "treetracker2-local" / "results" / "job" / "with_predicates" / csv_name
+    return Path.home() / "projects" / "treetracker2" / "results" / "job" / "with_predicates" / csv_name
 
 
 def speedup_analysis(data_speedup, labels):
@@ -58,7 +59,7 @@ def plot_job():
         n_bars = len(data)
         bar_width = total_width / n_bars
         bars = []
-        for i, name in enumerate([TTJ, Yannakakis, YannakakisB]):
+        for i, name in enumerate([TTJ, Yannakakis, Yannakakis1Pass, YannakakisB]):
             values = data[name]
             x_offset = (i - n_bars / 2) * bar_width + bar_width / 2
             for x, y in enumerate(values):
@@ -67,7 +68,7 @@ def plot_job():
                              edgecolor='black')
             bars.append(bar[0])
         if legend:
-            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{PT}$'], fontsize=10, ncol=3, frameon=False,
+            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{YA}^+$', r'$\mathsf{PT}$'], fontsize=10, ncol=3, frameon=False,
                       loc='best')
 
         x = np.arange(len(labels))
@@ -215,8 +216,8 @@ def plot_job():
         return grouped_data
 
     job_plot = {
-        DATA_SOURCE_CSV: "2024-01-04T23:06:13.391777Z_perf_report.csv",
-        ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis, YannakakisB],
+        DATA_SOURCE_CSV: "2024-03-10T20:18:16.460423Z_perf_report.csv",
+        ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis, Yannakakis1Pass, YannakakisB],
         COLUMN_RIGHT_BOUND: 114
     }
     prem_data = extract_data_from_csv(get_job_full_path(job_plot[DATA_SOURCE_CSV]),
@@ -301,9 +302,9 @@ def plot_job():
     font = {'family': 'Helvetica',
             'weight': 'bold',
             'size': 8}
-    bar_plot(axs[0], data_chunk1, data_chunk1_label, colors=['#00994D', '#FF9933', "#00C3E3"], total_width=.7, single_width=1,
+    bar_plot(axs[0], data_chunk1, data_chunk1_label, colors=['#00994D', '#FF9933', '#EA2283', "#00C3E3"], total_width=.7, single_width=1,
              fontdict=font)
-    bar_plot(axs[1], data_chunk2, data_chunk2_label, colors=['#00994D', '#FF9933', "#00C3E3"], total_width=.7, single_width=1,
+    bar_plot(axs[1], data_chunk2, data_chunk2_label, colors=['#00994D', '#FF9933', '#EA2283', "#00C3E3"], total_width=.7, single_width=1,
              fontdict=font)
     for ax in axs:
         ax.margins(x=0.01)

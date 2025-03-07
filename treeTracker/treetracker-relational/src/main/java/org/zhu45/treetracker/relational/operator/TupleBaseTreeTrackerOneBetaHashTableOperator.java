@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
+import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.relational.JoinValueContainerKey;
 
@@ -24,6 +25,11 @@ public class TupleBaseTreeTrackerOneBetaHashTableOperator
     private static final Logger traceLogger;
 
     private Context context;
+    protected MultiwayJoinNode multiwayJoinNode;
+    // the MultiwayJoinNode associated with the join operator when the join operator serves as an inner relation
+    // of a left-deep plan that is above it.
+    protected MultiwayJoinNode childMultiwayJoinNode;
+    protected MultiwayJoinNode r2Node;
 
     static {
         if (Switches.DEBUG) {
@@ -114,7 +120,7 @@ public class TupleBaseTreeTrackerOneBetaHashTableOperator
     @Override
     public Row passContext(OperatorInformation info)
     {
-        if (Switches.DEBUG) {
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             requireNonNull(info, "info is null");
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -128,8 +134,7 @@ public class TupleBaseTreeTrackerOneBetaHashTableOperator
         }
         else {
             MultiwayJoinNode currNode = context.getJoinNode();
-            MultiwayJoinNode r2Node = r2Operator.getMultiwayJoinNode();
-            MultiwayJoinOrderedGraph multiwayJoinOrderedGraph = (MultiwayJoinOrderedGraph) planBuildContext.getOrderedGraph();
+            MultiwayJoinOrderedGraph multiwayJoinOrderedGraph = planBuildContext.getOrderedGraph();
             if (multiwayJoinOrderedGraph.getParent().get(currNode).get(0).equals(r2Node)) {
                 if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                     traceLogger.trace(formatTraceMessage(String.format("%s is the parent of %s in G", r2Node, currNode)));
@@ -140,7 +145,7 @@ public class TupleBaseTreeTrackerOneBetaHashTableOperator
                         traceLogger.trace(formatTraceMessage("to be removed from H: " + currRowPointedbyIL));
                     }
                     iL.remove();
-                    if (Switches.DEBUG) {
+                    if (Switches.STATS) {
                         statisticsInformation.incrementNumberOfNoGoodTuples();
                     }
                     List<Row> l = hashTableH.get(jav);
@@ -293,6 +298,44 @@ public class TupleBaseTreeTrackerOneBetaHashTableOperator
     @Override
     public void initializeContextObject()
     {
-        context = new Context(r2Operator.getMultiwayJoinNode());
+        context = r2Operator.getChildMultiwayJoinNode() == null ?
+                new Context(r2Operator.getMultiwayJoinNode()) :
+                new Context(r2Operator.getChildMultiwayJoinNode());
+        r2Node = r2Operator.getChildMultiwayJoinNode() == null ?
+                r2Operator.getMultiwayJoinNode() :
+                r2Operator.getChildMultiwayJoinNode();
+    }
+
+    @Override
+    public MultiwayJoinNode getMultiwayJoinNode()
+    {
+        return multiwayJoinNode;
+    }
+
+    @Override
+    public void setMultiwayJoinNode(MultiwayJoinNode node)
+    {
+        this.multiwayJoinNode = node;
+    }
+
+    @Override
+    public SchemaTableName getSchemaTableName()
+    {
+        if (multiwayJoinNode != null) {
+            return multiwayJoinNode.getSchemaTableName();
+        }
+        return null;
+    }
+
+    @Override
+    public void setChildMultiwayJoinNode(MultiwayJoinNode node)
+    {
+        this.childMultiwayJoinNode = node;
+    }
+
+    @Override
+    public MultiwayJoinNode getChildMultiwayJoinNode()
+    {
+        return this.childMultiwayJoinNode;
     }
 }

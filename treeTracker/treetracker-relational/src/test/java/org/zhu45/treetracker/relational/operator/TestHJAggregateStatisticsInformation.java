@@ -113,9 +113,11 @@ public class TestHJAggregateStatisticsInformation
                     relationVal);
         }
         Pair<Plan, List<Operator>> pair = base.createPhysicalPlanFromJoinOrdering(new JoinOrdering(List.of(schemaTableNameR, schemaTableNameS)));
+        AggregateStatisticsInformation aggregateStatisticsInformation = testStatistics(pair);
         // R \join S, there are 4000 tuples in R (+1 comes from the last returned null). Thus, total intermediate
         // results produced is 4001.
-        assertEquals(4001, testStatistics(pair).totalIntermediateResultsProduced);
+        assertEquals(4001, aggregateStatisticsInformation.totalIntermediateResultsProduced);
+        assertEquals(4000, aggregateStatisticsInformation.numberOfHashTableProbe);
     }
 
     /**
@@ -190,10 +192,17 @@ public class TestHJAggregateStatisticsInformation
         Pair<Plan, List<Operator>> pair = base.createPhysicalPlanFromJoinOrdering(
                 new JoinOrdering(List.of(schemaTableNameC,
                         schemaTableNameR, schemaTableNameB, schemaTableNameG)));
+        AggregateStatisticsInformation aggregateStatisticsInformation = testStatistics(pair);
         // C \join2 R \join4 B \join6 G. 8 tuples from C (+1 due to null). \join2 produces 6 intermediate
-        // results (+1 due to null). \join4 produces 3 interemediate results (+1 due to null). Thus,
+        // results (+1 due to null). \join4 produces 3 intermediate results (+1 due to null). Thus,
         // we have 8 + 6 + 3 = 17.
-        assertEquals(17, testStatistics(pair).totalIntermediateResultsProduced);
+        assertEquals(17, aggregateStatisticsInformation.totalIntermediateResultsProduced);
+        // number of hash table probe from C is 7, which equals to |C|. For each join result from C \join R,
+        // it will probe hash table on B, which in total is 5. For each join result from C \join R \join B, it will probe
+        // G, which in total is 2. So, to sum up, 7 + 5 + 2 = 14.
+        assertEquals(14, aggregateStatisticsInformation.getNumberOfHashTableProbe());
+        assertEquals(aggregateStatisticsInformation.getNumberOfHashTableProbe(),
+                aggregateStatisticsInformation.getTotalIntermediateResultsProducedWithoutNULL());
     }
 
     /**
@@ -259,10 +268,14 @@ public class TestHJAggregateStatisticsInformation
         Pair<Plan, List<Operator>> pair = base.createPhysicalPlanFromJoinOrdering(
                 new JoinOrdering(List.of(schemaTableNameT,
                         schemaTableNameS, schemaTableNameB, schemaTableNameR)));
+        AggregateStatisticsInformation aggregateStatisticsInformation = testStatistics(pair);
         // T \join2 S \join4 B \join6 R. T produces 4 intermediate results (+1 due to return null).
         // \Join2 produces 3 intermediate results (+1 due to return null). \Join4 produces 3 intermediate
         // results (+1 due to null). Thus, in total, 4 + 3 + 3 = 10.
-        assertEquals(10, testStatistics(pair).totalIntermediateResultsProduced);
+        assertEquals(10, aggregateStatisticsInformation.totalIntermediateResultsProduced);
+        assertEquals(7, aggregateStatisticsInformation.numberOfHashTableProbe);
+        assertEquals(aggregateStatisticsInformation.numberOfHashTableProbe,
+                aggregateStatisticsInformation.getTotalIntermediateResultsProducedWithoutNULL());
     }
 
     @AfterAll

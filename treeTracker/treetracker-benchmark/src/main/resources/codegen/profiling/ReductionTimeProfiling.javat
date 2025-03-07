@@ -28,8 +28,10 @@ public class {{ algorithm}}{{ benchmark }}ReductionTimeProfiling
                 .setJdbcClient(duckDBJdbcClientSupplier.get())
                 .build();
         JoinFragmentType query = queryProvider(context);
+        int runtimes = 100;
+        System.out.println("runtimes: " + runtimes);
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < runtimes; i++) {
                 query.eval();
             }
         }

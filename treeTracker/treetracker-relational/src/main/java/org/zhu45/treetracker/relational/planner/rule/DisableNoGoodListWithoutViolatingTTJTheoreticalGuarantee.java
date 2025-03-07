@@ -1,6 +1,8 @@
 package org.zhu45.treetracker.relational.planner.rule;
 
+import de.renebergelt.test.Switches;
 import org.zhu45.treetracker.common.NodeType;
+import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.TreeTrackerException;
 import org.zhu45.treetracker.jdbc.JdbcClient;
 import org.zhu45.treetracker.jdbc.JdbcColumnHandle;
@@ -14,17 +16,21 @@ import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNode;
 import org.zhu45.treetracker.relational.planner.catalog.TableCatalog;
+import org.zhu45.treetracker.relational.planner.plan.JoinNode;
 import org.zhu45.treetracker.relational.planner.plan.TableNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 import static org.zhu45.treetracker.common.StandardErrorCode.FUNCTION_IMPLEMENTATION_ERROR;
 import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder.createTableScanOperator;
+import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder.getLeftMostNode;
 
 /**
  * In this rule, we disable the no-good list map
@@ -63,6 +69,18 @@ import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder
 public class DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
         extends BaseRule
 {
+    private RuleType ruleType = RuleType.IN_PLACE;
+    private RuleStatistics.Builder builder = RuleStatistics.builder(this.getClass());
+
+    public DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee()
+    {
+    }
+
+    public DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee(RuleType ruleType)
+    {
+        this.ruleType = checkIfRuleTypeIsAllowed(Set.of(RuleType.IN_PLACE, RuleType.AS_A_WHOLE), ruleType);
+    }
+
     @Override
     public Plan applyToLogicalPlan(Plan plan, PlanBuildContext context)
     {
@@ -72,8 +90,8 @@ public class DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
     @Override
     public Plan applyToPhysicalPlan(PlanNode node, RuleContext context)
     {
-        ruleStatistics = RuleStatistics.builder(this.getClass()).build();
-        TableNode rootTableNode = (TableNode) node.getSources().get(0);
+        TableNode rootTableNode = getTableNode(node);
+        JoinNode rootTableParentJoinNode = getParentJoinNode(node, rootTableNode);
         if (canDisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee(context, rootTableNode)) {
             // create new normal table scan operator and replace the R_k node table scan operator
             try {
@@ -81,19 +99,71 @@ public class DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
                         TupleBasedTableScanOperator.class.getConstructor(),
                         context.getPlanBuildContext(),
                         new HashMap<>());
-                Operator joinOperator = node.getOperator();
-                List<Operator> childOperators = node.getSources().stream().map(PlanNode::getOperator).collect(Collectors.toList());
+                Operator joinOperator = rootTableParentJoinNode.getOperator();
+                List<Operator> childOperators = rootTableParentJoinNode.getSources().stream().map(PlanNode::getOperator).collect(Collectors.toList());
                 childOperators.set(0, tableScanOperator);
                 joinOperator.setChildren(childOperators);
-                tableScanOperator.setOperatorID(node.getId());
+                tableScanOperator.setOperatorID(rootTableNode.getId());
                 tableScanOperator.setOperatorTraceDepth(rootTableNode.getOperator().getOperatorTraceDepth());
                 rootTableNode.setOperator(tableScanOperator);
+                if (Switches.STATS) {
+                    Set<SchemaTableName> disabledTTJScan = new HashSet<>();
+                    disabledTTJScan.add(rootTableNode.getSchemaTableName());
+                    builder.disabledTTJScan(disabledTTJScan);
+                    ruleStatistics = builder.build();
+                }
             }
             catch (NoSuchMethodException e) {
                 throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, e);
             }
         }
-        return null;
+        else {
+            if (Switches.STATS) {
+                ruleStatistics = builder.build();
+            }
+        }
+        return context.getPlan();
+    }
+
+    private TableNode getTableNode(PlanNode node)
+    {
+        if (ruleType == RuleType.IN_PLACE) {
+            return (TableNode) node.getSources().get(0);
+        }
+        else if (ruleType == RuleType.AS_A_WHOLE) {
+            return (TableNode) getLeftMostNode(node);
+        }
+        throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, "Unknown ruleType: " + ruleType);
+    }
+
+    private JoinNode getParentJoinNode(PlanNode node, TableNode rootTableNode)
+    {
+        if (ruleType == RuleType.IN_PLACE) {
+            return (JoinNode) node;
+        }
+        else if (ruleType == RuleType.AS_A_WHOLE) {
+            switch (node.getNodeType()) {
+                case gather:
+                case aggregate:
+                case sort:
+                case hash:
+                case gather_merge:
+                case materialize:
+                case fullReducer:
+                    return getParentJoinNode(node.getSources().get(0), rootTableNode);
+                case join:
+                    JoinNode joinNode = (JoinNode) node;
+                    if (joinNode.getLeft().equals(rootTableNode)) {
+                        return joinNode;
+                    }
+                    else {
+                        return getParentJoinNode(((JoinNode) node).getLeft(), rootTableNode);
+                    }
+                case table:
+                    throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, "We should not hit tableNode");
+            }
+        }
+        throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, "Unknown ruleType: " + ruleType);
     }
 
     private boolean canDisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee(RuleContext context, TableNode tableNode)
@@ -101,7 +171,7 @@ public class DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
         int numberOfEntriesHavingAllUniqueValues = 0;
         PlanBuildContext planBuildContext = context.getPlanBuildContext();
         checkState(planBuildContext != null);
-        Map<Integer, List<Integer>> nodeId2JoinIdx = planBuildContext.getNodeId2FactTableJoinAttributeIdx();
+        Map<Integer, List<Integer>> nodeId2JoinIdx = planBuildContext.getNodeId2FactTableJoinAttributeIdx(tableNode);
         TableCatalog tableCatalog = planBuildContext.getCatalogGroup().getTableCatalog(tableNode.getSchemaTableName());
         float[] fractionOfUniquesInEachColumn = tableCatalog.getFractionOfUniquesInEachColumn();
         checkState(nodeId2JoinIdx != null, "nodeId2JoinIdx cannot be null to apply " + this.getClass().getCanonicalName());
@@ -130,6 +200,22 @@ public class DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
     @Override
     public boolean checkForRulePrecondition(PlanNode node)
     {
+        if (ruleType == RuleType.IN_PLACE) {
+            return checkForRulePreconditionInPlace(node);
+        }
+        checkState(ruleType == RuleType.AS_A_WHOLE);
+        return checkForRulePreconditionAsAWhole(node);
+    }
+
+    private boolean checkForRulePreconditionAsAWhole(PlanNode node)
+    {
+        Operator leftMostOperator = getLeftMostNode(node).getOperator();
+        return leftMostOperator.getClass() == TupleBasedHighPerfTableScanOperator.class ||
+                leftMostOperator.getClass() == TreeTrackerTableScanV2Operator.class;
+    }
+
+    private boolean checkForRulePreconditionInPlace(PlanNode node)
+    {
         if (node.getNodeType() != OptType.join) {
             return false;
         }
@@ -149,6 +235,6 @@ public class DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
     @Override
     public RuleType getRuleType()
     {
-        return RuleType.IN_PLACE;
+        return ruleType;
     }
 }

@@ -1,0 +1,107 @@
+-- setup Postgres database schemas for Star Schema Benchmarok (SSB)
+-- instruction:  psql -p5432 -d ssb -f /home/zeyuanhu/projects/treetracker2/treeTracker/treetracker-benchmark/src/main/resources/ssb-original.sql
+-- ref:
+-- - https://github.com/nuko-yokohama/ssb-postgres/blob/master/tables.sql
+BEGIN TRANSACTION;
+
+DROP TABLE IF EXISTS customer, lineorder, part, supplier, date;
+
+CREATE UNLOGGED TABLE customer
+(
+    C_CUSTKEY    INTEGER,
+    C_NAME       VARCHAR,
+    C_ADDRESS    VARCHAR,
+    C_CITY       VARCHAR,
+    C_NATION     VARCHAR,
+    C_REGION     VARCHAR,
+    C_PHONE      VARCHAR,
+    C_MKTSEGMENT VARCHAR
+);
+
+CREATE UNLOGGED TABLE lineorder
+(
+    LO_ORDERKEY      INTEGER,
+    LO_LINENUMBER    INTEGER,
+    LO_CUSTKEY       INTEGER,
+    LO_PARTKEY       INTEGER,
+    LO_SUPPKEY       INTEGER,
+    LO_ORDERDATE     INTEGER,
+    LO_ORDERPRIORITY VARCHAR,
+    LO_SHIPPRIORITY  VARCHAR,
+    LO_QUANTITY      INTEGER,
+    LO_EXTENDEDPRICE INTEGER,
+    LO_ORDTOTALPRICE INTEGER,
+    LO_DISCOUNT      INTEGER,
+    LO_REVENUE       INTEGER,
+    LO_SUPPLYCOST    INTEGER,
+    LO_TAX           INTEGER,
+    LO_COMMITDATE    INTEGER,
+    LO_SHIPMODE      VARCHAR
+);
+
+CREATE UNLOGGED TABLE part
+(
+    P_PARTKEY   INTEGER,
+    P_NAME      VARCHAR,
+    P_MFGR      VARCHAR,
+    P_CATEGORY  VARCHAR,
+    P_BRAND1    VARCHAR,
+    P_COLOR     VARCHAR,
+    P_TYPE      VARCHAR,
+    P_SIZE      INTEGER,
+    P_CONTAINER VARCHAR
+);
+
+CREATE UNLOGGED TABLE supplier
+(
+    S_SUPPKEY INTEGER,
+    S_NAME    VARCHAR,
+    S_ADDRESS VARCHAR,
+    S_CITY    VARCHAR,
+    S_NATION  VARCHAR,
+    S_REGION  VARCHAR,
+    S_PHONE   VARCHAR
+);
+
+CREATE UNLOGGED TABLE date
+(
+    D_DATEKEY          INTEGER,
+    D_DATE             VARCHAR,
+    D_DAYOFWEEK        VARCHAR,
+    D_MONTH            VARCHAR,
+    D_YEAR             INTEGER,
+    D_YEARMONTHNUM     INTEGER,
+    D_YEARMONTH        VARCHAR,
+    D_DAYNUMINWEEK     INTEGER,
+    D_DAYNUMINMONTH    INTEGER,
+    D_DAYNUMINYEAR     INTEGER,
+    D_MONTHNUMINYEAR   INTEGER,
+    D_WEEKNUMINYEAR    INTEGER,
+    D_SELLINGSEASON    VARCHAR,
+    D_LASTDAYINWEEKFL  INTEGER,
+    D_LASTDAYINMONTHFL INTEGER,
+    D_HOLIDAYFL        INTEGER,
+    D_WEEKDAYFL        INTEGER
+);
+
+COPY customer FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s1/customer.tbl' WITH DELIMITER '|' NULL AS '' CSV;
+COPY lineorder FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s1/lineorder.tbl' WITH DELIMITER '|' NULL AS '' CSV;
+COPY part FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s1/part.tbl' WITH DELIMITER '|' NULL AS '' CSV;
+COPY supplier FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s1/supplier.tbl' WITH DELIMITER '|' NULL AS '' CSV;
+COPY date FROM '/home/zeyuanhu/projects/eyalroz-ssb-dbgen/postgres/s1/date.tbl' WITH DELIMITER '|' NULL AS '' CSV;
+
+COMMIT;
+
+ALTER TABLE customer
+    SET LOGGED;
+ALTER TABLE lineorder
+    SET LOGGED;
+ALTER TABLE part
+    SET LOGGED;
+ALTER TABLE supplier
+    SET LOGGED;
+ALTER TABLE date
+    SET LOGGED;
+
+
+

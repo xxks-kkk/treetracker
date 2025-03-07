@@ -28,6 +28,9 @@ public class CheckLabelConnectedness
 
     private List<String> getAttributes(MultiwayJoinNode node)
     {
+        if (node.getAttributes() != null) {
+            return node.getAttributes();
+        }
         return jdbcClient.getAttributes(node.getSchemaTableName());
     }
 

@@ -1,0 +1,309 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_company_name"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_kind_type"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "company_type"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_movie_info_idx2"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_info_type2"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_movie_info"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_info_type1"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_keyword"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q22b_keyword"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n||||imdb_int.movie_keyword(movie_id,keyword_id)\n|||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 6.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 3.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 5.0,
+    "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0
+  },
+  "optimalJoinTree" : "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)",
+  "cost" : 3.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_company_name"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_kind_type"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "company_type"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_movie_info_idx2"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_info_type2"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_movie_info"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_info_type1"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_keyword"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q22b_keyword"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n||||imdb_int.movie_keyword(movie_id,keyword_id)\n|||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 6.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)" : 3.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info(movie_id,info_type_id)\n|||imdb.q22b_info_type1(info_type_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb.q22b_movie_info(movie_id,info_type_id)\n||||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n||imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n|||imdb.q22b_info_type2(info_type_id2)\n|||imdb_int.movie_keyword(movie_id,keyword_id)\n||||imdb.q22b_keyword(keyword_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)" : 5.0,
+      "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q22b_keyword(keyword_id)" : 4.0
+    },
+    "optimalJoinTree" : "imdb.q22b_movie_companies(movie_id,company_id,company_type_id)\n|imdb.q22b_title(movie_id,kind_id)\n||imdb.q22b_kind_type(kind_id)\n|imdb.q22b_company_name(company_id)\n|imdb_int.company_type(company_type_id)\n|imdb.q22b_movie_info_idx2(movie_id,info_type_id2)\n||imdb.q22b_info_type2(info_type_id2)\n|imdb.q22b_movie_info(movie_id,info_type_id)\n||imdb.q22b_info_type1(info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q22b_keyword(keyword_id)",
+    "cost" : 3.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "imdb_int.movie_keyword",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_keyword"
+          },
+          "attributes" : [ "keyword_id", "movie_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_keyword",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_keyword"
+          },
+          "attributes" : [ "keyword_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_info"
+          },
+          "attributes" : [ "info_type_id", "movie_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_info_type1",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_info_type1"
+          },
+          "attributes" : [ "info_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_info_idx2",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_info_idx2"
+          },
+          "attributes" : [ "info_type_id2", "movie_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_info_type2",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_info_type2"
+          },
+          "attributes" : [ "info_type_id2" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_title"
+          },
+          "attributes" : [ "kind_id", "movie_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_kind_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_kind_type"
+          },
+          "attributes" : [ "kind_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_title"
+          },
+          "attributes" : [ "kind_id", "movie_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_company_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_company_name"
+          },
+          "attributes" : [ "company_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.company_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "company_type"
+          },
+          "attributes" : [ "company_type_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_movie_info_idx2",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_info_idx2"
+          },
+          "attributes" : [ "info_type_id2", "movie_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q22b_movie_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_info"
+          },
+          "attributes" : [ "info_type_id", "movie_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q22b_movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q22b_movie_companies"
+          },
+          "attributes" : [ "movie_id", "company_id", "company_type_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.movie_keyword",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_keyword"
+          },
+          "attributes" : [ "keyword_id", "movie_id" ]
+        }
+      } ]
+    }
+  } ]
+}

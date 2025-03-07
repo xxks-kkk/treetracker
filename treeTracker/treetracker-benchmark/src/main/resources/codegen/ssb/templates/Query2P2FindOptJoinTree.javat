@@ -7,14 +7,24 @@ import org.zhu45.treetracker.benchmark.Query;
 import org.zhu45.treetracker.relational.operator.Operator;
 import org.zhu45.treetracker.relational.planner.Plan;
 
+{% if verifyJoinOrderingCodeBlock %}
 import java.util.Arrays;
+{% endif %}
+{% if genPostgresPlan %}
+import java.nio.file.Paths;
+{% endif %}
 import java.util.List;
 
+{% if genPostgresPlan %}
+import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_UPDATED_POSTGRES_PLAN_STORED_PATH;
+{% endif %}
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getDateInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getLineOrderInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getPartInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getSupplierInt;
+{% if verifyJoinOrderingCodeBlock %}
 import static org.zhu45.treetracker.relational.planner.rule.JoinOrdering.getJoinOrderingFromNodes;
+{% endif %}
 
 public class Query2P2FindOptJoinTree
         extends Query
@@ -33,7 +43,9 @@ public class Query2P2FindOptJoinTree
         MultiwayJoinNode supplierNode = getSupplierInt(SSBQueries.Q2P2);
 
         {{ createPhysicalPlanFromJoinOrderingCodeBlock }}
+        {% if verifyJoinOrderingCodeBlock %}
         {{ verifyJoinOrderingCodeBlock }}
+        {% endif %}
         return pair;
     }
 }

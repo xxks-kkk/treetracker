@@ -31,11 +31,11 @@ public class Query12WFindOptJoinTree
         MultiwayJoinNode ordersNode = getOrders(TPCHQueries.Q12W);
         MultiwayJoinNode lineItemNode = getLineitem(TPCHQueries.Q12W);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(ordersNode, lineItemNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(lineItemNode, ordersNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(ordersNode.getSchemaTableName(),
-                lineItemNode.getSchemaTableName()));
+        verifyJoinOrdering(plan, Arrays.asList(lineItemNode.getSchemaTableName(),
+                ordersNode.getSchemaTableName()));
         return pair;
     }
 }

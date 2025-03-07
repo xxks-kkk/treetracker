@@ -1,0 +1,49 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb_int",
+      "tableName" : "date"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q2p2_part"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q2p2_supplier"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb_int.date(DATEKEY)\n|ssb.q2p2_part(PARTKEY)\n|ssb.q2p2_supplier(SUPPKEY)" : 2.0
+  },
+  "optimalJoinTree" : "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb_int.date(DATEKEY)\n|ssb.q2p2_part(PARTKEY)\n|ssb.q2p2_supplier(SUPPKEY)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree", "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb_int",
+        "tableName" : "date"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q2p2_part"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q2p2_supplier"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb_int.date(DATEKEY)\n|ssb.q2p2_part(PARTKEY)\n|ssb.q2p2_supplier(SUPPKEY)" : 2.0
+    },
+    "optimalJoinTree" : "ssb_int.lineorder(LO_ORDERKEY,CUSTKEY,PARTKEY,SUPPKEY,DATEKEY)\n|ssb_int.date(DATEKEY)\n|ssb.q2p2_part(PARTKEY)\n|ssb.q2p2_supplier(SUPPKEY)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree"
+  }, {
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee"
+  } ]
+}

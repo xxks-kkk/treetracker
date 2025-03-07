@@ -17,6 +17,7 @@ import org.zhu45.treektracker.multiwayJoin.MultiwayJoinDomain;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
 import org.zhu45.treektracker.multiwayJoin.testing.TestingMultiwayJoinDatabaseComplex;
+import org.zhu45.treetracker.common.IntegerValue;
 import org.zhu45.treetracker.common.RelationalValue;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.StringValue;
@@ -41,6 +42,7 @@ import static org.zhu45.treektracker.multiwayJoin.MultiwayJoinPreorderTraversalS
 import static org.zhu45.treetracker.common.Edge.asEdge;
 import static org.zhu45.treetracker.common.TestConstants.TREETRACKER_DEBUG;
 import static org.zhu45.treetracker.common.TestConstants.checkEnvVariableSet;
+import static org.zhu45.treetracker.common.type.IntegerType.INTEGER;
 import static org.zhu45.treetracker.common.type.VarcharType.VARCHAR;
 import static org.zhu45.treetracker.jdbc.testing.TestUtils.columnCompare;
 import static org.zhu45.treetracker.jdbc.testing.TestUtils.rowCompare;
@@ -152,16 +154,16 @@ public class TestTupleBasedLeftSemiHashJoinOperator
             SchemaTableName schemaTableNameR2 = new SchemaTableName(schemaName, relationR2);
             if (jdbcClient.getTableHandle(schemaTableNameR2) == null) {
                 List<List<RelationalValue>> relationValR2 = new ArrayList<>(Arrays.asList(
-                        Arrays.asList(new StringValue("1"), new StringValue("10"), new StringValue("100")),
-                        Arrays.asList(new StringValue("1"), new StringValue("20"), new StringValue("100")),
-                        Arrays.asList(new StringValue("3"), new StringValue("10"), new StringValue("300")),
-                        Arrays.asList(new StringValue("1"), new StringValue("40"), new StringValue("300")),
-                        Arrays.asList(new StringValue("2"), new StringValue("30"), new StringValue("200"))));
+                        Arrays.asList(IntegerValue.of(1), IntegerValue.of(10), IntegerValue.of(100)),
+                        Arrays.asList(IntegerValue.of(1), IntegerValue.of(20), IntegerValue.of(100)),
+                        Arrays.asList(IntegerValue.of(3), IntegerValue.of(10), IntegerValue.of(300)),
+                        Arrays.asList(IntegerValue.of(1), IntegerValue.of(40), IntegerValue.of(300)),
+                        Arrays.asList(IntegerValue.of(2), IntegerValue.of(30), IntegerValue.of(200))));
                 jdbcClient.ingestRelation(
                         schemaName,
                         relationR2,
                         new ArrayList<>(Arrays.asList("A1", "A2", "A3")),
-                        new ArrayList<>(Arrays.asList(VARCHAR, VARCHAR, VARCHAR)),
+                        new ArrayList<>(Arrays.asList(INTEGER, INTEGER, INTEGER)),
                         relationValR2);
             }
             MultiwayJoinDomain domainR2 = new MultiwayJoinDomain();
@@ -171,15 +173,15 @@ public class TestTupleBasedLeftSemiHashJoinOperator
             SchemaTableName schemaTableNameR4 = new SchemaTableName(schemaName, relationR4);
             if (jdbcClient.getTableHandle(schemaTableNameR4) == null) {
                 List<List<RelationalValue>> relationValR4 = new ArrayList<>(Arrays.asList(
-                        Arrays.asList(new StringValue("1"), new StringValue("10"), new StringValue("1000")),
-                        Arrays.asList(new StringValue("1"), new StringValue("20"), new StringValue("1000")),
-                        Arrays.asList(new StringValue("1"), new StringValue("20"), new StringValue("2000")),
-                        Arrays.asList(new StringValue("2"), new StringValue("20"), new StringValue("2000"))));
+                        Arrays.asList(IntegerValue.of(1), IntegerValue.of(10), IntegerValue.of(1000)),
+                        Arrays.asList(IntegerValue.of(1), IntegerValue.of(20), IntegerValue.of(1000)),
+                        Arrays.asList(IntegerValue.of(1), IntegerValue.of(20), IntegerValue.of(2000)),
+                        Arrays.asList(IntegerValue.of(2), IntegerValue.of(20), IntegerValue.of(2000))));
                 jdbcClient.ingestRelation(
                         schemaName,
                         relationR4,
                         new ArrayList<>(Arrays.asList("A1", "A2", "A4")),
-                        new ArrayList<>(Arrays.asList(VARCHAR, VARCHAR, VARCHAR)),
+                        new ArrayList<>(Arrays.asList(INTEGER, INTEGER, INTEGER)),
                         relationValR4);
             }
             MultiwayJoinDomain domainR4 = new MultiwayJoinDomain();
@@ -194,11 +196,11 @@ public class TestTupleBasedLeftSemiHashJoinOperator
             MultiSet<ObjectRow> res = new HashMultiSet<>();
             res.addAll(Arrays.asList(
                     new ObjectRow(new ArrayList<>(Arrays.asList("A1", "A2", "A3")),
-                            new ArrayList<>(Arrays.asList(VARCHAR, VARCHAR, VARCHAR)),
-                            Arrays.asList(new StringValue("1"), new StringValue("10"), new StringValue("100"))),
+                            new ArrayList<>(Arrays.asList(INTEGER, INTEGER, INTEGER)),
+                            Arrays.asList(IntegerValue.of(1), IntegerValue.of(10), IntegerValue.of(100))),
                     new ObjectRow(new ArrayList<>(Arrays.asList("A1", "A2", "A3")),
-                            new ArrayList<>(Arrays.asList(VARCHAR, VARCHAR, VARCHAR)),
-                            Arrays.asList(new StringValue("1"), new StringValue("20"), new StringValue("100")))));
+                            new ArrayList<>(Arrays.asList(INTEGER, INTEGER, INTEGER)),
+                            Arrays.asList(IntegerValue.of(1), IntegerValue.of(20), IntegerValue.of(100)))));
             return Triple.of(pair.getLeft(), pair.getRight(), res);
         }
     }

@@ -102,7 +102,9 @@ public class RowSet<R extends Row>
                 int typeLength = Math.min(types.get(i).getLength(), maxColumnWidth);
                 int attributeLength = attributes.get(i).length();
                 table.append(attributes.get(i))
-                        .append(Strings.repeat(" ", typeLength - attributeLength))
+                        //FIXME: Adding Math.abs is a hack to ensure the difference between typeLength and attributeLength is a positive.
+                        // Ideally, we want to rewrite the whole function using asciitable package; just like what we did with printing DP matrix.
+                        .append(Strings.repeat(" ", Math.abs(typeLength - attributeLength)))
                         .append("|");
                 printBarPosition.add(typeLength + 1);
                 separateLineLength += typeLength;

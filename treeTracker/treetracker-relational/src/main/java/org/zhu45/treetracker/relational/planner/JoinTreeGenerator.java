@@ -46,7 +46,8 @@ public class JoinTreeGenerator
 
     public List<MultiwayJoinOrderedGraph> generateJoinTrees(List<SchemaTableName> schemaTableNameList)
     {
-        schemaTableNameAttributes = populateSchemaTableNameAttributes(schemaTableNameList, context.getJdbcClient());
+        schemaTableNameAttributes = context.getSchemaTableNameAttributes() == null ? populateSchemaTableNameAttributes(schemaTableNameList, context.getJdbcClient())
+                : context.getSchemaTableNameAttributes();
         // key: attribute, vals: a list of relations that contains the given attribute
         HashMap<String, List<MultiwayJoinNode>> attributeToNodes = new HashMap<>();
         List<MultiwayJoinOrderedGraph> joinTrees = new ArrayList<>();
@@ -57,7 +58,8 @@ public class JoinTreeGenerator
                 .subList(1, schemaTableNameList.size())
                 .stream()
                 .map(schemaTableName -> new MultiwayJoinNode(schemaTableName,
-                        new ArrayList<>(schemaTableNameAttributes.get(schemaTableName)),
+                        new ArrayList<>(requireNonNull(schemaTableNameAttributes.get(schemaTableName),
+                                schemaTableName + " doesn't appear in " + schemaTableNameAttributes)),
                         new MultiwayJoinDomain()))
                 .collect(Collectors.toList()));
         List<String> attributes = root.getAttributes();
@@ -75,10 +77,9 @@ public class JoinTreeGenerator
             checkState(tree.validate());
             fillNodeConntectedness(tree);
             fillNodeType(tree);
-            if (Switches.DEBUG) {
-                checkState(new CheckLabelConnectedness(tree.getTraversalList(), context.getJdbcClient()).check(),
-                        tree + "\nis not a join tree");
-            }
+            tree.setDepth();
+            checkState(new CheckLabelConnectedness(tree.getTraversalList(), context.getJdbcClient()).check(),
+                    tree + "\nis not a join tree");
             // enforce the traversalList is the same as the input ordering
             checkState(getSchemaTableNameList(tree).equals(schemaTableNameList));
         });
@@ -130,10 +131,8 @@ public class JoinTreeGenerator
             checkState(tree.validate());
             fillNodeConntectedness(tree);
             fillNodeType(tree);
-            if (Switches.DEBUG) {
-                checkState(new CheckLabelConnectedness(tree.getTraversalList(), context.getJdbcClient()).check(),
-                        tree + "\nis not a join tree");
-            }
+            checkState(new CheckLabelConnectedness(tree.getTraversalList(), context.getJdbcClient()).check(),
+                    tree + "\nis not a join tree");
             // enforce the traversalList is the same as the input ordering
             checkState(getSchemaTableNameList(tree).equals(newOrdering),
                     "tree ordering: " + tree.getTraversalList() + "\n"
@@ -251,7 +250,7 @@ public class JoinTreeGenerator
     /**
      * Make sure connected field of each node in the given joinTree is properly set.
      */
-    private void fillNodeConntectedness(MultiwayJoinOrderedGraph joinTree)
+    public static void fillNodeConntectedness(MultiwayJoinOrderedGraph joinTree)
     {
         HashMap<MultiwayJoinNode, List<MultiwayJoinNode>> children = joinTree.getChildren();
         for (MultiwayJoinNode parent : children.keySet()) {
@@ -265,7 +264,7 @@ public class JoinTreeGenerator
     /**
      * Make sure NodeType of each node in the given joinTree is properly set.
      */
-    private void fillNodeType(MultiwayJoinOrderedGraph joinTree)
+    public static void fillNodeType(MultiwayJoinOrderedGraph joinTree)
     {
         HashMap<MultiwayJoinNode, List<MultiwayJoinNode>> children = joinTree.getChildren();
         for (MultiwayJoinNode parent : children.keySet()) {

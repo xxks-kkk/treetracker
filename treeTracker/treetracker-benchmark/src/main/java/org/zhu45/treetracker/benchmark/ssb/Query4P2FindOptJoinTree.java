@@ -7,15 +7,15 @@ import org.zhu45.treetracker.benchmark.Query;
 import org.zhu45.treetracker.relational.operator.Operator;
 import org.zhu45.treetracker.relational.planner.Plan;
 
-import java.util.Arrays;
+import java.nio.file.Paths;
 import java.util.List;
 
+import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_UPDATED_POSTGRES_PLAN_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getCustomerInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getDateInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getLineOrderInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getPartInt;
 import static org.zhu45.treetracker.benchmark.ssb.SSBDatabase.getSupplierInt;
-import static org.zhu45.treetracker.relational.planner.rule.JoinOrdering.getJoinOrderingFromNodes;
 
 public class Query4P2FindOptJoinTree
         extends Query
@@ -34,14 +34,8 @@ public class Query4P2FindOptJoinTree
         MultiwayJoinNode supplierNode = getSupplierInt(SSBQueries.Q4P2);
         MultiwayJoinNode partNode = getPartInt(SSBQueries.Q4P2);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(supplierNode, lineOrderNode, customerNode, dateNode, partNode)));
-        Plan plan = pair.getKey();
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromPostgresPlan(Paths.get(SSB_UPDATED_POSTGRES_PLAN_STORED_PATH, "updated_4P2.json").toString(), List.of(lineOrderNode.getSchemaTableName(), customerNode.getSchemaTableName(), supplierNode.getSchemaTableName(), dateNode.getSchemaTableName(), partNode.getSchemaTableName()));
 
-        verifyJoinOrdering(plan, Arrays.asList(supplierNode.getSchemaTableName(),
-                lineOrderNode.getSchemaTableName(),
-                customerNode.getSchemaTableName(),
-                dateNode.getSchemaTableName(),
-                partNode.getSchemaTableName()));
         return pair;
     }
 }

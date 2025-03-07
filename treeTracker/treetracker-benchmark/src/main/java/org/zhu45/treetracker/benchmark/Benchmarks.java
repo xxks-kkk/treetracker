@@ -24,18 +24,37 @@ public final class Benchmarks
     {
     }
 
+    public static final String ROOT;
     public static final String JOB_RESULT_STORED_PATH;
     public static final String SSB_RESULT_STORED_PATH;
+    public static final String SSB_SQLITE_ORDERING_STORED_PATH;
+    public static final String SSB_SQLITE_ORDERING_STATS_STORED_PATH;
+    public static final String SSB_POSTGRES_PLAN_STORED_PATH;
+    public static final String SSB_UPDATED_POSTGRES_PLAN_STORED_PATH;
+    public static final String SSB_POSTGRES_RESULT_STORED_PATH;
     public static final String JOB_WITH_PREDICATES_RESULT_STORED_PATH;
     public static final String JOB_WITH_PREDICATES_RESULT_SAME_ORDERING_STORED_PATH;
+    public static final String JOB_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH;
+    public static final String JOB_WITH_PREDICATES_RESULT_POSTGRES_PLAN_STORED_PATH;
+    public static final String JOB_WITH_PREDICATES_RESULT_POSTGRES_RESULT_STORED_PATH;
+    public static final String JOB_WITH_PREDICATES_RESULT_UPDATED_POSTGRES_PLAN_STORED_PATH;
+    public static final String JOB_WITH_PREDICATES_RESULT_SAME_ORDERING_SHALLOW_STORED_PATH;
     public static final String JOB_WITH_PREDICATES_RESULT_TRUE_CARD_STORED_PATH;
     public static final String JOB_WITH_PREDICATES_RESULT_EXP2P3_STORED_PATH;
     public static final String TPCH_RESULT_STORED_PATH;
     public static final String TPCH_WITH_PREDICATES_RESULT_STORED_PATH;
     public static final String TPCH_WITH_PREDICATES_RESULT_SAME_ORDERING_STORED_PATH;
+    public static final String TPCH_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH;
+    public static final String TPCH_POSTGRES_PLAN_STORED_PATH;
+    public static final String TPCH_UPDATED_POSTGRES_PLAN_STORED_PATH;
+    public static final String TPCH_WITH_PREDICATES_RESULT_POSTGRES_RESULT_STORED_PATH;
     public static final String OTHERS_RESULT_STORED_PATH;
     public static final String SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH;
     public static final String SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SAME_ORDERING_STORED_PATH;
+    public static final String SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+    public static final String SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+    public static final String TPCH_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
+    public static final String JOB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH;
     public static final String SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_TRUE_CARD_STORED_PATH;
     public static final String COST_MODEL_4_RESULT_STORED_PATH;
     public static final String COST_MODEL_4_WITH_PREDICATES_RESULT_STORED_PATH;
@@ -47,20 +66,42 @@ public final class Benchmarks
     public static final String EXP2P9O_RESULT_STORED_PATH;
 
     static {
-        String root = Paths.get(System.getProperty("user.dir")).getParent().toString();
-        String resultPath = Paths.get(root, "results").toString();
+        // NOTE: To run `TestCheckQueryImplementationCorrectness`, we need to set ROOT as `Paths.get(".").toAbsolutePath().getParent().getParent().getParent().toString();`
+        ROOT = Paths.get(System.getProperty("user.dir")).getParent().toString();
+        String resultPath = Paths.get(ROOT, "results").toString();
         JOB_RESULT_STORED_PATH = Paths.get(resultPath, "job").toString();
         SSB_RESULT_STORED_PATH = Paths.get(resultPath, "ssb").toString();
+        SSB_SQLITE_ORDERING_STORED_PATH = Paths.get(SSB_RESULT_STORED_PATH, "hj_ordering_hj").toString();
+        SSB_SQLITE_ORDERING_STATS_STORED_PATH = Paths.get(SSB_SQLITE_ORDERING_STORED_PATH, "stats").toString();
+        SSB_POSTGRES_PLAN_STORED_PATH = Paths.get(SSB_RESULT_STORED_PATH, "postgres_plans").toString();
+        SSB_UPDATED_POSTGRES_PLAN_STORED_PATH = Paths.get(SSB_RESULT_STORED_PATH, "postgres_plans_updated").toString();
+        SSB_POSTGRES_RESULT_STORED_PATH = Paths.get(SSB_RESULT_STORED_PATH, "perf_on_postgres_plans").toString();
         JOB_WITH_PREDICATES_RESULT_STORED_PATH = Paths.get(resultPath, "job", "with_predicates").toString();
+        JOB_WITH_PREDICATES_RESULT_POSTGRES_PLAN_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "postgres_plans").toString();
+        JOB_WITH_PREDICATES_RESULT_POSTGRES_RESULT_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "perf_on_postgres_plans").toString();
+        JOB_WITH_PREDICATES_RESULT_UPDATED_POSTGRES_PLAN_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "postgres_plans_updated").toString();
+        JOB_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "hj_ordering_hj").toString();
         JOB_WITH_PREDICATES_RESULT_SAME_ORDERING_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "hj_ordering_opt_jointree").toString();
+        JOB_WITH_PREDICATES_RESULT_SAME_ORDERING_SHALLOW_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "hj_ordering_shallow_opt_jointree").toString();
         JOB_WITH_PREDICATES_RESULT_TRUE_CARD_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "true_card").toString();
         JOB_WITH_PREDICATES_RESULT_EXP2P3_STORED_PATH = Paths.get(JOB_WITH_PREDICATES_RESULT_STORED_PATH, "exp2.3").toString();
         TPCH_RESULT_STORED_PATH = Paths.get(resultPath, "tpch").toString();
         TPCH_WITH_PREDICATES_RESULT_STORED_PATH = Paths.get(resultPath, "tpch", "with_predicates").toString();
         TPCH_WITH_PREDICATES_RESULT_SAME_ORDERING_STORED_PATH = Paths.get(TPCH_WITH_PREDICATES_RESULT_STORED_PATH, "hj_ordering_opt_jointree").toString();
+        TPCH_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH = Paths.get(TPCH_WITH_PREDICATES_RESULT_STORED_PATH, "hj_ordering_hj").toString();
+        TPCH_POSTGRES_PLAN_STORED_PATH = Paths.get(TPCH_WITH_PREDICATES_RESULT_STORED_PATH, "postgres_plans").toString();
+        TPCH_UPDATED_POSTGRES_PLAN_STORED_PATH = Paths.get(TPCH_WITH_PREDICATES_RESULT_STORED_PATH, "postgres_plans_updated").toString();
+        TPCH_WITH_PREDICATES_RESULT_POSTGRES_RESULT_STORED_PATH = Paths.get(TPCH_WITH_PREDICATES_RESULT_STORED_PATH, "perf_on_postgres_plans").toString();
         OTHERS_RESULT_STORED_PATH = Paths.get(resultPath, "others").toString();
         SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH = Paths.get(resultPath, "others", "simple-cost-model-with-predicates").toString();
         SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SAME_ORDERING_STORED_PATH = Paths.get(SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH, "hj_ordering_opt_jointree").toString();
+        SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH = Paths.get(SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH, "hj_ordering_hj").toString();
+        SSB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH = Paths.get(SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH, "ssb")
+                .toString();
+        TPCH_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH = Paths.get(SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH, "tpch")
+                .toString();
+        JOB_SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH = Paths.get(SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_SQLITE_ORDERING_STORED_PATH, "job")
+                .toString();
         SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_TRUE_CARD_STORED_PATH = Paths.get(SIMPLE_COST_MODEL_RESULT_WITH_PREDICATES_STORED_PATH, "true_card").toString();
         COST_MODEL_4_RESULT_STORED_PATH = Paths.get(resultPath, "others", "cost-model4").toString();
         COST_MODEL_4_WITH_PREDICATES_RESULT_STORED_PATH = Paths.get(resultPath, "others", "cost-model4-with-predicates").toString();

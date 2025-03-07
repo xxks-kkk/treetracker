@@ -1,0 +1,104 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb",
+      "tableName" : "q3a_title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q3a_movie_info"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_keyword"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q3a_keyword"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "imdb.q3a_title(movie_id,kind_id)\n|imdb.q3a_movie_info(movie_id,info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q3a_keyword(keyword_id)" : 4.0,
+    "imdb.q3a_title(movie_id,kind_id)\n|imdb.q3a_movie_info(movie_id,info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q3a_keyword(keyword_id)" : 3.0
+  },
+  "optimalJoinTree" : "imdb.q3a_title(movie_id,kind_id)\n|imdb.q3a_movie_info(movie_id,info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q3a_keyword(keyword_id)",
+  "cost" : 3.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb",
+        "tableName" : "q3a_title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q3a_movie_info"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_keyword"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q3a_keyword"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "imdb.q3a_title(movie_id,kind_id)\n|imdb.q3a_movie_info(movie_id,info_type_id)\n||imdb_int.movie_keyword(movie_id,keyword_id)\n|||imdb.q3a_keyword(keyword_id)" : 4.0,
+      "imdb.q3a_title(movie_id,kind_id)\n|imdb.q3a_movie_info(movie_id,info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q3a_keyword(keyword_id)" : 3.0
+    },
+    "optimalJoinTree" : "imdb.q3a_title(movie_id,kind_id)\n|imdb.q3a_movie_info(movie_id,info_type_id)\n|imdb_int.movie_keyword(movie_id,keyword_id)\n||imdb.q3a_keyword(keyword_id)",
+    "cost" : 3.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "imdb_int.movie_keyword",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_keyword"
+          },
+          "attributes" : [ "keyword_id", "movie_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q3a_keyword",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q3a_keyword"
+          },
+          "attributes" : [ "keyword_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q3a_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q3a_title"
+          },
+          "attributes" : [ "movie_id", "kind_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q3a_movie_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q3a_movie_info"
+          },
+          "attributes" : [ "info_type_id", "movie_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb.q3a_title",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q3a_title"
+          },
+          "attributes" : [ "movie_id", "kind_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.movie_keyword",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_keyword"
+          },
+          "attributes" : [ "keyword_id", "movie_id" ]
+        }
+      } ]
+    }
+  } ]
+}

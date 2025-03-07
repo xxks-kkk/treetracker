@@ -18,6 +18,7 @@ import static org.zhu45.treetracker.common.StandardErrorCode.FUNCTION_IMPLEMENTA
 
 public class Plan
 {
+    // Root of the plan always contains the operator that is the root of the operator tree.
     private final PlanNode root;
     private PlanStatistics planStatistics;
     private Map<Integer, List<Operator>> node2Operators;
@@ -65,8 +66,16 @@ public class Plan
                 FullReducerNode fullReducerNode = (FullReducerNode) root;
                 getSchemaTableNamesHelper(fullReducerNode.getSink(), res);
                 break;
+            case hash:
+            case gather:
+            case sort:
+            case materialize:
+            case gather_merge:
+            case aggregate:
+                getSchemaTableNamesHelper(root.getSources().get(0), res);
+                break;
             default:
-                throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, root.getNodeType() + "unimplemented");
+                throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, root.getNodeType() + " unimplemented");
         }
     }
 
@@ -127,8 +136,16 @@ public class Plan
                 res.add(fullReducerNode.getOperator());
                 getOperatorListHelper(fullReducerNode.getSink(), res);
                 break;
+            case gather:
+            case hash:
+            case sort:
+            case materialize:
+            case gather_merge:
+            case aggregate:
+                getOperatorListHelper(root.getSources().get(0), res);
+                break;
             default:
-                throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, root.getNodeType() + "unimplemented");
+                throw new TreeTrackerException(FUNCTION_IMPLEMENTATION_ERROR, root.getNodeType() + " unimplemented");
         }
     }
 

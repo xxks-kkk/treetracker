@@ -43,6 +43,13 @@ public class IMDBDatabase
     public static final String movieInfo = "movie_info";
     public static final String personInfo = "person_info";
 
+    public static List<String> getTableNames()
+    {
+        return List.of(akaName, akaTitle, castInfo, charName, compCastType, companyName, companyType, completeCast,
+                infoType, keyword, kindType, linkType, movieCompanies, movieInfoIdx, movieKeyword,
+                movieLink, name, roleType, title, movieInfo, personInfo);
+    }
+
     public static class CodeGen
     {
         public static final Map<String, String> relation2MultiwayJoinNode = Map.ofEntries(

@@ -68,7 +68,7 @@ public class Query12bOptJoinTreeOptOrderingY
                 asDirectedEdge(movieCompaniesNode, companyTypeNode)), traversalList);
         SemiJoinOrdering semiJoinOrdering = new SemiJoinOrdering(List.of(Pair.of(movieInfoNode, infoTypeNode1), Pair.of(movieInfoIdxNode2, infoTypeNode2), Pair.of(titleNode, movieInfoIdxNode2), Pair.of(titleNode, movieInfoNode), Pair.of(movieCompaniesNode, titleNode), Pair.of(movieCompaniesNode, companyNameNode), Pair.of(movieCompaniesNode, companyTypeNode)), orderedGraph);
 
-        Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, false, false);
+        Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, false, false, false);
 
         verifyJoinOrdering(plan, Arrays.asList(movieCompaniesNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),

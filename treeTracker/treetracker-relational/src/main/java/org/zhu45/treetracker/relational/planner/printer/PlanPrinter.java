@@ -5,14 +5,26 @@ import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.PlanNode;
 import org.zhu45.treetracker.relational.planner.PlanNodeId;
 import org.zhu45.treetracker.relational.planner.PlanVisitor;
+import org.zhu45.treetracker.relational.planner.plan.AggregateNode;
 import org.zhu45.treetracker.relational.planner.plan.FullReducerNode;
+import org.zhu45.treetracker.relational.planner.plan.GatherMergeNode;
+import org.zhu45.treetracker.relational.planner.plan.GatherNode;
+import org.zhu45.treetracker.relational.planner.plan.HashNode;
 import org.zhu45.treetracker.relational.planner.plan.JoinNode;
+import org.zhu45.treetracker.relational.planner.plan.MaterializeNode;
+import org.zhu45.treetracker.relational.planner.plan.SortNode;
 import org.zhu45.treetracker.relational.planner.plan.TableNode;
 
 import java.util.List;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Objects.requireNonNull;
+import static org.zhu45.treetracker.relational.planner.PostgresPlanProperty.Constants.AGGREGATE_VALUE;
+import static org.zhu45.treetracker.relational.planner.PostgresPlanProperty.Constants.GATHER_MERGE_VALUE;
+import static org.zhu45.treetracker.relational.planner.PostgresPlanProperty.Constants.GATHER_VALUE;
+import static org.zhu45.treetracker.relational.planner.PostgresPlanProperty.Constants.HASH_VALUE;
+import static org.zhu45.treetracker.relational.planner.PostgresPlanProperty.Constants.MATERIALIZE_VALUE;
+import static org.zhu45.treetracker.relational.planner.PostgresPlanProperty.Constants.SORT_VALUE;
 
 /**
  * Print logical plan and physical plan in various formats
@@ -48,10 +60,16 @@ public class PlanPrinter
         @Override
         public Void visitJoin(JoinNode node, Void context)
         {
-            NodeRepresentation nodeOutput =
-                    addNode(node, "Join", String.format("%s join %s", node.getLeft().getId(), node.getRight().getId()));
+            NodeRepresentation nodeOutput = addNode(node, "Join", String.format("%s join %s", node.getLeft().getId(),
+                    node.getRight().getId()));
             if (node.getOperator() != null) {
                 nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+                if (node.getOperator().getMultiwayJoinNode() != null) {
+                    nodeOutput.appendDetailsLine("binding node: " + node.getOperator().getMultiwayJoinNode());
+                }
+                if (node.getOperator().getChildMultiwayJoinNode() != null) {
+                    nodeOutput.appendDetailsLine("binding childMultiwayJoinNode: " + node.getOperator().getChildMultiwayJoinNode());
+                }
             }
             node.getLeft().accept(this, context);
             node.getRight().accept(this, context);
@@ -59,12 +77,86 @@ public class PlanPrinter
         }
 
         @Override
-        public Void visitTable(TableNode node, Void context)
+        public Void visitHash(HashNode node, Void context)
         {
-            NodeRepresentation nodeOutput =
-                    addNode(node, "Table", node.getSchemaTableName().toString());
+            PlanNode childPlanNode = node.getSources().get(0);
+            NodeRepresentation nodeOutput = addNode(node, HASH_VALUE, String.format("%s %s", HASH_VALUE, childPlanNode.getId()));
             if (node.getOperator() != null) {
                 nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+            }
+            childPlanNode.accept(this, context);
+            return null;
+        }
+
+        @Override
+        public Void visitGather(GatherNode node, Void context)
+        {
+            PlanNode childPlanNode = node.getSources().get(0);
+            NodeRepresentation nodeOutput = addNode(node, GATHER_VALUE, String.format("%s %s", GATHER_VALUE, childPlanNode.getId()));
+            if (node.getOperator() != null) {
+                nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+            }
+            childPlanNode.accept(this, context);
+            return null;
+        }
+
+        @Override
+        public Void visitGatherMerge(GatherMergeNode node, Void context)
+        {
+            PlanNode childPlanNode = node.getSources().get(0);
+            NodeRepresentation nodeOutput = addNode(node, GATHER_MERGE_VALUE, String.format("%s %s", GATHER_MERGE_VALUE, childPlanNode.getId()));
+            if (node.getOperator() != null) {
+                nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+            }
+            childPlanNode.accept(this, context);
+            return null;
+        }
+
+        @Override
+        public Void visitAggregate(AggregateNode node, Void context)
+        {
+            PlanNode childPlanNode = node.getSources().get(0);
+            NodeRepresentation nodeOutput = addNode(node, AGGREGATE_VALUE, String.format("%s %s", AGGREGATE_VALUE, childPlanNode.getId()));
+            if (node.getOperator() != null) {
+                nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+            }
+            childPlanNode.accept(this, context);
+            return null;
+        }
+
+        @Override
+        public Void visitSort(SortNode node, Void context)
+        {
+            PlanNode childPlanNode = node.getSources().get(0);
+            NodeRepresentation nodeOutput = addNode(node, SORT_VALUE, String.format("%s %s", SORT_VALUE, childPlanNode.getId()));
+            if (node.getOperator() != null) {
+                nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+            }
+            childPlanNode.accept(this, context);
+            return null;
+        }
+
+        @Override
+        public Void visitMaterialize(MaterializeNode node, Void context)
+        {
+            PlanNode childPlanNode = node.getSources().get(0);
+            NodeRepresentation nodeOutput = addNode(node, MATERIALIZE_VALUE, String.format("%s %s", MATERIALIZE_VALUE, childPlanNode.getId()));
+            if (node.getOperator() != null) {
+                nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+            }
+            childPlanNode.accept(this, context);
+            return null;
+        }
+
+        @Override
+        public Void visitTable(TableNode node, Void context)
+        {
+            NodeRepresentation nodeOutput = addNode(node, "Table", node.getSchemaTableName().toString());
+            if (node.getOperator() != null) {
+                nodeOutput.appendDetailsLine("operator = %s", node.getOperator().getOperatorName());
+                if (node.getOperator().getNoGoodListMap() != null) {
+                    nodeOutput.appendDetailsLine("noGoodListMap = %s", node.getOperator().getNoGoodListMap().generateNoGoodListMapRepresentation());
+                }
             }
             return processChildren(node, context);
         }
@@ -72,8 +164,7 @@ public class PlanPrinter
         @Override
         public Void visitFullReducer(FullReducerNode node, Void context)
         {
-            NodeRepresentation nodeOutput =
-                    addNode(node, "Full Reducer");
+            NodeRepresentation nodeOutput = addNode(node, "Full Reducer");
             if (node.getOperator() != null) {
                 FullReducerOperator operator = (FullReducerOperator) node.getOperator();
                 nodeOutput.appendDetailsLine("operator = %s", operator.getOperatorName());

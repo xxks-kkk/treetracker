@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
+import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -154,6 +155,7 @@ public class TTJAggregateStatisticsInformation
                 numberOfPassContextCalls += operator.getStatisticsInformation().getNumberOfPassContextCalls();
                 numberOfPassContextCallsInnerRelations += operator.getStatisticsInformation().getNumberOfPassContextCalls();
                 numberOfInitPassContextCalls += operator.getStatisticsInformation().getNumberOfInitPassContextCalls();
+                numberOfHashTableProbe += operator.getStatisticsInformation().getNumberOfHashTableProbe();
                 if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
                     traceLogger.debug(String.format("numberOfR1Assignments increased to %s by %s due to %s",
                             numberOfR1Assignments,
@@ -170,7 +172,7 @@ public class TTJAggregateStatisticsInformation
             @Override
             public void visitTupleBasedTableScanOperator(TupleBasedTableScanOperator operator, CostEstimationContext context)
             {
-                if (!operator.isLeftMostOperatorInPlan()) {
+                if (operator.getSide() != Side.OUTER) {
                     numberOfR1Assignments += operator.getStatisticsInformation().getNumberOfR1Assignments();
                     innerRelationSize += operator.getStatisticsInformation().getNumberOfTuples();
                     if (Switches.DEBUG && traceLogger.isDebugEnabled()) {

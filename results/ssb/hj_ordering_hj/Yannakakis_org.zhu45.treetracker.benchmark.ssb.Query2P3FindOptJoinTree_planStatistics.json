@@ -1,0 +1,102 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "ssb_int",
+      "tableName" : "lineorder"
+    }, {
+      "schemaName" : "ssb_int",
+      "tableName" : "date"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q2p3_part"
+    }, {
+      "schemaName" : "ssb",
+      "tableName" : "q2p3_supplier"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb_int.date(datekey)\n|ssb.q2p3_part(partkey)\n|ssb.q2p3_supplier(suppkey)" : 2.0
+  },
+  "optimalJoinTree" : "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb_int.date(datekey)\n|ssb.q2p3_part(partkey)\n|ssb.q2p3_supplier(suppkey)",
+  "cost" : 2.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "ssb_int",
+        "tableName" : "lineorder"
+      }, {
+        "schemaName" : "ssb_int",
+        "tableName" : "date"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q2p3_part"
+      }, {
+        "schemaName" : "ssb",
+        "tableName" : "q2p3_supplier"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb_int.date(datekey)\n|ssb.q2p3_part(partkey)\n|ssb.q2p3_supplier(suppkey)" : 2.0
+    },
+    "optimalJoinTree" : "ssb_int.lineorder(lo_orderkey,custkey,partkey,suppkey,datekey)\n|ssb_int.date(datekey)\n|ssb.q2p3_part(partkey)\n|ssb.q2p3_supplier(suppkey)",
+    "cost" : 2.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb_int.date",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "date"
+          },
+          "attributes" : [ "DATEKEY" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb.q2p3_part",
+          "schemaTableName" : {
+            "schemaName" : "ssb",
+            "tableName" : "q2p3_part"
+          },
+          "attributes" : [ "PARTKEY" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "ssb_int.lineorder",
+          "schemaTableName" : {
+            "schemaName" : "ssb_int",
+            "tableName" : "lineorder"
+          },
+          "attributes" : [ "LO_ORDERKEY", "CUSTKEY", "PARTKEY", "SUPPKEY", "DATEKEY" ]
+        },
+        "right" : {
+          "nodeName" : "ssb.q2p3_supplier",
+          "schemaTableName" : {
+            "schemaName" : "ssb",
+            "tableName" : "q2p3_supplier"
+          },
+          "attributes" : [ "SUPPKEY" ]
+        }
+      } ]
+    }
+  } ]
+}

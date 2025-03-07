@@ -349,4 +349,58 @@ public abstract class AbstractStatisticsInformation
     {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void incrementNumberOfHashTableProbe()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getNumberOfHashTableProbe()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateNumberOfHashTableProbe(long numberOfHashTableProbe)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateNumberOfHashTableBuildTuples(long numberOfHashTableBuildTuples)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getNumberOfHashTableBuildTuples()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void incrementNumberOfSemiJoinSuccess()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getNumberOfSemiJoinSuccess()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateHashTableSizeAfterEvaluation(long hashTableSize)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getHashTableSizeAfterEvaluation()
+    {
+        throw new UnsupportedOperationException();
+    }
 }

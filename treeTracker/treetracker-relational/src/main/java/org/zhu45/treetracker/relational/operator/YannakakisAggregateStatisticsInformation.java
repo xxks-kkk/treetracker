@@ -49,6 +49,10 @@ public class YannakakisAggregateStatisticsInformation
     @JsonIgnore
     @Getter
     private List<List<MultiwayJoinNode>> topDownSemiJoinOrdering;
+    @Getter
+    private long numberOfHashTableProbeWithinFullReducer;
+    @Getter
+    private long numberOfHashTableBuildTuplesWithinFullReducer;
 
     protected class YannakakisPrinter
             extends Printer
@@ -73,6 +77,10 @@ public class YannakakisAggregateStatisticsInformation
             bottomUpSemiJoinOrdering = obtainBottomUpSemJoinOrdering(operator.getBottomUpSemijoins());
             topDownSemiJoinOrdering = obtainBottomUpSemJoinOrdering(operator.getTopDownSemijoins());
             fullReducerTime = TimeUnit.NANOSECONDS.toMillis(statisticsInformation.getFullReducerTime());
+            numberOfHashTableProbeWithinFullReducer = statisticsInformation.getNumberOfHashTableProbe();
+            numberOfHashTableProbe += statisticsInformation.getNumberOfHashTableProbe();
+            numberOfHashTableBuildTuplesWithinFullReducer = statisticsInformation.getNumberOfHashTableBuildTuples();
+            hashTableBuildTime += statisticsInformation.getHashTableBuildTime();
             process(operator.getSinkOperator(), context);
         }
     }

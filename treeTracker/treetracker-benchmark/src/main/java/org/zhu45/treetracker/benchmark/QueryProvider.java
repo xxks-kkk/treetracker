@@ -8,6 +8,7 @@ import org.zhu45.treetracker.relational.operator.AggregateStatisticsInformationF
 import org.zhu45.treetracker.relational.operator.JoinOperator;
 import org.zhu45.treetracker.relational.operator.Operator;
 import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiBloomJoinOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiHashJoinIntOperator;
 import org.zhu45.treetracker.relational.planner.rule.AttachFullReducer;
 import org.zhu45.treetracker.relational.planner.rule.Rule;
 import org.zhu45.treetracker.relational.statistics.CostModel;
@@ -30,8 +31,11 @@ import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjHPBFContext
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjHPBGContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjHPContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjHPNONGContextBuilder;
+import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjHPNoDPContextBuilder;
+import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjHPVanillaContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjV1ContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.ttjV2ContextBuilder;
+import static org.zhu45.treetracker.benchmark.JoinFragmentContext.yannakakis1PassContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.yannakakisBContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.yannakakisContextBuilder;
 import static org.zhu45.treetracker.benchmark.JoinFragmentContext.yannakakisVContextBuilder;
@@ -66,6 +70,24 @@ public class QueryProvider
                             .setJdbcClient(context.jdbcClient)
                             .build();
                     return queryConstructor.newInstance(ttjHPNONGContext);
+                case TTJHP_NO_DP:
+                    JoinFragmentContext ttjHPNoDPContext = ttjHPNoDPContextBuilder
+                            .setBackJumpedRelationSize(context.backJumpedRelationSize)
+                            .setNumberOfBackJumpedRelations(context.numberOfBackjumpedRelations)
+                            .setQueryName(context.queryName)
+                            .setRules(context.rules)
+                            .setJdbcClient(context.jdbcClient)
+                            .build();
+                    return queryConstructor.newInstance(ttjHPNoDPContext);
+                case TTJHP_VANILLA:
+                    JoinFragmentContext ttjHPVanillaContext = ttjHPVanillaContextBuilder
+                            .setBackJumpedRelationSize(context.backJumpedRelationSize)
+                            .setNumberOfBackJumpedRelations(context.numberOfBackjumpedRelations)
+                            .setQueryName(context.queryName)
+                            .setRules(context.rules)
+                            .setJdbcClient(context.jdbcClient)
+                            .build();
+                    return queryConstructor.newInstance(ttjHPVanillaContext);
                 case TTJV2:
                     JoinFragmentContext ttjV2Context = ttjV2ContextBuilder
                             .setBackJumpedRelationSize(context.backJumpedRelationSize)
@@ -220,6 +242,24 @@ public class QueryProvider
                             .build();
                     bloomSemiJoinContextBuilder.build();
                     return queryConstructor.newInstance(bloomSemiJoinContext);
+                case Yannakakis1Pass:
+                    List<Rule> newRules1Pass = new ArrayList<>();
+                    if (context.rules != null) {
+                        newRules1Pass.addAll(context.rules);
+                    }
+                    newRules1Pass.forEach(rule -> checkState(!(rule instanceof AttachFullReducer),
+                            "AttachFullReducer rule is automatically added to Yannakakis's algorithm; no need to specify"));
+                    newRules1Pass.add(new AttachFullReducer(true, TupleBasedLeftSemiHashJoinIntOperator.class));
+                    JoinFragmentContext yannakakis1PassContext = yannakakis1PassContextBuilder
+                            .setBackJumpedRelationSize(context.backJumpedRelationSize)
+                            .setNumberOfBackJumpedRelations(context.numberOfBackjumpedRelations)
+                            .setQueryName(context.queryName)
+                            .setStopAfterFullReducer(context.stopAfterFullReducer)
+                            .setRules(newRules1Pass)
+                            .setJdbcClient(context.jdbcClient)
+                            .disablePTOptimizationTrick(true)
+                            .build();
+                    return queryConstructor.newInstance(yannakakis1PassContext);
                 default:
                     throw new UnsupportedOperationException(String.format("provided %s is not supported", context.joinOperator));
             }

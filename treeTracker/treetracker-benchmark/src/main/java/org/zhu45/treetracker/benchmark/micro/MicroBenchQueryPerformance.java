@@ -21,7 +21,6 @@ import java.util.List;
 
 import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.QueryProvider.queryProvider;
-import static org.zhu45.treetracker.common.RedissonClientSupplier.redissonClientSupplier;
 import static org.zhu45.treetracker.common.TestConstants.TREETRACKER_DEBUG;
 import static org.zhu45.treetracker.common.TestConstants.checkEnvVariableSet;
 import static org.zhu45.treetracker.common.logging.LoggerProvider.getLogger;
@@ -69,9 +68,6 @@ public class MicroBenchQueryPerformance
                 }
                 operator.close();
             });
-            if (!redissonClientSupplier.get().isShutdown()) {
-                redissonClientSupplier.get().shutdown();
-            }
             System.out.println("runtime: " + (System.currentTimeMillis() - timeNow) + " ms");
             if (Switches.DEBUG) {
                 System.out.println(printer.print(query.getRootOperator()));

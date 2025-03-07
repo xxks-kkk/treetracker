@@ -1,0 +1,102 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch",
+      "tableName" : "q10w_lineitem"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q10w_orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "customer"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "nation"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch.q10w_lineitem(orderkey,partkey,suppkey)\n|tpch.q10w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)" : 4.0
+  },
+  "optimalJoinTree" : "tpch.q10w_lineitem(orderkey,partkey,suppkey)\n|tpch.q10w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)",
+  "cost" : 4.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch",
+        "tableName" : "q10w_lineitem"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q10w_orders"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "customer"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "nation"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "tpch.q10w_lineitem(orderkey,partkey,suppkey)\n|tpch.q10w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)" : 4.0
+    },
+    "optimalJoinTree" : "tpch.q10w_lineitem(orderkey,partkey,suppkey)\n|tpch.q10w_orders(orderkey,custkey)\n||tpch_int.customer(custkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)",
+    "cost" : 4.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "tpch_int.customer",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "customer"
+          },
+          "attributes" : [ "nationkey", "custkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch_int.nation",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "nation"
+          },
+          "attributes" : [ "nationkey", "regionkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch.q10w_orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q10w_orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch_int.customer",
+          "schemaTableName" : {
+            "schemaName" : "tpch_int",
+            "tableName" : "customer"
+          },
+          "attributes" : [ "nationkey", "custkey" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "tpch.q10w_lineitem",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q10w_lineitem"
+          },
+          "attributes" : [ "orderkey", "partkey", "suppkey" ]
+        },
+        "right" : {
+          "nodeName" : "tpch.q10w_orders",
+          "schemaTableName" : {
+            "schemaName" : "tpch",
+            "tableName" : "q10w_orders"
+          },
+          "attributes" : [ "orderkey", "custkey" ]
+        }
+      } ]
+    }
+  } ]
+}

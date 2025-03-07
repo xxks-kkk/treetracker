@@ -7,6 +7,7 @@ import org.zhu45.treektracker.multiwayJoin.MultiwayJoinDomain;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.ColumnHandle;
 import org.zhu45.treetracker.common.SchemaTableName;
+import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.jdbc.RecordTupleSource;
 import org.zhu45.treetracker.jdbc.RecordTupleSourceProvider;
@@ -43,7 +44,6 @@ public class TupleBasedTableScanOperator
     protected Row pVal;
     protected boolean useDomainAsSource;
     private Iterator<Row> domainIterator;
-    private boolean isLeftMostOperatorInPlan;
     protected SchemaTableName schemaTableName;
     protected TableCatalog tableCatalog;
 
@@ -65,7 +65,12 @@ public class TupleBasedTableScanOperator
     {
         if (Switches.STATS) {
             statisticsInformation.setFetchingTuplesTime(fetchingTuplesTime);
-            statisticsInformation.setNumberOfTuples(operatorAssociatedRelationSize);
+            if (useDomainAsSource) {
+                statisticsInformation.setNumberOfTuples(multiwayJoinNode.getDomain().size());
+            }
+            else {
+                statisticsInformation.setNumberOfTuples(operatorAssociatedRelationSize);
+            }
             statisticsInformation.setRecordTupleSourceClazzName(recordTupleSourceProvider.getClass().getCanonicalName());
             statisticsInformation.setPredicateEvaluationTime(predicateEvaluationTime);
         }
@@ -262,6 +267,27 @@ public class TupleBasedTableScanOperator
         return tmp;
     }
 
+    @Override
+    public IntRow passContext(int parentId, int id)
+    {
+        if (Switches.STATS) {
+            statisticsInformation.incrementNumberOfPassContextCalls();
+            statisticsInformation.incrementNumberOfDanglingTuples();
+        }
+        if (Switches.DEBUG) {
+            if (traceLogger.isTraceEnabled()) {
+                traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".passContext(" + parentId + ")"));
+                incrementTraceDepth();
+            }
+        }
+        Row tmp = getNext();
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+            traceLogger.trace(formatTraceMessage("return: " + tmp));
+            decrementTraceDepth();
+        }
+        return (IntRow) tmp;
+    }
+
     public void initalizeDomainIterator()
     {
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -287,18 +313,6 @@ public class TupleBasedTableScanOperator
     public boolean getUseDomainAsSource()
     {
         return this.useDomainAsSource;
-    }
-
-    @Override
-    public void setLeftMostOperatorInPlan()
-    {
-        isLeftMostOperatorInPlan = true;
-    }
-
-    @Override
-    public boolean isLeftMostOperatorInPlan()
-    {
-        return isLeftMostOperatorInPlan;
     }
 
     @Override
@@ -341,5 +355,11 @@ public class TupleBasedTableScanOperator
     public Class<? extends RecordTupleSourceProvider> getRecordTupleSourceProviderClazz()
     {
         return recordTupleSourceProvider.getClass();
+    }
+
+    @Override
+    public MultiwayJoinNode getChildMultiwayJoinNode()
+    {
+        return null;
     }
 }

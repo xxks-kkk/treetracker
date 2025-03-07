@@ -21,12 +21,6 @@ public class TupleBasedLeftSemiHashJoinOperator
     }
 
     @Override
-    public void open()
-    {
-        hashJoinOpen();
-    }
-
-    @Override
     public Row getNext()
     {
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -56,6 +50,9 @@ public class TupleBasedLeftSemiHashJoinOperator
                     traceLogger.trace(formatTraceMessage("return " + r1));
                     decrementTraceDepth();
                 }
+                if (Switches.STATS) {
+                    statisticsInformation.incrementNumberOfSemiJoinSuccess();
+                }
                 return r1;
             }
         }
@@ -68,6 +65,9 @@ public class TupleBasedLeftSemiHashJoinOperator
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".l = " + l));
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + " is l null? " + isNull(l)));
             incrementTraceDepth();
+        }
+        if (Switches.STATS) {
+            statisticsInformation.incrementNumberOfHashTableProbe();
         }
         JoinValueContainerKey jav = extract(r1, true);
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {

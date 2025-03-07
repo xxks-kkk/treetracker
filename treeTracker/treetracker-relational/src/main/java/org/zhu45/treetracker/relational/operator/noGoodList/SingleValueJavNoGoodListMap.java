@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.IntegerValue;
@@ -23,6 +24,8 @@ import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNode;
 import org.zhu45.treetracker.relational.planner.PlanVisitor;
 import org.zhu45.treetracker.relational.planner.plan.FullReducerNode;
+import org.zhu45.treetracker.relational.planner.plan.GatherNode;
+import org.zhu45.treetracker.relational.planner.plan.HashNode;
 import org.zhu45.treetracker.relational.planner.plan.JoinNode;
 import org.zhu45.treetracker.relational.planner.plan.TableNode;
 
@@ -75,12 +78,12 @@ public class SingleValueJavNoGoodListMap
         }
     }
 
-    private SingleValueJavNoGoodListMap(PlanBuildContext planBuildContext)
+    private SingleValueJavNoGoodListMap(TableNode outerTable, PlanBuildContext planBuildContext)
     {
         this.planBuildContext = planBuildContext;
-        this.associateSchemaTableName = planBuildContext.getLeftMostPlanNodeOperator().getSchemaTableName();
-        this.traceDepth = planBuildContext.getLeftMostPlanNodeOperator().getOperatorTraceDepth() + 1;
-        this.nodeId2JoinIdx = constructNodeId2JoinIdx(planBuildContext);
+        this.associateSchemaTableName = outerTable.getSchemaTableName();
+        this.traceDepth = outerTable.getOperator().getOperatorTraceDepth() + 1;
+        this.nodeId2JoinIdx = constructNodeId2JoinIdx(outerTable, planBuildContext);
         this.noGoodListMap = constructNoGoodListMap(nodeId2JoinIdx);
         if (Switches.STATS) {
             this.statisticsInformation = new TupleBasedTableScanStatisticsInformation();
@@ -202,18 +205,19 @@ public class SingleValueJavNoGoodListMap
         return parseInstance(noGoodListMap).totalSize();
     }
 
-    public static Pair<Boolean, SingleValueJavNoGoodListMap> constructSingleValueJavNoGoodListMap(PlanNode root, PlanBuildContext planBuildContext)
+    public static Pair<Boolean, SingleValueJavNoGoodListMap> constructSingleValueJavNoGoodListMap(TableNode outerTable, PlanNode root, PlanBuildContext planBuildContext)
     {
-        boolean isNodeId2JoinIdxSatisfiesRequirement = checkNodeId2JoinIdxIfQuerySatisfiesRequirement(root, planBuildContext);
+        Map<Integer, List<Integer>> nodeId2JoinIdx = planBuildContext.getNodeId2FactTableJoinAttributeIdx(outerTable);
+        boolean isNodeId2JoinIdxSatisfiesRequirement = checkNodeId2JoinIdxIfQuerySatisfiesRequirement(root, Triple.of(outerTable, planBuildContext, nodeId2JoinIdx));
         if (!isNodeId2JoinIdxSatisfiesRequirement) {
             return Pair.of(isNodeId2JoinIdxSatisfiesRequirement, null);
         }
-        return Pair.of(isNodeId2JoinIdxSatisfiesRequirement, new SingleValueJavNoGoodListMap(planBuildContext));
+        return Pair.of(isNodeId2JoinIdxSatisfiesRequirement, new SingleValueJavNoGoodListMap(outerTable, planBuildContext));
     }
 
-    public static Int2IntOpenHashMap constructNodeId2JoinIdx(PlanBuildContext context)
+    public static Int2IntOpenHashMap constructNodeId2JoinIdx(TableNode outerTable, PlanBuildContext context)
     {
-        Map<Integer, List<Integer>> nodeId2JoinIdx = context.getNodeId2FactTableJoinAttributeIdx();
+        Map<Integer, List<Integer>> nodeId2JoinIdx = context.getNodeId2FactTableJoinAttributeIdx(outerTable);
         Int2IntOpenHashMap newNodeId2JoinIdx = new Int2IntOpenHashMap();
         for (Map.Entry<Integer, List<Integer>> entry : nodeId2JoinIdx.entrySet()) {
             newNodeId2JoinIdx.put(entry.getKey().intValue(), entry.getValue().get(0).intValue());
@@ -231,15 +235,21 @@ public class SingleValueJavNoGoodListMap
     }
 
     public static class ConstructNodeId2JoinIdx
-            extends PlanVisitor<Boolean, PlanBuildContext>
+            extends PlanVisitor<Boolean, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>>>
     {
-        public static boolean checkNodeId2JoinIdxIfQuerySatisfiesRequirement(PlanNode root, PlanBuildContext context)
+        public static boolean checkNodeId2JoinIdxIfQuerySatisfiesRequirement(PlanNode root, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
         {
             return new ConstructNodeId2JoinIdx().visitPlan(root, context);
         }
 
         @Override
-        public Boolean visitPlan(PlanNode node, PlanBuildContext context)
+        public Boolean visitPlan(PlanNode node, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
+        {
+            return node.accept(this, context);
+        }
+
+        @Override
+        public Boolean visitJoin(JoinNode node, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
         {
             List<PlanNode> children = node.getSources();
             for (PlanNode child : children) {
@@ -250,38 +260,44 @@ public class SingleValueJavNoGoodListMap
                     }
                 }
             }
-            return node.accept(this, context);
-        }
-
-        @Override
-        public Boolean visitJoin(JoinNode node, PlanBuildContext context)
-        {
             return Boolean.TRUE;
         }
 
         @Override
-        public Boolean visitTable(TableNode node, PlanBuildContext context)
+        public Boolean visitTable(TableNode node, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
         {
             Operator operator = node.getOperator();
             int nodeId = operator.getMultiwayJoinNode().getNodeId();
-            if (operator.getPlanBuildContext().getNodeId2FactTableJoinAttributeIdx().containsKey(nodeId)) {
+            if (context.getRight().containsKey(nodeId)) {
                 return checkFactTableJoinAttributeIdx(nodeId, context);
             }
             return Boolean.TRUE;
         }
 
         @Override
-        public Boolean visitFullReducer(FullReducerNode node, PlanBuildContext context)
+        public Boolean visitHash(HashNode node, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
+        {
+            return visitPlan(node.getSources().get(0), context);
+        }
+
+        @Override
+        public Boolean visitGather(GatherNode node, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
+        {
+            return visitPlan(node.getSources().get(0), context);
+        }
+
+        @Override
+        public Boolean visitFullReducer(FullReducerNode node, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
         {
             throw new UnsupportedOperationException();
         }
 
-        private boolean checkFactTableJoinAttributeIdx(int nodeId, PlanBuildContext context)
+        private boolean checkFactTableJoinAttributeIdx(int nodeId, Triple<TableNode, PlanBuildContext, Map<Integer, List<Integer>>> context)
         {
-            List<Integer> factTableJoinAttributeIdx = context.getNodeId2FactTableJoinAttributeIdx().get(nodeId);
+            List<Integer> factTableJoinAttributeIdx = context.getRight().get(nodeId);
 
-            Operator factTableOperator = context.getLeftMostPlanNodeOperator();
-            List<Type> factTableTypes = context.getCatalogGroup().getTableCatalog(factTableOperator.getSchemaTableName()).getTypeList();
+            Operator factTableOperator = context.getLeft().getOperator();
+            List<Type> factTableTypes = context.getMiddle().getCatalogGroup().getTableCatalog(factTableOperator.getSchemaTableName()).getTypeList();
             return factTableJoinAttributeIdx.size() == 1 &&
                     factTableTypes.get(factTableJoinAttributeIdx.get(0)).equals(INTEGER);
         }

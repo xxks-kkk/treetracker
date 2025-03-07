@@ -4,14 +4,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
+import org.zhu45.treetracker.common.SchemaTableName;
+import org.zhu45.treetracker.relational.OperatorSpecification;
 import org.zhu45.treetracker.relational.planner.cost.CardEstProviderStatistics;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 /**
  * Any information obtained during applying rule. This information is to be consumed (merged) into PlanStatistics.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class RuleStatistics
 {
     private Class<? extends Rule> rule;
@@ -45,6 +49,10 @@ public class RuleStatistics
     private final SemiJoinOrdering semiJoinOrdering;
     @Getter
     private final SemiJoinOrdering topDownSemiJoinOrdering;
+    @Getter
+    private final Set<SchemaTableName> disabledTTJScan;
+    @Getter
+    private final LinkedHashMap<OperatorSpecification, MultiwayJoinOrderedGraph> node2JoinTrees;
 
     private RuleStatistics(Builder builder)
     {
@@ -62,6 +70,8 @@ public class RuleStatistics
         this.cardEstProviderStatistics = builder.cardEstProviderStatistics;
         this.semiJoinOrdering = builder.semiJoinOrdering;
         this.topDownSemiJoinOrdering = builder.topDownSemiJoinOrdering;
+        this.disabledTTJScan = builder.disabledTTJScan;
+        this.node2JoinTrees = builder.node2JoinTrees;
     }
 
     public static Builder builder(Class<? extends Rule> rule)
@@ -91,6 +101,9 @@ public class RuleStatistics
         private SemiJoinOrdering semiJoinOrdering;
         // top-down semijoin ordering
         private SemiJoinOrdering topDownSemiJoinOrdering;
+        // a set of relations where they are no longer associated with TTJ scan
+        Set<SchemaTableName> disabledTTJScan;
+        private LinkedHashMap<OperatorSpecification, MultiwayJoinOrderedGraph> node2JoinTrees;
 
         private Builder(Class<? extends Rule> rule)
         {
@@ -149,6 +162,18 @@ public class RuleStatistics
         public Builder topDownSemiJoinOrdering(SemiJoinOrdering semiJoinOrdering)
         {
             this.topDownSemiJoinOrdering = topDownSemiJoinOrdering;
+            return this;
+        }
+
+        public Builder disabledTTJScan(Set<SchemaTableName> disabledTTJScan)
+        {
+            this.disabledTTJScan = disabledTTJScan;
+            return this;
+        }
+
+        public Builder node2JoinTrees(LinkedHashMap<OperatorSpecification, MultiwayJoinOrderedGraph> node2JoinTrees)
+        {
+            this.node2JoinTrees = node2JoinTrees;
             return this;
         }
 

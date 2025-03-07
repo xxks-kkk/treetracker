@@ -82,8 +82,7 @@ public class TupleBasedSSBLIPHashJoinOperator
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage("baseRelationAttributes: " + properPrintList(baseRelationAttributes)));
-            traceLogger.trace(formatTraceMessage("factTableRAttributes: " + properPrintList(planBuildContext
-                    .getLeftMostPlanNodeOperator().getColumns().stream().map(ColumnHandle::getColumnName).collect(Collectors.toList()))));
+            traceLogger.trace(formatTraceMessage("factTableRAttributes: " + properPrintList(factTableOperator.getColumns().stream().map(ColumnHandle::getColumnName).collect(Collectors.toList()))));
             traceLogger.trace(formatTraceMessage("factTableJoinAttributeIdx: " + properPrintList(factTableJoinAttributeIdx)));
         }
 
@@ -188,7 +187,6 @@ public class TupleBasedSSBLIPHashJoinOperator
         }
         factTableJoinAttributeIdx = new ArrayList<>();
         joinIdxTmp = new HashMap<>();
-        Operator factTableOperator = planBuildContext.getLeftMostPlanNodeOperator();
         List<? extends ColumnHandle> factTableHandles = factTableOperator.getColumns();
         List<String> factTableAttributes = factTableHandles.stream().map(ColumnHandle::getColumnName).collect(Collectors.toList());
         List<Type> factTableTypes = factTableHandles.stream().map(ColumnHandle::getColumnType).collect(Collectors.toList());

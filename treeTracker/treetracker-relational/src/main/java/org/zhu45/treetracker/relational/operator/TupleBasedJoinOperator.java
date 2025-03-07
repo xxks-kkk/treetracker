@@ -1,7 +1,9 @@
 package org.zhu45.treetracker.relational.operator;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.primitives.Ints;
 import de.renebergelt.test.Switches;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,12 +11,15 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import org.zhu45.treetracker.common.ColumnHandle;
 import org.zhu45.treetracker.common.RelationalValue;
 import org.zhu45.treetracker.common.Utils;
+import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.ObjectRow;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.common.type.Type;
 import org.zhu45.treetracker.relational.JoinResultColumnHandle;
+import org.zhu45.treetracker.relational.JoinValueContainerIntKey;
 import org.zhu45.treetracker.relational.JoinValueContainerKey;
 import org.zhu45.treetracker.relational.OptType;
+import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,6 +60,8 @@ public abstract class TupleBasedJoinOperator
     // join result relation column handle containing name, type information
     protected List<JoinResultColumnHandle> resultColumnHandles;
     protected JoinType joinType;
+    protected int[] joinIdxForR1Operator;
+    protected int[] joinIdxForR2Operator;
 
     protected StopWatch stopWatch;
 
@@ -86,10 +93,19 @@ public abstract class TupleBasedJoinOperator
     public void setChildren(List<Operator> children)
     {
         checkArgument(children.size() == 2, "expected newChildren to contain 2 nodes");
-        // leftdeep, rightdeep, and busy are determined in PlanBuilder and there is no need to perform swap between
-        // left and right based on the plan type.
-        left = children.get(0);
-        right = children.get(1);
+        checkArgument(children.get(0) != null && children.get(1) != null, "children should not contain null");
+        checkArgument((children.get(0).getSide() == Side.OUTER && children.get(1).getSide() == Side.INNER) ||
+                        (children.get(0).getSide() == Side.INNER && children.get(1).getSide() == Side.OUTER),
+                "One operator has to be Side.INNER and the other operator has to be Side.OUTER");
+        // We always want to make sure the left is the probe side.
+        if (children.get(0).getSide() == Side.OUTER) {
+            left = children.get(0);
+            right = children.get(1);
+        }
+        else {
+            left = children.get(1);
+            right = children.get(0);
+        }
         r1Operator = left;
         r2Operator = right;
     }
@@ -165,6 +181,40 @@ public abstract class TupleBasedJoinOperator
         return new ObjectRow(attributesList, types, res);
     }
 
+    protected IntRow join(IntRow r1, IntRow r2)
+    {
+        requireNonNull(joinType, "joinType is not set; need to call construct(joinType) first");
+        checkArgument(r1 != null && r2 != null, "r1 or r2 is null");
+
+        int[] r1Vals = r1.getIntVals();
+        int[] r2Vals = r2.getIntVals();
+        for (int idx : joinIdxForR1Operator) {
+            // We don't need to call entryEqual because when building joinIdx,
+            // attributes and types are already checked.
+            if (r1Vals[idx] != r2Vals[joinIdx.get(idx)]) {
+                return null;
+            }
+        }
+        int numResultColumns = resultColumnHandles.size();
+        int[] res = Arrays.copyOf(r1Vals, numResultColumns);
+        int counter = r1Vals.length;
+        if (joinType == JoinType.NaturalJoin) {
+            for (int i = 0; i < r2.size(); ++i) {
+                if (!processedRelationR2Column.contains(i)) {
+                    res[counter] = r2Vals[i];
+                    counter++;
+                }
+            }
+        }
+        List<String> attributesList = FastList.newList(numResultColumns);
+        List<Type> types = FastList.newList(numResultColumns);
+        for (JoinResultColumnHandle columnHandle : resultColumnHandles) {
+            attributesList.add(columnHandle.getColumnName());
+            types.add(columnHandle.getColumnType());
+        }
+        return new IntRow(attributesList, res);
+    }
+
     public void construct(JoinType joinType)
     {
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -191,10 +241,8 @@ public abstract class TupleBasedJoinOperator
             boolean iJoinWithSomeJ = false;
             for (int j = 0; j < r2Handles.size(); ++j) {
                 if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                    traceLogger.trace(formatTraceMessage(String.format("i: %s, r1Attributes[i]: %s, r1Types[i]: %s",
-                            i, r1Attributes.get(i), r1Types.get(i))));
-                    traceLogger.trace(formatTraceMessage(String.format("j: %s, r2Attributes[i]: %s, r2Types[i]: %s",
-                            j, r2Attributes.get(j), r2Types.get(j))));
+                    traceLogger.trace(formatTraceMessage(String.format("i: %s, r1Attributes[i]: %s, r1Types[i]: %s", i, r1Attributes.get(i), r1Types.get(i))));
+                    traceLogger.trace(formatTraceMessage(String.format("j: %s, r2Attributes[i]: %s, r2Types[i]: %s", j, r2Attributes.get(j), r2Types.get(j))));
                 }
                 if (r1Attributes.get(i).equals(r2Attributes.get(j)) && r1Types.get(i).equals(r2Types.get(j))) {
                     joinIdxTmp.put(i, j);
@@ -203,20 +251,21 @@ public abstract class TupleBasedJoinOperator
                     }
                     processedRelationR2Column.add(j);
                     if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                        traceLogger.trace(formatTraceMessage("processedRelationR2Column:\n" + Utils.properPrintList(processedRelationR2Column)));
+                        traceLogger.trace(formatTraceMessage(
+                                "processedRelationR2Column:\n" + Utils.properPrintList(processedRelationR2Column)));
                     }
                     resultColumnHandles.add(new JoinResultColumnHandle(r1Handles.get(i).getColumnName(),
                             r1Handles.get(i).getColumnType()));
                     if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                        traceLogger.trace(formatTraceMessage("resultColumnHandles:\n" + Utils.properPrintList(resultColumnHandles)));
+                        traceLogger.trace(formatTraceMessage(
+                                "resultColumnHandles:\n" + Utils.properPrintList(resultColumnHandles)));
                     }
                     iJoinWithSomeJ = true;
                     break;
                 }
             }
             if (!iJoinWithSomeJ) {
-                resultColumnHandles.add(new JoinResultColumnHandle(r1Handles.get(i).getColumnName(),
-                        r1Handles.get(i).getColumnType()));
+                resultColumnHandles.add(new JoinResultColumnHandle(r1Handles.get(i).getColumnName(), r1Handles.get(i).getColumnType()));
                 if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                     traceLogger.trace(formatTraceMessage("resultColumnHandles:\n" + Utils.properPrintList(resultColumnHandles)));
                 }
@@ -225,29 +274,18 @@ public abstract class TupleBasedJoinOperator
         if (joinType == JoinType.NaturalJoin) {
             for (int i = 0; i < r2Handles.size(); ++i) {
                 if (!processedRelationR2Column.contains(i)) {
-                    resultColumnHandles.add(new JoinResultColumnHandle(r2Handles.get(i).getColumnName(),
-                            r2Handles.get(i).getColumnType()));
+                    resultColumnHandles.add(new JoinResultColumnHandle(r2Handles.get(i).getColumnName(), r2Handles.get(i).getColumnType()));
                 }
             }
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage("resultColumnHandles: " + Utils.properPrintList(resultColumnHandles)));
         }
-        joinIdx = ImmutableMap.<Integer, Integer>builder()
-                .putAll(joinIdxTmp)
-                .build();
+        joinIdx = ImmutableMap.<Integer, Integer>builder().putAll(joinIdxTmp).build();
+        joinIdxForR1Operator = Ints.toArray(joinIdx.keySet());
+        joinIdxForR2Operator = Ints.toArray(joinIdx.values());
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             decrementTraceDepth();
-        }
-    }
-
-    protected List<Integer> getJoinAttributeIndex(boolean isIdxForRowFromR1Operator)
-    {
-        if (isIdxForRowFromR1Operator) {
-            return joinIdx.keySet().asList();
-        }
-        else {
-            return joinIdx.values().asList();
         }
     }
 
@@ -256,12 +294,34 @@ public abstract class TupleBasedJoinOperator
         if (Switches.DEBUG) {
             requireNonNull(row, "input row is null");
         }
-        List<Integer> joinAttributeIndex = getJoinAttributeIndex(isRowFromR1Operator);
-        List<RelationalValue> vals = FastList.newList(joinAttributeIndex.size());
+        int[] joinAttributeIndex = isRowFromR1Operator ? joinIdxForR1Operator : joinIdxForR2Operator;
+        List<RelationalValue> vals = FastList.newList(joinAttributeIndex.length);
         List<RelationalValue> rowVals = row.getVals();
         for (int idx : joinAttributeIndex) {
             vals.add(rowVals.get(idx));
         }
         return new JoinValueContainerKey(vals);
+    }
+
+    protected JoinValueContainerIntKey extract(IntRow row, boolean isRowFromR1Operator)
+    {
+        if (Switches.DEBUG) {
+            requireNonNull(row, "input row is null");
+        }
+        int[] joinAttributeIndex = isRowFromR1Operator ? joinIdxForR1Operator : joinIdxForR2Operator;
+        int[] vals = new int[joinAttributeIndex.length];
+        int[] rowVals = row.getIntVals();
+        int counter = 0;
+        for (int idx : joinAttributeIndex) {
+            vals[counter] = rowVals[idx];
+            counter++;
+        }
+        return new JoinValueContainerIntKey(vals);
+    }
+
+    @Override
+    public List<JoinResultColumnHandle> getResultColumnHandles()
+    {
+        return resultColumnHandles;
     }
 }

@@ -42,15 +42,15 @@ public class Query10bFindOptJoinTree
         MultiwayJoinNode charNameNode = getCharNameInt(JOBQueries.Q10b);
         MultiwayJoinNode roleTypeNode = getRoleTypeInt(JOBQueries.Q10b);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(castInfoNode, roleTypeNode, titleNode, movieCompaniesNode, companyNameNode, charNameNode, companyTypeNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(castInfoNode, titleNode, charNameNode, roleTypeNode, movieCompaniesNode, companyNameNode, companyTypeNode)));
         Plan plan = pair.getKey();
 
         verifyJoinOrdering(plan, Arrays.asList(castInfoNode.getSchemaTableName(),
-                roleTypeNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
+                charNameNode.getSchemaTableName(),
+                roleTypeNode.getSchemaTableName(),
                 movieCompaniesNode.getSchemaTableName(),
                 companyNameNode.getSchemaTableName(),
-                charNameNode.getSchemaTableName(),
                 companyTypeNode.getSchemaTableName()));
         return pair;
     }

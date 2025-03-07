@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.SchemaTableName;
@@ -20,9 +21,11 @@ import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOn
 import org.zhu45.treetracker.relational.operator.TupleBasedTableScanStatisticsInformation;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNode;
+import org.zhu45.treetracker.relational.planner.plan.TableNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.openjdk.jol.info.GraphLayout.parseInstance;
@@ -51,12 +54,12 @@ public class SingleValueJavIntRowNoGoodListMap
         }
     }
 
-    private SingleValueJavIntRowNoGoodListMap(PlanBuildContext planBuildContext)
+    private SingleValueJavIntRowNoGoodListMap(TableNode outerTable, PlanBuildContext planBuildContext)
     {
         this.planBuildContext = planBuildContext;
-        this.associateSchemaTableName = planBuildContext.getLeftMostPlanNodeOperator().getSchemaTableName();
-        this.traceDepth = planBuildContext.getLeftMostPlanNodeOperator().getOperatorTraceDepth() + 1;
-        this.nodeId2JoinIdx = constructNodeId2JoinIdx(planBuildContext);
+        this.associateSchemaTableName = outerTable.getSchemaTableName();
+        this.traceDepth = outerTable.getOperator().getOperatorTraceDepth() + 1;
+        this.nodeId2JoinIdx = constructNodeId2JoinIdx(outerTable, planBuildContext);
         this.noGoodListMap = constructNoGoodListMap(nodeId2JoinIdx);
         if (Switches.STATS) {
             this.statisticsInformation = new TupleBasedTableScanStatisticsInformation();
@@ -121,6 +124,22 @@ public class SingleValueJavIntRowNoGoodListMap
     }
 
     @Override
+    public void updateNoGoodListMap(Row row, int id)
+    {
+        int[] vals = ((IntRow) row).getIntVals();
+        int joinIdx = nodeId2JoinIdx.get(id);
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+            traceLogger.trace(formatTraceMessage("jav: " + row.getVals().get(joinIdx)));
+        }
+        noGoodListMap.get(joinIdx).add(vals[joinIdx]);
+        noGoodListMapAddedValue = true;
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+            traceLogger.trace(formatTraceMessage("nodeId2JoinIdx: " + nodeId2JoinIdx));
+            traceLogger.trace(formatTraceMessage("noGoodListMap: " + noGoodListMap));
+        }
+    }
+
+    @Override
     public String generateNoGoodListMapRepresentation()
     {
         List<MultiwayJoinNode> nodes = planBuildContext.getOrderedGraph().getTraversalList();
@@ -129,6 +148,9 @@ public class SingleValueJavIntRowNoGoodListMap
         StringBuilder stringBuilder = new StringBuilder();
         if (nodeId2JoinIdx.size() != noGoodListMap.size()) {
             // there exists key clashes (multiple child relations point to the same joinIdx)
+            // For example, if a node S(y,z) has three children H(z), B(z,w), and R(z,a),
+            // all three children share attribute z and nodeId2JoinIdx has size 3: H -> 1, B -> 1, and R -> 1 and 1 comes from
+            // the index of z in S. noGoodListMap has size 1; the only entry corresponds to attribute z.
             stringBuilder.append("warning: multiple key clashes exist\n");
         }
         for (Int2IntMap.Entry entry : nodeId2JoinIdx.int2IntEntrySet()) {
@@ -185,13 +207,14 @@ public class SingleValueJavIntRowNoGoodListMap
         return parseInstance(noGoodListMap).totalSize();
     }
 
-    public static Pair<Boolean, SingleValueJavIntRowNoGoodListMap> constructSingleValueJavIntRowNoGoodListMap(PlanNode root, PlanBuildContext planBuildContext)
+    public static Pair<Boolean, SingleValueJavIntRowNoGoodListMap> constructSingleValueJavIntRowNoGoodListMap(TableNode outerTable, PlanNode root, PlanBuildContext planBuildContext)
     {
-        boolean ifNodeId2JoinIdxSatisfiesRequirement = checkNodeId2JoinIdxIfQuerySatisfiesRequirement(root, planBuildContext);
+        Map<Integer, List<Integer>> nodeId2JoinIdx = planBuildContext.getNodeId2FactTableJoinAttributeIdx(outerTable);
+        boolean ifNodeId2JoinIdxSatisfiesRequirement = checkNodeId2JoinIdxIfQuerySatisfiesRequirement(root, Triple.of(outerTable, planBuildContext, nodeId2JoinIdx));
         if (!ifNodeId2JoinIdxSatisfiesRequirement) {
             return Pair.of(ifNodeId2JoinIdxSatisfiesRequirement, null);
         }
-        return Pair.of(ifNodeId2JoinIdxSatisfiesRequirement, new SingleValueJavIntRowNoGoodListMap(planBuildContext));
+        return Pair.of(ifNodeId2JoinIdxSatisfiesRequirement, new SingleValueJavIntRowNoGoodListMap(outerTable, planBuildContext));
     }
 
     private static Int2ObjectOpenHashMap<IntOpenHashSet> constructNoGoodListMap(Int2IntOpenHashMap nodeId2JoinIdx)

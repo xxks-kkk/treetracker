@@ -11,7 +11,9 @@ from bs4 import BeautifulSoup
 from jinja2 import FileSystemLoader
 
 from reductionTimeProfiling.proggen import Benchmark, get_template_dir, Algorithm, SSBQuery, \
-    get_reduction_time_profiling_class, get_mvn_root_dir
+    get_reduction_time_profiling_class, get_mvn_root_dir, TTJHPJOB, Yannakakis1PassJOB, get_algorithm_name, \
+    get_project_dir
+
 
 class ProfileResult:
     def __init__(self,
@@ -98,7 +100,7 @@ class YannakakisProfileResult(ProfileResult):
         """
 
 def get_profile_result_dir():
-    return Path.home() / "projects" / "treetracker2" / "results" / "others" / "profiling"
+    return get_project_dir() / "results" / "others" / "profiling"
 
 
 def get_profile_result_file(benchmark: Benchmark, algorithm: Algorithm, query: SSBQuery):
@@ -117,10 +119,11 @@ def create_profile_script(benchmark: Benchmark, algorithm: Algorithm, query: SSB
     environment = jinja2.Environment(loader=FileSystemLoader(get_template_dir()),
                                      keep_trailing_newline=True)
     template = environment.get_template("ProfileReductionTimeProfiling.sht")
-    reduction_time_profiling_class = get_reduction_time_profiling_class(benchmark, algorithm)
+    reduction_time_profiling_class = get_reduction_time_profiling_class(benchmark, get_algorithm_name(algorithm))
     content = template.render(benchmark=benchmark,
                               ReductionTimeProfilingClassName=reduction_time_profiling_class,
-                              profile_result_file=get_profile_result_file(benchmark, algorithm, query))
+                              profile_result_file=get_profile_result_file(benchmark, algorithm, query),
+                              project_dir=get_project_dir())
     filename = get_profile_script_name(benchmark, algorithm, query)
     with open(filename, mode="w", encoding="utf-8") as profile_script:
         profile_script.write(content)
@@ -138,10 +141,10 @@ def construct_profile_result(benchmark: Benchmark, algorithm: Algorithm, query: 
 
     def extract_sample_count(text_in_div):
         """
-        Expect '[8] 0.57% 4 self: 0.14% 1', which is wrapped in <div> tag of the profiling result.
-        Then, extract '4' from it and return.
+        Expect '46.96% [1,119] • self: 0.00% [0]', which is wrapped in <div> tag of the profiling result.
+        Then, extract '1119' from it and return.
         """
-        return int(text_in_div.split(' ')[2].replace(',', ''))
+        return int(re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", text_in_div.split(' ')[1])[0].replace(',',''))
 
     def extract_total_samples(text_in_div):
         """
@@ -165,7 +168,7 @@ def construct_profile_result(benchmark: Benchmark, algorithm: Algorithm, query: 
                     ng_probing_count += extract_sample_count(soup.find('div').text)
                 elif 'total samples' in line:
                     soup = BeautifulSoup(line, "html.parser")
-                    total_sample_count = extract_total_samples(soup.find('div').text)
+                    total_sample_count = extract_total_samples(soup.find('span').text)
                 elif f'{get_reduction_time_profiling_class(benchmark, algorithm)}.main' in line:
                     soup = BeautifulSoup(line, "html.parser")
                     print(f"parse: {soup.find('span').text} for main_sample_count")
@@ -246,7 +249,7 @@ def construct_profile_result(benchmark: Benchmark, algorithm: Algorithm, query: 
                     full_reducer_count += extract_sample_count(soup.find('div').text)
                 elif 'total samples' in line:
                     soup = BeautifulSoup(line, "html.parser")
-                    total_sample_count = extract_total_samples(soup.find('div').text)
+                    total_sample_count = extract_total_samples(soup.find('span').text)
                 elif f'{get_reduction_time_profiling_class(benchmark, algorithm)}.main' in line:
                     soup = BeautifulSoup(line, "html.parser")
                     print(f"parse: {soup.find('span').text} for main_sample_count")
@@ -274,6 +277,9 @@ def construct_profile_result(benchmark: Benchmark, algorithm: Algorithm, query: 
         return construct_Yannakakis_profile_result()
     elif algorithm == Algorithm.YannakakisB:
         return construct_Yannakakis_profile_result()
+    elif algorithm == Algorithm.Yannakakis1Pass:
+        return construct_Yannakakis_profile_result()
 
 if __name__ == "__main__":
-    construct_profile_result(Benchmark.ssb, Algorithm.TTJ, SSBQuery.Query2P1)
+    # construct_profile_result(Benchmark.job, Algorithm.TTJ, TTJHPJOB.Query11bOptJoinTreeOptOrderingShallowHJOrdering)
+    construct_profile_result(Benchmark.job, Algorithm.Yannakakis1Pass, Yannakakis1PassJOB.Query11bOptJoinTreeOptOrderingY1PShallowHJOrdering)

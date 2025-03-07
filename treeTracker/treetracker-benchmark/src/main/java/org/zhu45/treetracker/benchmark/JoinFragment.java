@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinDomain;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
+import org.zhu45.treetracker.common.SchemaTableName;
+import org.zhu45.treetracker.common.TreeTrackerException;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.jdbc.JdbcClient;
 import org.zhu45.treetracker.relational.JoinFragmentType;
@@ -30,6 +32,9 @@ import org.zhu45.treetracker.relational.planner.rule.JoinOrdering;
 import org.zhu45.treetracker.relational.planner.rule.Rule;
 import org.zhu45.treetracker.relational.planner.rule.SemiJoinOrdering;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
+import static org.zhu45.treetracker.common.StandardErrorCode.GENERIC_INTERNAL_ERROR;
 import static org.zhu45.treetracker.common.Utils.appendCallerInfo;
 import static org.zhu45.treetracker.relational.planner.PlanBuildContext.builder;
 import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder.createMap;
@@ -63,6 +69,7 @@ public abstract class JoinFragment
     protected TestingCaseVerifier caseVerifier = new TestingCaseVerifier();
     protected List<Operator> operators;
     protected boolean stopAfterFullReducer;
+    protected boolean disablePTOptimizationTrick;
 
     Plan physicalPlan;
     ExecutionNormal executionNormal;
@@ -106,6 +113,7 @@ public abstract class JoinFragment
                 .setOrderedGraph(multiwayJoinOrderedGraph)
                 .setNoGoodList(noGoodList)
                 .setOperatorMap(operatorMap)
+                .disablePTOptimizationTrick(disablePTOptimizationTrick)
                 .build();
         PlanBuilder planBuilder = new PlanBuilder(context);
         Plan logicalPlan = planBuilder.build();
@@ -131,6 +139,30 @@ public abstract class JoinFragment
         return Pair.of(physicalPlan, physicalPlan.getOperatorList());
     }
 
+    public Pair<Plan, List<Operator>> createPhysicalPlanFromPostgresPlan(String postgresPlanPath, List<SchemaTableName> schemaTableNameList)
+    {
+        try {
+            PlanBuildContext.Builder builder = builder();
+            PlanBuildContext context = builder
+                    .setRules(rules)
+                    .setPlanNodeIdAllocator(idAllocator)
+                    .setOperatorMap(operatorMap)
+                    .setJdbcClient(jdbcClient)
+                    .postgresPlan(Files.readString(Paths.get(postgresPlanPath)))
+                    .schemaTableNameList(schemaTableNameList)
+                    .planBuildOption(PlanBuildContext.PlanBuildOption.POSTGRES)
+                    .build();
+            PlanBuilder planBuilder = new PlanBuilder(context);
+            Plan logicalPlan = planBuilder.build();
+            RandomPhysicalPlanBuilder physicalPlanBuilder = new RandomPhysicalPlanBuilder(context);
+            Plan physicalPlan = physicalPlanBuilder.build(logicalPlan.getRoot());
+            return Pair.of(physicalPlan, physicalPlan.getOperatorList());
+        }
+        catch (IOException e) {
+            throw new TreeTrackerException(GENERIC_INTERNAL_ERROR, "Postgres plan not found from: " + postgresPlanPath);
+        }
+    }
+
     public Plan createPhysicalPlanFromJoinOrdering(JoinOrdering joinOrdering, MultiwayJoinOrderedGraph joinTree)
     {
         PlanBuildContext.Builder builder = builder();
@@ -150,13 +182,18 @@ public abstract class JoinFragment
 
     public Plan createPhysicalPlanForYannakakis(SemiJoinOrdering semiJoinOrdering)
     {
-        return createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, false, false);
+        return createPhysicalPlanForYannakakis(semiJoinOrdering,
+                TupleBasedLeftSemiHashJoinOperator.class,
+                false,
+                false,
+                false);
     }
 
     public Plan createPhysicalPlanForYannakakis(SemiJoinOrdering semiJoinOrdering,
                                                 Class<? extends TupleBasedJoinOperator> semiJoinClazz,
                                                 boolean disablePTOptimizationTrick,
-                                                boolean enableJoinGraphHeuristicFromPT)
+                                                boolean enableJoinGraphHeuristicFromPT,
+                                                boolean skipTopDownSemijoins)
     {
         PlanBuildContext.Builder builder = builder();
         builder.setSemiJoinClazz(semiJoinClazz);
@@ -169,6 +206,7 @@ public abstract class JoinFragment
                 .setOperatorMap(operatorMap)
                 .setJdbcClient(jdbcClient)
                 .enableJoinGraphHeuristicFromPT(enableJoinGraphHeuristicFromPT)
+                .skipTopDownSemijoins(skipTopDownSemijoins)
                 .build();
         PlanBuilder planBuilder = new PlanBuilder(context);
         Plan logicalPlan = planBuilder.build();

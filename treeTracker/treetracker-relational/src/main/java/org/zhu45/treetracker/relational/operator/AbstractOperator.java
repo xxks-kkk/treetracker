@@ -4,11 +4,16 @@ import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.StandardErrorCode;
 import org.zhu45.treetracker.common.TreeTrackerException;
+import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.Row;
+import org.zhu45.treetracker.relational.JoinResultColumnHandle;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodListMap;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNodeId;
 import org.zhu45.treetracker.relational.planner.catalog.TableCatalog;
+import org.zhu45.treetracker.relational.planner.plan.Side;
+
+import java.util.List;
 
 import static org.zhu45.treetracker.common.Utils.formatTraceMessageWithDepth;
 
@@ -23,6 +28,7 @@ public abstract class AbstractOperator
     // size of relation size set during the plan generation
     // for join operator, this is R_{inner} size; for table scan operator, this is associated relation size
     protected long operatorAssociatedRelationSize;
+    private Side side;
 
     public String getOperatorName()
     {
@@ -80,8 +86,15 @@ public abstract class AbstractOperator
         return null;
     }
 
+    @Override
+    public IntRow passContext(int parentId, int id)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     public void setMultiwayJoinNode(MultiwayJoinNode node)
     {
+        throw new UnsupportedOperationException();
     }
 
     public MultiwayJoinNode getMultiwayJoinNode()
@@ -126,18 +139,6 @@ public abstract class AbstractOperator
     }
 
     @Override
-    public boolean isLeftMostOperatorInPlan()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setLeftMostOperatorInPlan()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setOperatorAssociatedRelationSize(long operatorAssociatedRelationSize)
     {
         this.operatorAssociatedRelationSize = operatorAssociatedRelationSize;
@@ -171,5 +172,41 @@ public abstract class AbstractOperator
     public void initializeContextObject()
     {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSide(Side side)
+    {
+        this.side = side;
+    }
+
+    @Override
+    public Side getSide()
+    {
+        return side;
+    }
+
+    @Override
+    public List<JoinResultColumnHandle> getResultColumnHandles()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFactTableOperator(Operator operator)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setChildMultiwayJoinNode(MultiwayJoinNode node)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public MultiwayJoinNode getChildMultiwayJoinNode()
+    {
+        return null;
     }
 }

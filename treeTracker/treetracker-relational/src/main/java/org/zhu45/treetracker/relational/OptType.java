@@ -9,5 +9,11 @@ public enum OptType
 {
     join,
     table,
-    fullReducer
+    hash,
+    gather,
+    gather_merge,
+    aggregate,
+    sort,
+    fullReducer,
+    materialize
 }

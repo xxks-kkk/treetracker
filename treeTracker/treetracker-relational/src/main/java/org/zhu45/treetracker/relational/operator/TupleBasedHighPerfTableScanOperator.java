@@ -3,6 +3,7 @@ package org.zhu45.treetracker.relational.operator;
 import de.renebergelt.test.Switches;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.Row;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodListMap;
 
@@ -123,6 +124,28 @@ public class TupleBasedHighPerfTableScanOperator
             decrementTraceDepth();
         }
         return tmp;
+    }
+
+    @Override
+    public IntRow passContext(int parentId, int id)
+    {
+        if (Switches.STATS) {
+            statisticsInformation.incrementNumberOfPassContextCalls();
+            statisticsInformation.incrementNumberOfDanglingTuples();
+        }
+        if (Switches.DEBUG) {
+            if (traceLogger.isTraceEnabled()) {
+                traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".passContext(" + parentId + ")"));
+                incrementTraceDepth();
+            }
+        }
+        noGoodListMap.updateNoGoodListMap(pVal, id);
+        Row tmp = getNext();
+        if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+            traceLogger.trace(formatTraceMessage("return: " + tmp));
+            decrementTraceDepth();
+        }
+        return (IntRow) tmp;
     }
 
     @Override

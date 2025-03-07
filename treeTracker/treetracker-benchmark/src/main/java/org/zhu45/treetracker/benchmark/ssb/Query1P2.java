@@ -34,6 +34,10 @@ public class Query1P2
                 QueryGraphEdge.asQueryGraphEdge(lineOrderNode, dateNode));
         MultiwayJoinOrderedGraph orderedGraph = getMultiwayJoinOrderedGraph(edgeLists, lineOrderNode);
 
-        return createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Pair<Plan, List<Operator>> pair = createFixedPhysicalPlanFromQueryGraph(orderedGraph);
+        Plan plan = pair.getLeft();
+        verifyJoinOrdering(plan, Arrays.asList(lineOrderNode.getSchemaTableName(),
+                dateNode.getSchemaTableName()));
+        return pair;
     }
 }

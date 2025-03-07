@@ -130,7 +130,9 @@ public class JdbcRecordCursor
     @Override
     public long getLong(int field)
     {
-        checkState(!closed, "cursor is closed");
+        if (Switches.DEBUG) {
+            checkState(!closed, "cursor is closed");
+        }
         try {
             return longReadFunctions[field].readLong(resultSet, field + 1);
         }

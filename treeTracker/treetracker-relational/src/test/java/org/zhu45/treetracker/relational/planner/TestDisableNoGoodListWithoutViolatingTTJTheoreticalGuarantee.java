@@ -16,11 +16,20 @@ import org.zhu45.treetracker.common.RelationalValue;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.jdbc.JdbcClient;
 import org.zhu45.treetracker.relational.execution.ExecutionNormal;
-import org.zhu45.treetracker.relational.operator.*;
+import org.zhu45.treetracker.relational.operator.Operator;
+import org.zhu45.treetracker.relational.operator.StatisticsInformationPrinter;
+import org.zhu45.treetracker.relational.operator.TupleBaseTreeTrackerOneBetaHashTableOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTableScanOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedTableScanOperator;
 import org.zhu45.treetracker.relational.operator.testCases.TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases;
 import org.zhu45.treetracker.relational.planner.rule.DisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.zhu45.treektracker.multiwayJoin.MultiwayJoinPreorderTraversalStrategy.getMultiwayJoinOrderedGraph;
@@ -30,6 +39,7 @@ import static org.zhu45.treetracker.common.TestConstants.checkEnvVariableSet;
 import static org.zhu45.treetracker.common.type.IntegerType.INTEGER;
 import static org.zhu45.treetracker.relational.operator.DatabaseSuppler.TestingMultiwayJoinDatabaseComplexSupplier;
 import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder.createMap;
+import static org.zhu45.treetracker.relational.planner.RandomPhysicalPlanBuilder.getLeftMostNode;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestDisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
@@ -67,8 +77,7 @@ public class TestDisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
     {
         Pair<Plan, List<Operator>> pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseOne();
         base.testPhysicalPlanExecution(pair);
-        Operator leftMostOperator = pair.getLeft().getRoot().getOperator().getPlanBuildContext().getLeftMostPlanNodeOperator();
-        assertEquals(TupleBasedTableScanOperator.class, leftMostOperator.getClass());
+        assertEquals(TupleBasedTableScanOperator.class, getLeftMostNode(pair.getKey().getRoot()).getOperator().getClass());
     }
 
     /**
@@ -136,8 +145,7 @@ public class TestDisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
                 Optional.of(new LinkedList<>(Arrays.asList(schemaTableNameCastInfo, schemaTableNameAkaName, schemaTableNameMovieCompanies))),
                 Optional.empty());
         base.testPhysicalPlanExecution(pair);
-        Operator leftMostOperator = pair.getLeft().getRoot().getOperator().getPlanBuildContext().getLeftMostPlanNodeOperator();
-        assertEquals(TupleBasedTableScanOperator.class, leftMostOperator.getClass());
+        assertEquals(TupleBasedTableScanOperator.class, getLeftMostNode(pair.getLeft().getRoot()).getOperator().getClass());
     }
 
     /**
@@ -186,8 +194,7 @@ public class TestDisableNoGoodListWithoutViolatingTTJTheoreticalGuarantee
                 Optional.of(new LinkedList<>(Arrays.asList(schemaTableNameMovieInfo, schemaTableNameMovieInfoIdx))),
                 Optional.empty());
         base.testPhysicalPlanExecution(pair);
-        Operator leftMostOperator = pair.getLeft().getRoot().getOperator().getPlanBuildContext().getLeftMostPlanNodeOperator();
-        assertEquals(TupleBasedTableScanOperator.class, leftMostOperator.getClass());
+        assertEquals(TupleBasedTableScanOperator.class, getLeftMostNode(pair.getLeft().getRoot()).getOperator().getClass());
     }
 
     @AfterAll

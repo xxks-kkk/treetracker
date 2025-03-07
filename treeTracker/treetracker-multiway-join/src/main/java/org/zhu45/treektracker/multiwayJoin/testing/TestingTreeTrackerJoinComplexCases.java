@@ -5,6 +5,7 @@ import org.zhu45.treektracker.multiwayJoin.MultiwayJoinDomain;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinGraph;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.QueryGraphEdge;
+import org.zhu45.treetracker.common.IntegerValue;
 import org.zhu45.treetracker.common.RelationalValue;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.StringValue;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static org.zhu45.treektracker.multiwayJoin.QueryGraphEdge.asQueryGraphEdge;
 import static org.zhu45.treetracker.common.type.CharType.createCharType;
+import static org.zhu45.treetracker.common.type.IntegerType.INTEGER;
 
 public class TestingTreeTrackerJoinComplexCases
 {
@@ -263,6 +265,10 @@ public class TestingTreeTrackerJoinComplexCases
      * exposed by:
      * - seed_db: 221632311526772538L
      * - seed_graph: 6472814709492076677L
+     * <p>
+     * WARNING: For some reason, the join tree constructed is not join tree: nodes containing "color" don't form
+     * a connected subtree. We are supposed to fix the issue but I leave as it is because this test case seems to be
+     * useful for covering certain scenarios of TTJ execution.
      */
     public Pair<MultiwayJoinGraph, MultiwayJoinNode> testTreeTrackerJoinCaseThree()
     {
@@ -487,6 +493,68 @@ public class TestingTreeTrackerJoinComplexCases
                 asQueryGraphEdge(nodeB, nodeA),
                 asQueryGraphEdge(nodeA, nodeS),
                 asQueryGraphEdge(nodeS, nodeR)));
+        MultiwayJoinGraph g = new MultiwayJoinGraph(edgeLists);
+        return Pair.of(g, nodeB);
+    }
+
+    /**
+     * This test case to show why it is necessary to clear out l during the backjumping. Using
+     * algorithm notation (e.g., ICDT 2025 submission), whenever r_{outer} is updated, MatchingTuples
+     * (i.e., l in code) has to be re-initialized. In other words, clear out l force MatchingTuples updated
+     * whenever backjumping happens.
+     */
+    public Pair<MultiwayJoinGraph, MultiwayJoinNode> testTreeTrackerJoinCaseSix()
+    {
+        String relationB = "case6_b";
+        SchemaTableName schemaTableNameB = new SchemaTableName(schemaName, relationB);
+        if (jdbcClient.getTableHandle(schemaTableNameB) == null) {
+            List<List<RelationalValue>> relationValB = new ArrayList<>(Arrays.asList(
+                    List.of(IntegerValue.of(13)),
+                    List.of(IntegerValue.of(14))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationB,
+                    new ArrayList<>(List.of("age")),
+                    new ArrayList<>(List.of(INTEGER)),
+                    relationValB);
+        }
+        MultiwayJoinDomain domainB = new MultiwayJoinDomain();
+        MultiwayJoinNode nodeB = new MultiwayJoinNode(schemaTableNameB, domainB);
+
+        String relationA = "case6_a";
+        SchemaTableName schemaTableNameA = new SchemaTableName(schemaName, relationA);
+        if (jdbcClient.getTableHandle(schemaTableNameA) == null) {
+            List<List<RelationalValue>> relationValA = new ArrayList<>(List.of(
+                    List.of(IntegerValue.of(13)),
+                    List.of(IntegerValue.of(14))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationA,
+                    new ArrayList<>(List.of("age")),
+                    new ArrayList<>(List.of(INTEGER)),
+                    relationValA);
+        }
+        MultiwayJoinDomain domainA = new MultiwayJoinDomain();
+        MultiwayJoinNode nodeA = new MultiwayJoinNode(schemaTableNameA, domainA);
+
+        String relationS = "case6_s";
+        SchemaTableName schemaTableNameS = new SchemaTableName(schemaName, relationS);
+        if (jdbcClient.getTableHandle(schemaTableNameS) == null) {
+            List<List<RelationalValue>> relationValS = new ArrayList<>(List.of(
+                    List.of(IntegerValue.of(14))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationS,
+                    new ArrayList<>(List.of("age")),
+                    new ArrayList<>(List.of(INTEGER)),
+                    relationValS);
+        }
+        MultiwayJoinDomain domainS = new MultiwayJoinDomain();
+        MultiwayJoinNode nodeS = new MultiwayJoinNode(schemaTableNameS, domainS);
+
+        List<QueryGraphEdge> edgeLists = new ArrayList<>(Arrays.asList(
+                asQueryGraphEdge(nodeB, nodeA),
+                asQueryGraphEdge(nodeB, nodeS)));
         MultiwayJoinGraph g = new MultiwayJoinGraph(edgeLists);
         return Pair.of(g, nodeB);
     }

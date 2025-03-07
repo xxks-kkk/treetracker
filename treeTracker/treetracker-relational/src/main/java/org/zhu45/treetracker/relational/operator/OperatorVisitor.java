@@ -12,6 +12,11 @@ public abstract class OperatorVisitor<C>
         operator.accept(this, context);
     }
 
+    void visitTupleBasedTreeTrackerOneBetaHashTableIntOperator(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator operator, C context)
+    {
+        operator.accept(this, context);
+    }
+
     void visitTupleBasedTableScanOperator(TupleBasedTableScanOperator operator, C context)
     {
         operator.accept(this, context);

@@ -61,26 +61,26 @@ public class Query29bFindOptJoinTree
         MultiwayJoinNode infoTypeNode2 = getInfoTypeInt(JOBQueries.Q29b, TableInstanceId.TWO);
         MultiwayJoinNode companyNameNode = getCompanyNameInt(JOBQueries.Q29b, null);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(completeCastNode, titleNode, castInfoNode, movieInfoNode, movieCompaniesNode, companyNameNode, movieKeywordNode, roleTypeNode, keywordNode, compCastTypeNode2, compCastTypeNode1, personInfoNode, akaNameNode, charNameNode, nameNode, infoTypeNode2, infoTypeNode1)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(castInfoNode, nameNode, titleNode, charNameNode, roleTypeNode, completeCastNode, compCastTypeNode1, compCastTypeNode2, movieCompaniesNode, companyNameNode, movieKeywordNode, keywordNode, movieInfoNode, infoTypeNode1, personInfoNode, infoTypeNode2, akaNameNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(completeCastNode.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(castInfoNode.getSchemaTableName(),
+                nameNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
-                castInfoNode.getSchemaTableName(),
-                movieInfoNode.getSchemaTableName(),
+                charNameNode.getSchemaTableName(),
+                roleTypeNode.getSchemaTableName(),
+                completeCastNode.getSchemaTableName(),
+                compCastTypeNode1.getSchemaTableName(),
+                compCastTypeNode2.getSchemaTableName(),
                 movieCompaniesNode.getSchemaTableName(),
                 companyNameNode.getSchemaTableName(),
                 movieKeywordNode.getSchemaTableName(),
-                roleTypeNode.getSchemaTableName(),
                 keywordNode.getSchemaTableName(),
-                compCastTypeNode2.getSchemaTableName(),
-                compCastTypeNode1.getSchemaTableName(),
+                movieInfoNode.getSchemaTableName(),
+                infoTypeNode1.getSchemaTableName(),
                 personInfoNode.getSchemaTableName(),
-                akaNameNode.getSchemaTableName(),
-                charNameNode.getSchemaTableName(),
-                nameNode.getSchemaTableName(),
                 infoTypeNode2.getSchemaTableName(),
-                infoTypeNode1.getSchemaTableName()));
+                akaNameNode.getSchemaTableName()));
         return pair;
     }
 }

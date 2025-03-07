@@ -38,14 +38,14 @@ public class Query2dFindOptJoinTree
         MultiwayJoinNode companyNameNode = getCompanyNameInt(JOBQueries.Q2d, null);
         MultiwayJoinNode titleNode = getTitleInt(JOBQueries.Q2d, null);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieKeywordNode, keywordNode, titleNode, movieCompaniesNode, companyNameNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieCompaniesNode, companyNameNode, titleNode, movieKeywordNode, keywordNode)));
         Plan plan = pair.getKey();
 
-        verifyJoinOrdering(plan, Arrays.asList(movieKeywordNode.getSchemaTableName(),
-                keywordNode.getSchemaTableName(),
+        verifyJoinOrdering(plan, Arrays.asList(movieCompaniesNode.getSchemaTableName(),
+                companyNameNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
-                movieCompaniesNode.getSchemaTableName(),
-                companyNameNode.getSchemaTableName()));
+                movieKeywordNode.getSchemaTableName(),
+                keywordNode.getSchemaTableName()));
         return pair;
     }
 }

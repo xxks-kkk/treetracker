@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import ticker, transforms
 
 from plot.constants import DATA_SOURCE_CSV, HJ, TTJ, LIP, Yannakakis, FIG_SAVE_LOCATION, DECIMAL_PRECISION, \
-    PLOT_FUNCTION, ALGORITHMS_TO_PLOT, YannakakisB, YannakakisV, PTO
+    PLOT_FUNCTION, ALGORITHMS_TO_PLOT, YannakakisB, YannakakisV, PTO, Yannakakis1Pass, TTJ_VANILLA, TTJ_NO_DP, TTJ_NO_NG
 from plot.utility import check_argument, TimeUnits, convert_time, normalized_data, to_float
 
 
@@ -35,6 +35,12 @@ def extract_data_from_csv(csv_file_path: Path,
                 result[HJ] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
             elif TTJ in row:
                 result[TTJ] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
+            elif TTJ_VANILLA in row:
+                result[TTJ_VANILLA] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
+            elif TTJ_NO_DP in row:
+                result[TTJ_NO_DP] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
+            elif TTJ_NO_NG in row:
+                result[TTJ_NO_NG] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
             elif LIP in row:
                 result[LIP] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
             elif Yannakakis in row and YannakakisB not in row and YannakakisV not in row:
@@ -43,6 +49,8 @@ def extract_data_from_csv(csv_file_path: Path,
                 result[YannakakisB] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
             elif YannakakisV in row:
                 result[YannakakisV] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
+            elif Yannakakis1Pass in row:
+                result[Yannakakis1Pass] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
             elif PTO in row:
                 result[PTO] = [to_float(num_str) for num_str in row[start_idx:end_idx]]
     original_idx = None

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,10 +18,12 @@ import org.zhu45.treetracker.common.RelationalValue;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.StringValue;
 import org.zhu45.treetracker.jdbc.JdbcClient;
+import org.zhu45.treetracker.relational.OperatorSpecification;
+import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.execution.ExecutionNormal;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodList;
 import org.zhu45.treetracker.relational.operator.noGoodList.PlainNoGoodList;
-import org.zhu45.treetracker.relational.operator.noGoodList.RedissonNoGoodList;
+import org.zhu45.treetracker.relational.operator.testCases.TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases;
 import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.TestingPhysicalPlanBase;
 
@@ -32,6 +35,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.zhu45.treektracker.multiwayJoin.MultiwayJoinPreorderTraversalStrategy.getMultiwayJoinOrderedGraph;
 import static org.zhu45.treetracker.common.Edge.asEdge;
@@ -40,6 +45,7 @@ import static org.zhu45.treetracker.common.TestConstants.checkEnvVariableSet;
 import static org.zhu45.treetracker.common.type.IntegerType.INTEGER;
 import static org.zhu45.treetracker.common.type.VarcharType.VARCHAR;
 import static org.zhu45.treetracker.jdbc.testing.TestUtils.twoDlistTo2DArray;
+import static org.zhu45.treetracker.relational.OperatorSpecification.findTargetOperator;
 import static org.zhu45.treetracker.relational.operator.DatabaseSuppler.TestingMultiwayJoinDatabaseComplexSupplier;
 import static org.zhu45.treetracker.relational.operator.TestTupleBaseTreeTrackerOneBetaHashTableOperator.testLeftDeepQueryPlansTestCasesOnly;
 import static org.zhu45.treetracker.relational.operator.testCases.InstantiateTestCases.buildAllTestCases;
@@ -94,7 +100,7 @@ public class TestTupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
 
     private Stream<NoGoodList> testNoGoodListAndTuplesRemovedFromHashTableDataProvider()
     {
-        return Stream.of(PlainNoGoodList.create(), RedissonNoGoodList.create());
+        return Stream.of(PlainNoGoodList.create());
     }
 
     // NOTE: Further improvement see https://gitlab.com/xxks-kkk/challenge-set/-/issues/152
@@ -282,6 +288,48 @@ public class TestTupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
         assertTrue(statistics.contains("numberOfNoGoodTuples: " + 2));
         assertTrue(statistics.contains("numberOfNoGoodTuplesFiltered: " + (numberOfNoGoodTuplesDueToPersonIdSolely
                 + numberOfNoGoodTuplesDueToMovieIdSolely + numberOfNoGoodTuplesDueToBothPersonIdAndMovieId)));
+    }
+
+    /**
+     * Per Remy:
+     * Also, in the pseudocode for the arxiv version deleteDT removes the matching tuple both from the hash table and the vector of matching tuples (line 24 Algorithm 3.1).
+     * I think it's only necessary to remove from the hash table, since you won't ever access the same tuple again in the vector.
+     * This could make deleteDT faster.
+     * <p>
+     * This test case verifies that in our implementation, due to referencing, removal from MatchingTuples also means removal from
+     * the underlying hash table at the same time. Specifically, in our implementation, hash table is implemented as
+     * {@code
+     * Map<JoinValueContainerKey, List<Row>>
+     * }
+     * and MatchingTuples from the algorithm is implemented as
+     * {@code
+     * l = hashTableH.get(jav);
+     * }
+     * Then, we initialize an iterator on {@code l} as {@code iL = l.iterator();} and the tuple deletion in deleteDT() is implemented as
+     * {@code iL.remove();}. By the semantics of iterator's {@code remove()}, tuple is removed from {@code l}. Since {@code l} contains
+     * a collection of references to the original tuples in the hash table, deleting reference in {@code l} also means deleting the tuple
+     * in the hash table.
+     */
+    @Test
+    public void testRemoveMatchingTuplesAndHashTable()
+    {
+        TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases cases = new TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases(base);
+        var pair = cases.testTupleBaseTreeTrackerOneBetaHashTableOperatorComplexCaseEleven();
+        base.testPhysicalPlanExecution(pair);
+        OperatorSpecification leftOperator = OperatorSpecification.builder()
+                .optType(OptType.table)
+                .relationName("rmMatchTest_A")
+                .build();
+        OperatorSpecification rightOperator = OperatorSpecification.builder()
+                .optType(OptType.table)
+                .relationName("rmMatchTest_B")
+                .build();
+        OperatorSpecification rootOperator = OperatorSpecification.builder()
+                .optType(OptType.join)
+                .children(List.of(leftOperator, rightOperator))
+                .build();
+        Operator targetOperator = requireNonNull(findTargetOperator(pair.getLeft().getRoot(), rootOperator));
+        assertEquals(1, targetOperator.getStatisticsInformation().getHashTableSizeAfterEvaluation());
     }
 
     @AfterAll

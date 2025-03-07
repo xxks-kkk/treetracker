@@ -38,12 +38,12 @@ public class Query6eFindOptJoinTree
         MultiwayJoinNode keywordNode = getKeywordInt(JOBQueries.Q6e);
         MultiwayJoinNode nameNode = getNameInt(JOBQueries.Q6e);
 
-        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieKeywordNode, keywordNode, titleNode, castInfoNode, nameNode)));
+        Pair<Plan, List<Operator>> pair = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(List.of(movieKeywordNode, titleNode, keywordNode, castInfoNode, nameNode)));
         Plan plan = pair.getKey();
 
         verifyJoinOrdering(plan, Arrays.asList(movieKeywordNode.getSchemaTableName(),
-                keywordNode.getSchemaTableName(),
                 titleNode.getSchemaTableName(),
+                keywordNode.getSchemaTableName(),
                 castInfoNode.getSchemaTableName(),
                 nameNode.getSchemaTableName()));
         return pair;

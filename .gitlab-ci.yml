@@ -5,7 +5,6 @@ services:
       - "postgres"
       - "-c"
       - "max_connections=1000"
-  - redis:latest
 
 stages:
   - test
@@ -39,7 +38,6 @@ test:
     - cp src/gitlab/db.properties treetracker-multiway-join/src/test/resources/db.properties
     - cp src/gitlab/db.properties treetracker-jdbc/src/test/resources/db.properties
     - cp src/gitlab/db.properties treetracker-jdbc/src/main/resources/db.properties
-    - cp src/gitlab/redisson.yaml treetracker-common/src/main/resources/redisson.yaml
     - "echo \" TEST INTEGRATION\""
     - "mvn clean install -P dev -P stats"
   stage: test
@@ -48,7 +46,3 @@ test:
     POSTGRES_PASSWORD: password
     POSTGRES_USER: postgres
     POSTGRES_HOST_AUTH_METHOD: trust
-    REDIS_PORT: 6379
-    REDIS_HOST: redis
-    REDIS_URL: redis://redis:6379
-

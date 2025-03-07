@@ -38,6 +38,7 @@ import static org.apache.commons.lang.StringUtils.repeat;
 import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_WITH_PREDICATES_RESULT_SAME_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.JOB_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.SSB_RESULT_STORED_PATH;
+import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.Benchmarks.TPCH_WITH_PREDICATES_RESULT_STORED_PATH;
 import static org.zhu45.treetracker.benchmark.codegen.GenerateJOBBenchmarkWithOptimalJoinTrees.Step1.step1Driver;
 import static org.zhu45.treetracker.benchmark.codegen.GenerateJOBBenchmarkWithOptimalJoinTrees.Step2.step2Driver;
@@ -73,9 +74,12 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
 {
     private static final String ttjHPJavaClassExtension = "OptJoinTreeOptOrdering";
     private static final String ttjHPFixedHJOrderingJavaClassExtension = "OptJoinTreeOptOrderingFixedHJOrdering";
+    private static final String ttjHPFixedHJOrderingShallowJavaClassExtension = "OptJoinTreeOptOrderingShallowHJOrdering";
     private static final String yannakakisJavaClassExtension = "OptJoinTreeOptOrderingY";
     private static final String yannakakisBJavaClassExtension = "OptJoinTreeOptOrderingYB";
     private static final String yannakakisVJavaClassExtension = "OptJoinTreeOptOrderingYV";
+    private static final String yannakakis1PassJavaClassExtension = "OptJoinTreeOptOrderingY1P";
+    private static final String yannakakis1PassHJOrderingShallowJavaClassExtension = "OptJoinTreeOptOrderingY1PShallowHJOrdering";
     private static final String pTOJavaClassExtension = "OptJoinTreeOptOrderingPTO";
     private static final String hashJoinJavaClassExtension = "FindOptJoinTree";
     private static final String hashJoinOnYannakakisJavaClassExtension = "OptJoinTreeOptOrderingHJOnY";
@@ -98,12 +102,26 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                     queryName2Template,
                     "codegen/job/JOBQueriesFixedHJOrdering.javat",
                     "QueriesAutoGenAnnotationBlock");
+    private static final AlgorithmSpecificConfiguration ttjHPShallowHJOrderingConfigurationJOB =
+            new AlgorithmSpecificConfiguration(JoinOperator.TTJHP,
+                    ttjHPFixedHJOrderingShallowJavaClassExtension,
+                    hashJoinJavaClassExtension,
+                    queryName2Template,
+                    "codegen/job/JOBQueriesShallowHJOrdering.javat",
+                    "QueriesAutoGenAnnotationBlock");
     private static final AlgorithmSpecificConfiguration ttjHPConfigurationTPCH =
             new AlgorithmSpecificConfiguration(JoinOperator.TTJHP,
                     ttjHPJavaClassExtension,
                     hashJoinJavaClassExtension,
                     TPCHDatabase.CodeGen.queryName2Template,
                     "codegen/tpch/TPCHQueriesAutoGen.javat",
+                    "TPCHQueriesAutoGenAnnotationBlock");
+    private static final AlgorithmSpecificConfiguration ttjHPShallowHJOrderingConfigurationTPCH =
+            new AlgorithmSpecificConfiguration(JoinOperator.TTJHP,
+                    ttjHPFixedHJOrderingShallowJavaClassExtension,
+                    hashJoinJavaClassExtension,
+                    TPCHDatabase.CodeGen.queryName2Template,
+                    "codegen/tpch/TPCHQueriesShallowHJOrdering.javat",
                     "TPCHQueriesAutoGenAnnotationBlock");
     private static final AlgorithmSpecificConfiguration ttjHPConfigurationSSB =
             new AlgorithmSpecificConfiguration(JoinOperator.TTJHP,
@@ -126,6 +144,20 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                     queryName2TempateYannakakis,
                     "codegen/job/JOBQueriesYannakakisB.javat",
                     "QueriesAutoGenYannakakisBAnnotationBlock");
+    private static final AlgorithmSpecificConfiguration yannakakis1PassConfigurationJOB =
+            new AlgorithmSpecificConfiguration(JoinOperator.Yannakakis1Pass,
+                    yannakakis1PassJavaClassExtension,
+                    ttjHPJavaClassExtension,
+                    queryName2TempateYannakakis,
+                    "codegen/job/JOBQueriesYannakakis1Pass.javat",
+                    "QueriesAutoGenYannakakis1PassAnnotationBlock");
+    private static final AlgorithmSpecificConfiguration yannakakis1PassHJOrderingShallowConfigurationJOB =
+            new AlgorithmSpecificConfiguration(JoinOperator.Yannakakis1Pass,
+                    yannakakis1PassHJOrderingShallowJavaClassExtension,
+                    hashJoinJavaClassExtension,
+                    queryName2TempateYannakakis,
+                    "codegen/job/JOBQueriesYannakakis1PassShallow.javat",
+                    "QueriesAutoGenYannakakis1PassAnnotationBlock");
     private static final AlgorithmSpecificConfiguration yannakakisConfigurationTPCH =
             new AlgorithmSpecificConfiguration(JoinOperator.Yannakakis,
                     yannakakisJavaClassExtension,
@@ -133,6 +165,13 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                     TPCHDatabase.CodeGen.queryName2TempateYannakakis,
                     "codegen/tpch/TPCHQueriesYannakakis.javat",
                     "QueriesAutoGenYannakakisAnnotationBlock");
+    private static final AlgorithmSpecificConfiguration yannakakis1PassHJOrderingShallowConfigurationTPCH =
+            new AlgorithmSpecificConfiguration(JoinOperator.Yannakakis1Pass,
+                    yannakakis1PassHJOrderingShallowJavaClassExtension,
+                    hashJoinJavaClassExtension,
+                    TPCHDatabase.CodeGen.queryName2TempateYannakakisB,
+                    "codegen/tpch/TPCHQueriesYannakakis1PassShallowHJOrdering.javat",
+                    "QueriesAutoGenYannakakis1PassAnnotationBlock");
     private static final AlgorithmSpecificConfiguration yannakakisBConfigurationTPCH =
             new AlgorithmSpecificConfiguration(JoinOperator.YannakakisB,
                     yannakakisBJavaClassExtension,
@@ -164,6 +203,13 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                     TPCHDatabase.CodeGen.queryName2TempateYannakakisB,
                     "codegen/tpch/TPCHQueriesYannakakisV.javat",
                     "QueriesAutoGenYannakakisVAnnotationBlock");
+    private static final AlgorithmSpecificConfiguration yannakakis1PassConfigurationTPCH =
+            new AlgorithmSpecificConfiguration(JoinOperator.Yannakakis1Pass,
+                    yannakakis1PassJavaClassExtension,
+                    ttjHPJavaClassExtension,
+                    TPCHDatabase.CodeGen.queryName2TempateYannakakisB,
+                    "codegen/tpch/TPCHQueriesYannakakis1Pass.javat",
+                    "QueriesAutoGenYannakakis1PassAnnotationBlock");
     // TODO: we can merge GenerateFindOptJoinTree code logic to this
     private static final AlgorithmSpecificConfiguration hashJoinConfiguration =
             new AlgorithmSpecificConfiguration(JoinOperator.HASH_JOIN,
@@ -202,7 +248,7 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                 queryName2SavePath,
                 "import org.zhu45.treetracker.benchmark.job",
                 "codegen/job/BenchmarkJOBWithPredicatesDifferentOrdering.javat",
-                List.of(ttjHPConfigurationJOB, yannakakisConfigurationJOB, yannakakisBConfigurationJOB));
+                List.of(ttjHPConfigurationJOB, yannakakisConfigurationJOB, yannakakis1PassConfigurationJOB, yannakakisBConfigurationJOB));
     }
 
     public static void generateJOBBenchmarkWithOptimalJoinTreesFixedHJOrdering()
@@ -216,6 +262,19 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                 "import org.zhu45.treetracker.benchmark.job",
                 "codegen/job/BenchmarkJOBWithPredicatesFixedHJOrdering.javat",
                 List.of(ttjHPFixedHJOrderingConfigurationJOB));
+    }
+
+    public static void generateJOBBenchmarkWithOptimalJoinTreesFixedHJOrderingShallow(String path)
+            throws IOException, ParseException
+    {
+        run(path,
+                relation2MultiwayJoinNode,
+                templatePathPrefix,
+                savePathPrefix,
+                queryName2SavePath,
+                "import org.zhu45.treetracker.benchmark.job",
+                "codegen/job/BenchmarkJOBWithPredicatesFixedHJOrderingShallow.javat",
+                List.of(ttjHPShallowHJOrderingConfigurationJOB, yannakakis1PassHJOrderingShallowConfigurationJOB));
     }
 
     public static void generateTPCHBenchmarkWithOptimalJoinTrees()
@@ -232,8 +291,22 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                         yannakakisBConfigurationTPCH,
                         yannakakisConfigurationTPCH,
                         yannakakisVanillaConfigurationTPCH,
+                        yannakakis1PassConfigurationTPCH,
                         pTOConfigurationTPCH,
                         hashJoinOnYannakakisConfigurationTPCH));
+    }
+
+    public static void generateTPCHBenchmarkWithOptimalJoinTreesFixedHJOrderingShallow(String path)
+            throws IOException, ParseException
+    {
+        run(path,
+                TPCHDatabase.CodeGen.relation2MultiwayJoinNode,
+                TPCHDatabase.CodeGen.templatePathPrefix,
+                TPCHDatabase.CodeGen.savePathPrefix,
+                TPCHDatabase.CodeGen.queryName2SavePath,
+                "import org.zhu45.treetracker.benchmark.tpch",
+                "codegen/tpch/BenchmarkTPCHWithPredicatesHJOrderingShallow.javat",
+                List.of(ttjHPShallowHJOrderingConfigurationTPCH, yannakakis1PassHJOrderingShallowConfigurationTPCH));
     }
 
     public static void generateSSBBenchmarkWithOptimalJoinTrees()
@@ -301,10 +374,13 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
     public static void main(String[] args)
             throws IOException, ParseException
     {
-        generateJOBBenchmarkWithOptimalJoinTrees();
-        generateTPCHBenchmarkWithOptimalJoinTrees();
-        generateSSBBenchmarkWithOptimalJoinTrees();
-        generateJOBBenchmarkWithOptimalJoinTreesFixedHJOrdering();
+//        generateJOBBenchmarkWithOptimalJoinTrees();
+//        generateTPCHBenchmarkWithOptimalJoinTrees();
+//        generateSSBBenchmarkWithOptimalJoinTrees();
+//        generateJOBBenchmarkWithOptimalJoinTreesFixedHJOrdering();
+//        generateJOBBenchmarkWithOptimalJoinTreesFixedHJOrderingShallow(JOB_WITH_PREDICATES_RESULT_SAME_ORDERING_SHALLOW_STORED_PATH);
+//        generateJOBBenchmarkWithOptimalJoinTreesFixedHJOrderingShallow(JOB_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH);
+        generateTPCHBenchmarkWithOptimalJoinTreesFixedHJOrderingShallow(TPCH_WITH_PREDICATES_RESULT_SQLITE_ORDERING_STORED_PATH);
     }
 
     public static class Step1
@@ -343,7 +419,8 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
             // JoinOperator.YannakakisB, JoinOperator.YannakakisVanilla, JoinOperator.Yannakakis, and JoinOperator.PTO share the same planStatistics
             if (configuration.planIdentifierJoinOperator == JoinOperator.YannakakisB ||
                     configuration.planIdentifierJoinOperator == JoinOperator.YannakakisVanilla ||
-                    configuration.planIdentifierJoinOperator == JoinOperator.PTO) {
+                    configuration.planIdentifierJoinOperator == JoinOperator.PTO ||
+                    configuration.planIdentifierJoinOperator == JoinOperator.Yannakakis1Pass) {
                 patterns.add(JoinOperator.Yannakakis.name());
             }
             else {
@@ -409,6 +486,9 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
                     break;
                 case YannakakisVanilla:
                     context.put("importSemiJoinOperator", "import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiHashJoinOperator;");
+                    break;
+                case Yannakakis1Pass:
+                    context.put("importSemiJoinOperator", "import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiHashJoinIntOperator;");
                     break;
                 case PTO:
                     context.put("importSemiJoinOperator", "import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiBloomJoinOperator;");
@@ -501,16 +581,19 @@ public class GenerateJOBBenchmarkWithOptimalJoinTrees
         {
             switch (configuration.algorithm) {
                 case Yannakakis:
-                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, false, false);");
+                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, false, false, false);");
                     break;
                 case YannakakisB:
-                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiBloomJoinOperator.class, false, false);");
+                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiBloomJoinOperator.class, false, false, false);");
                     break;
                 case YannakakisVanilla:
-                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, true, false);");
+                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinOperator.class, true, false, false);");
+                    break;
+                case Yannakakis1Pass:
+                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiHashJoinIntOperator.class, true, false, true);");
                     break;
                 case PTO:
-                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiBloomJoinOperator.class, false, true);");
+                    context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanForYannakakis(semiJoinOrdering, TupleBasedLeftSemiBloomJoinOperator.class, false, true, false);");
                     break;
                 case HASH_JOIN:
                     context.put("createPhysicalPlanForYannakakisBlock", "Plan plan = createPhysicalPlanFromJoinOrdering(getJoinOrderingFromNodes(traversalList)).getKey();");

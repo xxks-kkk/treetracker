@@ -10,6 +10,11 @@ public interface NoGoodListMap
 
     void updateNoGoodListMap(Row row, OperatorInformation info);
 
+    default void updateNoGoodListMap(Row row, int id)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     String generateNoGoodListMapRepresentation();
 
     int getNoGoodListSize();

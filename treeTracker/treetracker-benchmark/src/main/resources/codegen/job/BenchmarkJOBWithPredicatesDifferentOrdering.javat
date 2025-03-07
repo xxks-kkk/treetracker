@@ -140,6 +140,33 @@ public class BenchmarkJOBWithPredicatesDifferentOrdering
         }
     }
 
+    @State(Scope.Benchmark)
+    public static class BenchStateYannakakis1Pass
+    {
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        @Param({"Yannakakis1Pass"})
+        public JoinOperator joinOperator;
+        @SuppressWarnings("checkstyle:AnnotationUseStyle")
+        {{ QueriesAutoGenYannakakis1PassAnnotationBlock }}
+        public JOBQueriesYannakakis1Pass jobQueries;
+        JoinFragmentType query;
+
+        @Setup(Level.Trial)
+        public void setUp()
+        {
+            query = queryProvider(joinOperator,
+                    jobQueries,
+                    List.of(),
+                    duckDBJdbcClientSupplier.get());
+        }
+
+        @TearDown(Level.Trial)
+        public void tearDown()
+        {
+            query.cleanUp();
+        }
+    }
+
     @Benchmark
     public void benchTTJ(BenchStateTTJ state)
     {
@@ -160,6 +187,12 @@ public class BenchmarkJOBWithPredicatesDifferentOrdering
 
     @Benchmark
     public void benchYannakakisB(BenchStateYannakakisB state)
+    {
+        state.query.eval();
+    }
+
+    @Benchmark
+    public void benchYannakakis1Pass(BenchStateYannakakis1Pass state)
     {
         state.query.eval();
     }

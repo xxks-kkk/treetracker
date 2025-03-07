@@ -1,0 +1,66 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "tpch_int",
+      "tableName" : "lineitem"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "partsupp"
+    }, {
+      "schemaName" : "tpch",
+      "tableName" : "q9w_part"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "orders"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "supplier"
+    }, {
+      "schemaName" : "tpch_int",
+      "tableName" : "nation"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n||tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)\n|tpch_int.supplier(suppkey,nationkey)\n||tpch_int.nation(nationkey,regionkey)" : 3.0,
+    "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n|tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)\n|tpch_int.supplier(suppkey,nationkey)\n||tpch_int.nation(nationkey,regionkey)" : 3.0,
+    "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n||tpch_int.supplier(suppkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)\n|tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)" : 4.0,
+    "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n||tpch.q9w_part(partkey)\n||tpch_int.supplier(suppkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)\n|tpch_int.orders(orderkey,custkey)" : 4.0
+  },
+  "optimalJoinTree" : "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n|tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)\n|tpch_int.supplier(suppkey,nationkey)\n||tpch_int.nation(nationkey,regionkey)",
+  "cost" : 3.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.DefaultNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "tpch_int",
+        "tableName" : "lineitem"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "partsupp"
+      }, {
+        "schemaName" : "tpch",
+        "tableName" : "q9w_part"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "orders"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "supplier"
+      }, {
+        "schemaName" : "tpch_int",
+        "tableName" : "nation"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n||tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)\n|tpch_int.supplier(suppkey,nationkey)\n||tpch_int.nation(nationkey,regionkey)" : 3.0,
+      "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n|tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)\n|tpch_int.supplier(suppkey,nationkey)\n||tpch_int.nation(nationkey,regionkey)" : 3.0,
+      "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n||tpch_int.supplier(suppkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)\n|tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)" : 4.0,
+      "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n||tpch.q9w_part(partkey)\n||tpch_int.supplier(suppkey,nationkey)\n|||tpch_int.nation(nationkey,regionkey)\n|tpch_int.orders(orderkey,custkey)" : 4.0
+    },
+    "optimalJoinTree" : "tpch_int.lineitem(orderkey,partkey,suppkey)\n|tpch_int.partsupp(partkey,suppkey)\n|tpch.q9w_part(partkey)\n|tpch_int.orders(orderkey,custkey)\n|tpch_int.supplier(suppkey,nationkey)\n||tpch_int.nation(nationkey,regionkey)",
+    "cost" : 3.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0
+  } ]
+}

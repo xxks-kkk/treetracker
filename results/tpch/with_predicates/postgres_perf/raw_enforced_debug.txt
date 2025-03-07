@@ -1,0 +1,1604 @@
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/19aW.sql
+LOG:  duration: 0.119 ms
+LOG:  statement: EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+   count(*)
+from
+   lineitem,
+   part
+where
+   p_partkey = l_partkey
+   and p_brand = 'Brand#12'
+   and p_container in ('SM CASE', 'SM BOX', 'SM PACK', 'SM PKG')
+   and l_quantity >= 1
+   and l_quantity <= 1 + 10
+   and p_size between 1 and 5
+   and l_shipmode in ('AIR', 'AIR REG')
+   and l_shipinstruct = 'DELIVER IN PERSON';
+LOG:  hints in comment="Leading( (lineitem part) )
+  ", query="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+   count(*)
+from
+   lineitem,
+   part
+where
+   p_partkey = l_partkey
+   and p_brand = 'Brand#12'
+   and p_container in ('SM CASE', 'SM BOX', 'SM PACK', 'SM PKG')
+   and l_quantity >= 1
+   and l_quantity <= 1 + 10
+   and p_size between 1 and 5
+   and l_shipmode in ('AIR', 'AIR REG')
+   and l_shipinstruct = 'DELIVER IN PERSON';", debug_query_string="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+   count(*)
+from
+   lineitem,
+   part
+where
+   p_partkey = l_partkey
+   and p_brand = 'Brand#12'
+   and p_container in ('SM CASE', 'SM BOX', 'SM PACK', 'SM PKG')
+   and l_quantity >= 1
+   and l_quantity <= 1 + 10
+   and p_size between 1 and 5
+   and l_shipmode in ('AIR', 'AIR REG')
+   and l_shipinstruct = 'DELIVER IN PERSON';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1cc318, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1cc318, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((lineitem part))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 38.042 ms
+Timing is on.
+SET
+Time: 0.174 ms
+SET
+Time: 0.062 ms
+SET
+Time: 0.055 ms
+SET
+Time: 0.050 ms
+SET
+Time: 0.045 ms
+SET
+Time: 0.164 ms
+                                                                                                                QUERY PLAN                                                                                                                
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=182883.31..182883.32 rows=1 width=8)
+   ->  Gather  (cost=182883.20..182883.31 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=181883.20..181883.21 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=6469.66..181883.17 rows=11 width=0)
+                     Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..175309.53 rows=27711 width=4)
+                           Filter: ((l_quantity >= '1'::double precision) AND (l_quantity <= '11'::double precision) AND ((l_shipmode)::text = ANY ('{AIR,"AIR REG"}'::text[])) AND ((l_shipinstruct)::text = 'DELIVER IN PERSON'::text))
+                     ->  Parallel Hash  (cost=6469.06..6469.06 rows=48 width=4)
+                           ->  Parallel Seq Scan on part  (cost=0.00..6469.06 rows=48 width=4)
+                                 Filter: ((p_size >= 1) AND (p_size <= 5) AND ((p_brand)::text = 'Brand#12'::text) AND ((p_container)::text = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::text[])))
+ JIT:
+   Functions: 17
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(14 rows)
+
+Time: 38.108 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/9W.sql
+LOG:  duration: 0.120 ms
+LOG:  statement: EXPLAIN /*+ Leading( (((((lineitem partsupp) part) orders) supplier) nation) )
+  */
+select
+    count(*)
+from
+    part,
+    supplier,
+    lineitem,
+    partsupp,
+    orders,
+    nation
+where
+    s_suppkey = l_suppkey
+    and ps_suppkey = l_suppkey
+    and ps_partkey = l_partkey
+    and p_partkey = l_partkey
+    and o_orderkey = l_orderkey
+    and s_nationkey = n_nationkey
+    and p_name like '%green%';
+LOG:  hints in comment="Leading( (((((lineitem partsupp) part) orders) supplier) nation) )
+  ", query="EXPLAIN /*+ Leading( (((((lineitem partsupp) part) orders) supplier) nation) )
+  */
+select
+    count(*)
+from
+    part,
+    supplier,
+    lineitem,
+    partsupp,
+    orders,
+    nation
+where
+    s_suppkey = l_suppkey
+    and ps_suppkey = l_suppkey
+    and ps_partkey = l_partkey
+    and p_partkey = l_partkey
+    and o_orderkey = l_orderkey
+    and s_nationkey = n_nationkey
+    and p_name like '%green%';", debug_query_string="EXPLAIN /*+ Leading( (((((lineitem partsupp) part) orders) supplier) nation) )
+  */
+select
+    count(*)
+from
+    part,
+    supplier,
+    lineitem,
+    partsupp,
+    orders,
+    nation
+where
+    s_suppkey = l_suppkey
+    and ps_suppkey = l_suppkey
+    and ps_partkey = l_partkey
+    and p_partkey = l_partkey
+    and o_orderkey = l_orderkey
+    and s_nationkey = n_nationkey
+    and p_name like '%green%';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1c46f8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1c46f8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1c46f8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876976(partsupp), inhparent=0, current_hint=0x55aa7b1c46f8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1c46f8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1c46f8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((((((lineitem partsupp) part) orders) supplier) nation))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 299.648 ms
+Timing is on.
+SET
+Time: 0.168 ms
+SET
+Time: 0.068 ms
+SET
+Time: 0.069 ms
+SET
+Time: 0.088 ms
+SET
+Time: 0.069 ms
+SET
+Time: 0.171 ms
+                                                                     QUERY PLAN                                                                     
+----------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=257753.24..257753.25 rows=1 width=8)
+   ->  Gather  (cost=257753.13..257753.24 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=256753.13..256753.14 rows=1 width=8)
+               ->  Hash Join  (cost=81416.26..256752.37 rows=302 width=0)
+                     Hash Cond: (supplier.s_nationkey = nation.n_nationkey)
+                     ->  Hash Join  (cost=81388.03..256713.33 rows=75 width=4)
+                           Hash Cond: (lineitem.l_suppkey = supplier.s_suppkey)
+                           ->  Parallel Hash Join  (cost=80945.03..256269.30 rows=75 width=8)
+                                 Hash Cond: (lineitem.l_orderkey = orders.o_orderkey)
+                                 ->  Parallel Hash Join  (cost=35125.09..210448.63 rows=75 width=12)
+                                       Hash Cond: (partsupp.ps_partkey = part.p_partkey)
+                                       ->  Parallel Hash Join  (cost=29754.70..205072.52 rows=1410 width=20)
+                                             Hash Cond: ((lineitem.l_suppkey = partsupp.ps_suppkey) AND (lineitem.l_partkey = partsupp.ps_partkey))
+                                             ->  Parallel Seq Scan on lineitem  (cost=0.00..140008.26 rows=3530126 width=12)
+                                             ->  Parallel Hash  (cost=22695.88..22695.88 rows=470588 width=8)
+                                                   ->  Parallel Seq Scan on partsupp  (cost=0.00..22695.88 rows=470588 width=8)
+                                       ->  Parallel Hash  (cost=5292.59..5292.59 rows=6224 width=4)
+                                             ->  Parallel Seq Scan on part  (cost=0.00..5292.59 rows=6224 width=4)
+                                                   Filter: ((p_name)::text ~~ '%green%'::text)
+                                 ->  Parallel Hash  (cost=34790.53..34790.53 rows=882353 width=4)
+                                       ->  Parallel Seq Scan on orders  (cost=0.00..34790.53 rows=882353 width=4)
+                           ->  Hash  (cost=318.00..318.00 rows=10000 width=8)
+                                 ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=8)
+                     ->  Hash  (cost=18.10..18.10 rows=810 width=4)
+                           ->  Seq Scan on nation  (cost=0.00..18.10 rows=810 width=4)
+ JIT:
+   Functions: 49
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(29 rows)
+
+Time: 299.761 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/16W.sql
+LOG:  duration: 0.116 ms
+LOG:  statement: EXPLAIN /*+ Leading( (part partsupp) )
+  */
+select
+   count(*)
+from
+   partsupp,
+   part
+where
+   p_partkey = ps_partkey
+   and p_brand <> 'Brand#45'
+   and p_type not like 'MEDIUM POLISHED%'
+   and p_size in (49, 14, 23, 45, 19, 3, 36, 9)
+   and ps_suppkey not in (
+            select s_suppkey
+            from supplier
+            where
+                 s_comment like '%Customer%Complaints%');
+LOG:  hints in comment="Leading( (part partsupp) )
+  ", query="EXPLAIN /*+ Leading( (part partsupp) )
+  */
+select
+   count(*)
+from
+   partsupp,
+   part
+where
+   p_partkey = ps_partkey
+   and p_brand <> 'Brand#45'
+   and p_type not like 'MEDIUM POLISHED%'
+   and p_size in (49, 14, 23, 45, 19, 3, 36, 9)
+   and ps_suppkey not in (
+            select s_suppkey
+            from supplier
+            where
+                 s_comment like '%Customer%Complaints%');", debug_query_string="EXPLAIN /*+ Leading( (part partsupp) )
+  */
+select
+   count(*)
+from
+   partsupp,
+   part
+where
+   p_partkey = ps_partkey
+   and p_brand <> 'Brand#45'
+   and p_type not like 'MEDIUM POLISHED%'
+   and p_size in (49, 14, 23, 45, 19, 3, 36, 9)
+   and ps_suppkey not in (
+            select s_suppkey
+            from supplier
+            where
+                 s_comment like '%Customer%Complaints%');"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1c3f30, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876976(partsupp), inhparent=0, current_hint=0x55aa7b1c3f30, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1c3f30, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((part partsupp))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 6.638 ms
+Timing is on.
+SET
+Time: 0.211 ms
+SET
+Time: 0.064 ms
+SET
+Time: 0.161 ms
+SET
+Time: 0.064 ms
+SET
+Time: 0.052 ms
+SET
+Time: 0.167 ms
+                                                                                      QUERY PLAN                                                                                       
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=35297.90..35297.91 rows=1 width=8)
+   ->  Gather  (cost=35297.78..35297.89 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=34297.78..34297.79 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=27156.54..34210.93 rows=34742 width=0)
+                     Hash Cond: (part.p_partkey = partsupp.ps_partkey)
+                     ->  Parallel Seq Scan on part  (cost=0.00..6763.18 rows=17371 width=4)
+                           Filter: (((p_brand)::text <> 'Brand#45'::text) AND ((p_type)::text !~~ 'MEDIUM POLISHED%'::text) AND (p_size = ANY ('{49,14,23,45,19,3,36,9}'::integer[])))
+                     ->  Parallel Hash  (cost=24215.36..24215.36 rows=235294 width=4)
+                           ->  Parallel Seq Scan on partsupp  (cost=343.01..24215.36 rows=235294 width=4)
+                                 Filter: (NOT (hashed SubPlan 1))
+                                 SubPlan 1
+                                   ->  Seq Scan on supplier  (cost=0.00..343.00 rows=4 width=4)
+                                         Filter: ((s_comment)::text ~~ '%Customer%Complaints%'::text)
+(14 rows)
+
+Time: 6.691 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/19cW.sql
+LOG:  duration: 0.116 ms
+LOG:  statement: EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+    count(*)
+from
+    lineitem,
+    part
+where
+    p_partkey = l_partkey
+    and p_brand = 'Brand#34'
+    and p_container in ('LG CASE', 'LG BOX', 'LG PACK', 'LG PKG')
+    and l_quantity >= 20
+    and l_quantity <= 20 + 10
+    and p_size between 1 and 15
+    and l_shipmode in ('AIR', 'AIR REG')
+    and l_shipinstruct = 'DELIVER IN PERSON';       
+LOG:  hints in comment="Leading( (lineitem part) )
+  ", query="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+    count(*)
+from
+    lineitem,
+    part
+where
+    p_partkey = l_partkey
+    and p_brand = 'Brand#34'
+    and p_container in ('LG CASE', 'LG BOX', 'LG PACK', 'LG PKG')
+    and l_quantity >= 20
+    and l_quantity <= 20 + 10
+    and p_size between 1 and 15
+    and l_shipmode in ('AIR', 'AIR REG')
+    and l_shipinstruct = 'DELIVER IN PERSON';       ", debug_query_string="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+    count(*)
+from
+    lineitem,
+    part
+where
+    p_partkey = l_partkey
+    and p_brand = 'Brand#34'
+    and p_container in ('LG CASE', 'LG BOX', 'LG PACK', 'LG PKG')
+    and l_quantity >= 20
+    and l_quantity <= 20 + 10
+    and p_size between 1 and 15
+    and l_shipmode in ('AIR', 'AIR REG')
+    and l_shipinstruct = 'DELIVER IN PERSON';       "
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1cc318, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1cc318, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((lineitem part))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 35.719 ms
+Timing is on.
+SET
+Time: 0.186 ms
+SET
+Time: 0.062 ms
+SET
+Time: 0.056 ms
+SET
+Time: 0.047 ms
+SET
+Time: 0.045 ms
+SET
+Time: 0.160 ms
+                                                                                                                QUERY PLAN                                                                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=182884.75..182884.76 rows=1 width=8)
+   ->  Gather  (cost=182884.64..182884.75 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=181884.64..181884.65 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=6470.85..181884.55 rows=34 width=0)
+                     Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..175309.53 rows=27727 width=4)
+                           Filter: ((l_quantity >= '20'::double precision) AND (l_quantity <= '30'::double precision) AND ((l_shipmode)::text = ANY ('{AIR,"AIR REG"}'::text[])) AND ((l_shipinstruct)::text = 'DELIVER IN PERSON'::text))
+                     ->  Parallel Hash  (cost=6469.06..6469.06 rows=143 width=4)
+                           ->  Parallel Seq Scan on part  (cost=0.00..6469.06 rows=143 width=4)
+                                 Filter: ((p_size >= 1) AND (p_size <= 15) AND ((p_brand)::text = 'Brand#34'::text) AND ((p_container)::text = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::text[])))
+ JIT:
+   Functions: 17
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(14 rows)
+
+Time: 35.809 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/10W.sql
+LOG:  duration: 0.119 ms
+LOG:  statement: EXPLAIN /*+ Leading( (((lineitem orders) customer) nation) )
+  */
+select
+count(*)
+from
+customer,
+orders,
+lineitem,
+nation
+where
+c_custkey = o_custkey
+and l_orderkey = o_orderkey
+and o_orderdate >= date '1993-10-01'
+and o_orderdate < date '1993-10-01' + interval '3' month
+and l_returnflag = 'R'
+and c_nationkey = n_nationkey;    
+LOG:  hints in comment="Leading( (((lineitem orders) customer) nation) )
+  ", query="EXPLAIN /*+ Leading( (((lineitem orders) customer) nation) )
+  */
+select
+count(*)
+from
+customer,
+orders,
+lineitem,
+nation
+where
+c_custkey = o_custkey
+and l_orderkey = o_orderkey
+and o_orderdate >= date '1993-10-01'
+and o_orderdate < date '1993-10-01' + interval '3' month
+and l_returnflag = 'R'
+and c_nationkey = n_nationkey;    ", debug_query_string="EXPLAIN /*+ Leading( (((lineitem orders) customer) nation) )
+  */
+select
+count(*)
+from
+customer,
+orders,
+lineitem,
+nation
+where
+c_custkey = o_custkey
+and l_orderkey = o_orderkey
+and o_orderdate >= date '1993-10-01'
+and o_orderdate < date '1993-10-01' + interval '3' month
+and l_returnflag = 'R'
+and c_nationkey = n_nationkey;    "
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876982(customer), inhparent=0, current_hint=0x55aa7b1c8a10, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1c8a10, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1c8a10, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1c8a10, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((((lineitem orders) customer) nation))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 36.342 ms
+Timing is on.
+SET
+Time: 0.158 ms
+SET
+Time: 0.061 ms
+SET
+Time: 0.054 ms
+SET
+Time: 0.047 ms
+SET
+Time: 0.047 ms
+SET
+Time: 0.162 ms
+                                                                            QUERY PLAN                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=203998.85..203998.86 rows=1 width=8)
+   ->  Gather  (cost=203998.74..203998.85 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=202998.74..202998.75 rows=1 width=8)
+               ->  Hash Join  (cost=45270.43..202663.27 rows=134188 width=0)
+                     Hash Cond: (customer.c_nationkey = nation.n_nationkey)
+                     ->  Parallel Hash Join  (cost=45242.21..197855.61 rows=33133 width=4)
+                           Hash Cond: (orders.o_custkey = customer.c_custkey)
+                           ->  Parallel Hash Join  (cost=39621.92..191916.17 rows=33133 width=4)
+                                 Hash Cond: (lineitem.l_orderkey = orders.o_orderkey)
+                                 ->  Parallel Seq Scan on lineitem  (cost=0.00..148833.58 rows=870871 width=4)
+                                       Filter: ((l_returnflag)::text = 'R'::text)
+                                 ->  Parallel Hash  (cost=39202.29..39202.29 rows=33570 width=8)
+                                       ->  Parallel Seq Scan on orders  (cost=0.00..39202.29 rows=33570 width=8)
+                                             Filter: ((o_orderdate >= '1993-10-01'::date) AND (o_orderdate < '1994-01-01 00:00:00'::timestamp without time zone))
+                           ->  Parallel Hash  (cost=4517.35..4517.35 rows=88235 width=8)
+                                 ->  Parallel Seq Scan on customer  (cost=0.00..4517.35 rows=88235 width=8)
+                     ->  Hash  (cost=18.10..18.10 rows=810 width=4)
+                           ->  Seq Scan on nation  (cost=0.00..18.10 rows=810 width=4)
+ JIT:
+   Functions: 33
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(22 rows)
+
+Time: 36.415 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/14W.sql
+LOG:  duration: 0.131 ms
+LOG:  statement: EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+    count(*)
+from
+    lineitem,
+    part
+where
+    l_partkey = p_partkey
+    and l_shipdate >= date '1995-09-01'
+    and l_shipdate < date '1995-09-01' + interval '1' month;
+LOG:  hints in comment="Leading( (lineitem part) )
+  ", query="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+    count(*)
+from
+    lineitem,
+    part
+where
+    l_partkey = p_partkey
+    and l_shipdate >= date '1995-09-01'
+    and l_shipdate < date '1995-09-01' + interval '1' month;", debug_query_string="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+    count(*)
+from
+    lineitem,
+    part
+where
+    l_partkey = p_partkey
+    and l_shipdate >= date '1995-09-01'
+    and l_shipdate < date '1995-09-01' + interval '1' month;"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1c3468, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1c3468, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((lineitem part))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 11.951 ms
+Timing is on.
+SET
+Time: 0.145 ms
+SET
+Time: 0.049 ms
+SET
+Time: 0.049 ms
+SET
+Time: 0.042 ms
+SET
+Time: 0.040 ms
+SET
+Time: 0.170 ms
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=165668.57..165668.58 rows=1 width=8)
+   ->  Gather  (cost=165668.46..165668.57 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=164668.46..164668.47 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=6469.06..164557.08 rows=44551 width=0)
+                     Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..157658.90 rows=44551 width=4)
+                           Filter: ((l_shipdate >= '1995-09-01'::date) AND (l_shipdate < '1995-10-01 00:00:00'::timestamp without time zone))
+                     ->  Parallel Hash  (cost=4998.47..4998.47 rows=117647 width=4)
+                           ->  Parallel Seq Scan on part  (cost=0.00..4998.47 rows=117647 width=4)
+ JIT:
+   Functions: 15
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(13 rows)
+
+Time: 11.998 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/12W.sql
+LOG:  duration: 0.119 ms
+LOG:  statement: EXPLAIN /*+ Leading( (lineitem orders) )
+  */
+select
+    count(*)
+from
+    orders,
+    lineitem
+where
+    o_orderkey = l_orderkey
+    and l_shipmode in ('MAIL', 'SHIP')
+    and l_commitdate < l_receiptdate
+    and l_shipdate < l_commitdate
+    and l_receiptdate >= date '1994-01-01'
+    and l_receiptdate < date '1994-01-01' + interval '1' year;
+LOG:  hints in comment="Leading( (lineitem orders) )
+  ", query="EXPLAIN /*+ Leading( (lineitem orders) )
+  */
+select
+    count(*)
+from
+    orders,
+    lineitem
+where
+    o_orderkey = l_orderkey
+    and l_shipmode in ('MAIL', 'SHIP')
+    and l_commitdate < l_receiptdate
+    and l_shipdate < l_commitdate
+    and l_receiptdate >= date '1994-01-01'
+    and l_receiptdate < date '1994-01-01' + interval '1' year;", debug_query_string="EXPLAIN /*+ Leading( (lineitem orders) )
+  */
+select
+    count(*)
+from
+    orders,
+    lineitem
+where
+    o_orderkey = l_orderkey
+    and l_shipmode in ('MAIL', 'SHIP')
+    and l_commitdate < l_receiptdate
+    and l_shipdate < l_commitdate
+    and l_receiptdate >= date '1994-01-01'
+    and l_receiptdate < date '1994-01-01' + interval '1' year;"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1c84a8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1c84a8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((lineitem orders))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 11.606 ms
+Timing is on.
+SET
+Time: 0.155 ms
+SET
+Time: 0.067 ms
+SET
+Time: 0.064 ms
+SET
+Time: 0.059 ms
+SET
+Time: 0.053 ms
+SET
+Time: 0.171 ms
+                                                                                                                                  QUERY PLAN                                                                                                                                  
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=231161.39..231161.40 rows=1 width=8)
+   ->  Gather  (cost=231161.28..231161.39 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=230161.28..230161.29 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=45819.94..230118.73 rows=17020 width=0)
+                     Hash Cond: (lineitem.l_orderkey = orders.o_orderkey)
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..184134.85 rows=17020 width=4)
+                           Filter: (((l_shipmode)::text = ANY ('{MAIL,SHIP}'::text[])) AND (l_commitdate < l_receiptdate) AND (l_shipdate < l_commitdate) AND (l_receiptdate >= '1994-01-01'::date) AND (l_receiptdate < '1995-01-01 00:00:00'::timestamp without time zone))
+                     ->  Parallel Hash  (cost=34790.53..34790.53 rows=882353 width=4)
+                           ->  Parallel Seq Scan on orders  (cost=0.00..34790.53 rows=882353 width=4)
+ JIT:
+   Functions: 15
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(13 rows)
+
+Time: 11.652 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/7aW.sql
+LOG:  duration: 0.129 ms
+LOG:  statement: EXPLAIN /*+ Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  */
+select
+    count(*)
+from
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2
+where
+    s_suppkey = l_suppkey
+    and o_orderkey = l_orderkey
+    and c_custkey = o_custkey
+    and s_nationkey = n1.n_nationkey
+    and c_nationkey = n2.n_nationkey
+    and n1.n_name = 'FRANCE'
+    and n2.n_name = 'GERMANY'
+    and l_shipdate between date '1995-01-01' and date '1996-12-31';
+LOG:  hints in comment="Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  ", query="EXPLAIN /*+ Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  */
+select
+    count(*)
+from
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2
+where
+    s_suppkey = l_suppkey
+    and o_orderkey = l_orderkey
+    and c_custkey = o_custkey
+    and s_nationkey = n1.n_nationkey
+    and c_nationkey = n2.n_nationkey
+    and n1.n_name = 'FRANCE'
+    and n2.n_name = 'GERMANY'
+    and l_shipdate between date '1995-01-01' and date '1996-12-31';", debug_query_string="EXPLAIN /*+ Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  */
+select
+    count(*)
+from
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2
+where
+    s_suppkey = l_suppkey
+    and o_orderkey = l_orderkey
+    and c_custkey = o_custkey
+    and s_nationkey = n1.n_nationkey
+    and c_nationkey = n2.n_nationkey
+    and n1.n_name = 'FRANCE'
+    and n2.n_name = 'GERMANY'
+    and l_shipdate between date '1995-01-01' and date '1996-12-31';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876982(customer), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((((((n2 customer) orders) lineitem) supplier) n1))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 12.965 ms
+Timing is on.
+SET
+Time: 0.157 ms
+SET
+Time: 0.068 ms
+SET
+Time: 0.070 ms
+SET
+Time: 0.061 ms
+SET
+Time: 0.057 ms
+SET
+Time: 0.177 ms
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=286911.03..286911.04 rows=1 width=8)
+   ->  Hash Join  (cost=284754.77..286909.21 rows=731 width=0)
+         Hash Cond: (supplier.s_nationkey = n1.n_nationkey)
+         ->  Hash Join  (cost=284734.60..286744.69 rows=36543 width=4)
+               Hash Cond: (lineitem.l_suppkey = supplier.s_suppkey)
+               ->  Hash Join  (cost=284291.60..285799.22 rows=36543 width=4)
+                     Hash Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                     ->  Hash Join  (cost=66727.00..67269.19 rows=30000 width=4)
+                           Hash Cond: (customer.c_custkey = orders.o_custkey)
+                           ->  Hash Join  (cost=7010.00..7090.94 rows=3000 width=4)
+                                 Hash Cond: (n2.n_nationkey = customer.c_nationkey)
+                                 ->  Seq Scan on nation n2  (cost=0.00..20.12 rows=4 width=4)
+                                       Filter: ((n_name)::text = 'GERMANY'::text)
+                                 ->  Hash  (cost=5135.00..5135.00 rows=150000 width=8)
+                                       ->  Seq Scan on customer  (cost=0.00..5135.00 rows=150000 width=8)
+                           ->  Hash  (cost=40967.00..40967.00 rows=1500000 width=8)
+                                 ->  Seq Scan on orders  (cost=0.00..40967.00 rows=1500000 width=8)
+                     ->  Hash  (cost=194725.22..194725.22 rows=1827150 width=8)
+                           ->  Seq Scan on lineitem  (cost=0.00..194725.22 rows=1827150 width=8)
+                                 Filter: ((l_shipdate >= '1995-01-01'::date) AND (l_shipdate <= '1996-12-31'::date))
+               ->  Hash  (cost=318.00..318.00 rows=10000 width=8)
+                     ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=8)
+         ->  Hash  (cost=20.12..20.12 rows=4 width=4)
+               ->  Seq Scan on nation n1  (cost=0.00..20.12 rows=4 width=4)
+                     Filter: ((n_name)::text = 'FRANCE'::text)
+ JIT:
+   Functions: 49
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(28 rows)
+
+Time: 13.009 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/15W.sql
+LOG:  duration: 0.128 ms
+LOG:  statement: EXPLAIN /*+ Leading( (lineitemrevenue supplier) )
+  */
+SELECT
+    count(*)
+from
+    supplier,
+    lineitemrevenue -- assume existence of lineitemrevenue view
+where
+    s_suppkey = supplier_no;
+LOG:  hints in comment="Leading( (lineitemrevenue supplier) )
+  ", query="EXPLAIN /*+ Leading( (lineitemrevenue supplier) )
+  */
+SELECT
+    count(*)
+from
+    supplier,
+    lineitemrevenue -- assume existence of lineitemrevenue view
+where
+    s_suppkey = supplier_no;", debug_query_string="EXPLAIN /*+ Leading( (lineitemrevenue supplier) )
+  */
+SELECT
+    count(*)
+from
+    supplier,
+    lineitemrevenue -- assume existence of lineitemrevenue view
+where
+    s_suppkey = supplier_no;"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1d0028, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1d0028, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((lineitemrevenue supplier))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 14.649 ms
+Timing is on.
+SET
+Time: 0.185 ms
+SET
+Time: 0.071 ms
+SET
+Time: 0.069 ms
+SET
+Time: 0.065 ms
+SET
+Time: 0.058 ms
+SET
+Time: 0.176 ms
+                                                                            QUERY PLAN                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=162945.94..162945.95 rows=1 width=8)
+   ->  Hash Join  (cost=162719.62..162945.81 rows=50 width=0)
+         Hash Cond: (a1.l_suppkey = supplier.s_suppkey)
+         ->  CTE Scan on a1  (cost=162276.62..162501.62 rows=50 width=12)
+               Filter: (total_revenue = $2)
+               CTE a1
+                 ->  Finalize GroupAggregate  (cost=160751.61..162051.61 rows=10000 width=12)
+                       Group Key: lineitem.l_suppkey
+                       ->  Gather Merge  (cost=160751.61..161901.61 rows=10000 width=12)
+                             Workers Planned: 1
+                             ->  Sort  (cost=159751.60..159776.60 rows=10000 width=12)
+                                   Sort Key: lineitem.l_suppkey
+                                   ->  Partial HashAggregate  (cost=158987.22..159087.22 rows=10000 width=12)
+                                         Group Key: lineitem.l_suppkey
+                                         ->  Parallel Seq Scan on lineitem  (cost=0.00..157658.90 rows=132832 width=20)
+                                               Filter: ((l_shipdate >= '1996-01-01'::date) AND (l_shipdate < '1996-04-01 00:00:00'::timestamp without time zone))
+               InitPlan 2 (returns $2)
+                 ->  Aggregate  (cost=225.00..225.01 rows=1 width=8)
+                       ->  CTE Scan on a1 a1_1  (cost=0.00..200.00 rows=10000 width=8)
+         ->  Hash  (cost=318.00..318.00 rows=10000 width=4)
+               ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=4)
+ JIT:
+   Functions: 25
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(24 rows)
+
+Time: 14.693 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/19bW.sql
+LOG:  duration: 0.115 ms
+LOG:  statement: EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+   count(*)
+from
+   lineitem,
+   part
+where
+   p_partkey = l_partkey
+   and p_brand = 'Brand#23'
+   and p_container in ('MED BAG', 'MED BOX', 'MED PKG', 'MED PACK')
+   and l_quantity >= 10
+   and l_quantity <= 10 + 10
+   and p_size between 1 and 10
+   and l_shipmode in ('AIR', 'AIR REG')
+   and l_shipinstruct = 'DELIVER IN PERSON';
+LOG:  hints in comment="Leading( (lineitem part) )
+  ", query="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+   count(*)
+from
+   lineitem,
+   part
+where
+   p_partkey = l_partkey
+   and p_brand = 'Brand#23'
+   and p_container in ('MED BAG', 'MED BOX', 'MED PKG', 'MED PACK')
+   and l_quantity >= 10
+   and l_quantity <= 10 + 10
+   and p_size between 1 and 10
+   and l_shipmode in ('AIR', 'AIR REG')
+   and l_shipinstruct = 'DELIVER IN PERSON';", debug_query_string="EXPLAIN /*+ Leading( (lineitem part) )
+  */
+select
+   count(*)
+from
+   lineitem,
+   part
+where
+   p_partkey = l_partkey
+   and p_brand = 'Brand#23'
+   and p_container in ('MED BAG', 'MED BOX', 'MED PKG', 'MED PACK')
+   and l_quantity >= 10
+   and l_quantity <= 10 + 10
+   and p_size between 1 and 10
+   and l_shipmode in ('AIR', 'AIR REG')
+   and l_shipinstruct = 'DELIVER IN PERSON';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1cc318, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1cc318, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((lineitem part))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 13.065 ms
+Timing is on.
+SET
+Time: 0.287 ms
+SET
+Time: 0.062 ms
+SET
+Time: 0.055 ms
+SET
+Time: 0.047 ms
+SET
+Time: 0.045 ms
+SET
+Time: 0.159 ms
+                                                                                                                QUERY PLAN                                                                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=182884.13..182884.14 rows=1 width=8)
+   ->  Gather  (cost=182884.02..182884.13 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=181884.02..181884.03 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=6470.23..181883.97 rows=22 width=0)
+                     Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                     ->  Parallel Seq Scan on lineitem  (cost=0.00..175309.53 rows=27753 width=4)
+                           Filter: ((l_quantity >= '10'::double precision) AND (l_quantity <= '20'::double precision) AND ((l_shipmode)::text = ANY ('{AIR,"AIR REG"}'::text[])) AND ((l_shipinstruct)::text = 'DELIVER IN PERSON'::text))
+                     ->  Parallel Hash  (cost=6469.06..6469.06 rows=94 width=4)
+                           ->  Parallel Seq Scan on part  (cost=0.00..6469.06 rows=94 width=4)
+                                 Filter: ((p_size >= 1) AND (p_size <= 10) AND ((p_brand)::text = 'Brand#23'::text) AND ((p_container)::text = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::text[])))
+ JIT:
+   Functions: 17
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(14 rows)
+
+Time: 13.101 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/3W.sql
+LOG:  duration: 0.110 ms
+LOG:  statement: EXPLAIN /*+ Leading( ((lineitem orders) customer) )
+  */
+select
+   count(*)
+from
+   customer,
+   orders,
+   lineitem
+where c_mktsegment = 'BUILDING'
+      and c_custkey = o_custkey
+      and l_orderkey = o_orderkey
+      and o_orderdate < date '1995-03-15'
+      and l_shipdate > date '1995-03-15';
+LOG:  hints in comment="Leading( ((lineitem orders) customer) )
+  ", query="EXPLAIN /*+ Leading( ((lineitem orders) customer) )
+  */
+select
+   count(*)
+from
+   customer,
+   orders,
+   lineitem
+where c_mktsegment = 'BUILDING'
+      and c_custkey = o_custkey
+      and l_orderkey = o_orderkey
+      and o_orderdate < date '1995-03-15'
+      and l_shipdate > date '1995-03-15';", debug_query_string="EXPLAIN /*+ Leading( ((lineitem orders) customer) )
+  */
+select
+   count(*)
+from
+   customer,
+   orders,
+   lineitem
+where c_mktsegment = 'BUILDING'
+      and c_custkey = o_custkey
+      and l_orderkey = o_orderkey
+      and o_orderdate < date '1995-03-15'
+      and l_shipdate > date '1995-03-15';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876982(customer), inhparent=0, current_hint=0x55aa7b1c84a0, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1c84a0, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1c84a0, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading(((lineitem orders) customer))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 35.124 ms
+Timing is on.
+SET
+Time: 0.145 ms
+SET
+Time: 0.051 ms
+SET
+Time: 0.050 ms
+SET
+Time: 0.043 ms
+SET
+Time: 0.041 ms
+SET
+Time: 0.147 ms
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=214741.31..214741.32 rows=1 width=8)
+   ->  Gather  (cost=214741.20..214741.31 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=213741.20..213741.21 rows=1 width=8)
+               ->  Parallel Hash Join  (cost=47303.82..213276.99 rows=185684 width=0)
+                     Hash Cond: (orders.o_custkey = customer.c_custkey)
+                     ->  Parallel Hash Join  (cost=42344.24..203759.96 rows=924045 width=4)
+                           Hash Cond: (lineitem.l_orderkey = orders.o_orderkey)
+                           ->  Parallel Seq Scan on lineitem  (cost=0.00..148833.58 rows=1905758 width=4)
+                                 Filter: (l_shipdate > '1995-03-15'::date)
+                           ->  Parallel Hash  (cost=36996.41..36996.41 rows=427826 width=8)
+                                 ->  Parallel Seq Scan on orders  (cost=0.00..36996.41 rows=427826 width=8)
+                                       Filter: (o_orderdate < '1995-03-15'::date)
+                     ->  Parallel Hash  (cost=4737.94..4737.94 rows=17731 width=4)
+                           ->  Parallel Seq Scan on customer  (cost=0.00..4737.94 rows=17731 width=4)
+                                 Filter: ((c_mktsegment)::text = 'BUILDING'::text)
+ JIT:
+   Functions: 27
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(19 rows)
+
+Time: 35.225 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/7bW.sql
+LOG:  duration: 0.091 ms
+LOG:  statement: EXPLAIN /*+ Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  */
+select
+    count(*)
+from
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2
+where
+    s_suppkey = l_suppkey
+    and o_orderkey = l_orderkey
+    and c_custkey = o_custkey
+    and s_nationkey = n1.n_nationkey
+    and c_nationkey = n2.n_nationkey
+    and n1.n_name = 'GERMANY'
+    and n2.n_name = 'FRANCE'
+    and l_shipdate between date '1995-01-01' and date '1996-12-31';
+LOG:  hints in comment="Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  ", query="EXPLAIN /*+ Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  */
+select
+    count(*)
+from
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2
+where
+    s_suppkey = l_suppkey
+    and o_orderkey = l_orderkey
+    and c_custkey = o_custkey
+    and s_nationkey = n1.n_nationkey
+    and c_nationkey = n2.n_nationkey
+    and n1.n_name = 'GERMANY'
+    and n2.n_name = 'FRANCE'
+    and l_shipdate between date '1995-01-01' and date '1996-12-31';", debug_query_string="EXPLAIN /*+ Leading( (((((n2 customer) orders) lineitem) supplier) n1) )
+  */
+select
+    count(*)
+from
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2
+where
+    s_suppkey = l_suppkey
+    and o_orderkey = l_orderkey
+    and c_custkey = o_custkey
+    and s_nationkey = n1.n_nationkey
+    and c_nationkey = n2.n_nationkey
+    and n1.n_name = 'GERMANY'
+    and n2.n_name = 'FRANCE'
+    and l_shipdate between date '1995-01-01' and date '1996-12-31';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876982(customer), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d1558, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((((((n2 customer) orders) lineitem) supplier) n1))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 16.466 ms
+Timing is on.
+SET
+Time: 0.115 ms
+SET
+Time: 0.039 ms
+SET
+Time: 0.039 ms
+SET
+Time: 0.034 ms
+SET
+Time: 0.033 ms
+SET
+Time: 0.119 ms
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=286911.03..286911.04 rows=1 width=8)
+   ->  Hash Join  (cost=284754.77..286909.21 rows=731 width=0)
+         Hash Cond: (supplier.s_nationkey = n1.n_nationkey)
+         ->  Hash Join  (cost=284734.60..286744.69 rows=36543 width=4)
+               Hash Cond: (lineitem.l_suppkey = supplier.s_suppkey)
+               ->  Hash Join  (cost=284291.60..285799.22 rows=36543 width=4)
+                     Hash Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                     ->  Hash Join  (cost=66727.00..67269.19 rows=30000 width=4)
+                           Hash Cond: (customer.c_custkey = orders.o_custkey)
+                           ->  Hash Join  (cost=7010.00..7090.94 rows=3000 width=4)
+                                 Hash Cond: (n2.n_nationkey = customer.c_nationkey)
+                                 ->  Seq Scan on nation n2  (cost=0.00..20.12 rows=4 width=4)
+                                       Filter: ((n_name)::text = 'FRANCE'::text)
+                                 ->  Hash  (cost=5135.00..5135.00 rows=150000 width=8)
+                                       ->  Seq Scan on customer  (cost=0.00..5135.00 rows=150000 width=8)
+                           ->  Hash  (cost=40967.00..40967.00 rows=1500000 width=8)
+                                 ->  Seq Scan on orders  (cost=0.00..40967.00 rows=1500000 width=8)
+                     ->  Hash  (cost=194725.22..194725.22 rows=1827150 width=8)
+                           ->  Seq Scan on lineitem  (cost=0.00..194725.22 rows=1827150 width=8)
+                                 Filter: ((l_shipdate >= '1995-01-01'::date) AND (l_shipdate <= '1996-12-31'::date))
+               ->  Hash  (cost=318.00..318.00 rows=10000 width=8)
+                     ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=8)
+         ->  Hash  (cost=20.12..20.12 rows=4 width=4)
+               ->  Seq Scan on nation n1  (cost=0.00..20.12 rows=4 width=4)
+                     Filter: ((n_name)::text = 'GERMANY'::text)
+ JIT:
+   Functions: 49
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(28 rows)
+
+Time: 16.509 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/11W.sql
+LOG:  duration: 0.087 ms
+LOG:  statement: EXPLAIN /*+ Leading( ((partsupp supplier) nation) )
+  */
+select
+count(*)
+from
+    partsupp,
+    supplier,
+    nation
+where
+    ps_suppkey = s_suppkey
+    and s_nationkey = n_nationkey
+    and n_name = 'GERMANY';
+LOG:  hints in comment="Leading( ((partsupp supplier) nation) )
+  ", query="EXPLAIN /*+ Leading( ((partsupp supplier) nation) )
+  */
+select
+count(*)
+from
+    partsupp,
+    supplier,
+    nation
+where
+    ps_suppkey = s_suppkey
+    and s_nationkey = n_nationkey
+    and n_name = 'GERMANY';", debug_query_string="EXPLAIN /*+ Leading( ((partsupp supplier) nation) )
+  */
+select
+count(*)
+from
+    partsupp,
+    supplier,
+    nation
+where
+    ps_suppkey = s_suppkey
+    and s_nationkey = n_nationkey
+    and n_name = 'GERMANY';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876976(partsupp), inhparent=0, current_hint=0x55aa7b1c31b8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1c31b8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1c31b8, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading(((partsupp supplier) nation))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 1.591 ms
+Timing is on.
+SET
+Time: 0.119 ms
+SET
+Time: 0.040 ms
+SET
+Time: 0.039 ms
+SET
+Time: 0.034 ms
+SET
+Time: 0.032 ms
+SET
+Time: 0.116 ms
+                                               QUERY PLAN                                               
+--------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=32512.11..32512.12 rows=1 width=8)
+   ->  Gather  (cost=32512.00..32512.11 rows=1 width=8)
+         Workers Planned: 1
+         ->  Partial Aggregate  (cost=31512.00..31512.01 rows=1 width=8)
+               ->  Hash Join  (cost=463.18..31488.47 rows=9412 width=0)
+                     Hash Cond: (supplier.s_nationkey = nation.n_nationkey)
+                     ->  Hash Join  (cost=443.00..29609.47 rows=470588 width=4)
+                           Hash Cond: (partsupp.ps_suppkey = supplier.s_suppkey)
+                           ->  Parallel Seq Scan on partsupp  (cost=0.00..22695.88 rows=470588 width=4)
+                           ->  Hash  (cost=318.00..318.00 rows=10000 width=8)
+                                 ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=8)
+                     ->  Hash  (cost=20.12..20.12 rows=4 width=4)
+                           ->  Seq Scan on nation  (cost=0.00..20.12 rows=4 width=4)
+                                 Filter: ((n_name)::text = 'GERMANY'::text)
+(14 rows)
+
+Time: 1.624 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/20W.sql
+LOG:  duration: 0.090 ms
+LOG:  statement: EXPLAIN /*+ Leading( (supplier nation) )
+  */
+select
+    count(*)
+from
+    supplier,
+    nation
+where
+    s_suppkey in (
+            select
+                ps_suppkey
+            from
+                partsupp
+            where
+                ps_partkey in (
+                         select
+                              p_partkey
+                         from
+                              part
+                         where
+                              p_name like 'forest%'
+                                                                                                                                                                                                            )
+            and ps_availqty > (
+                     select
+                          0.5 * sum(l_quantity)
+                     from
+                          lineitem
+                     where
+                          l_partkey = ps_partkey
+                          and l_suppkey = ps_suppkey
+                          and l_shipdate >= date '1994-01-01'
+                          and l_shipdate < date '1994-01-01' + interval '1' year
+             )
+       )
+       and s_nationkey = n_nationkey
+       and n_name = 'CHINA';
+LOG:  hints in comment="Leading( (supplier nation) )
+  ", query="EXPLAIN /*+ Leading( (supplier nation) )
+  */
+select
+    count(*)
+from
+    supplier,
+    nation
+where
+    s_suppkey in (
+            select
+                ps_suppkey
+            from
+                partsupp
+            where
+                ps_partkey in (
+                         select
+                              p_partkey
+                         from
+                              part
+                         where
+                              p_name like 'forest%'
+                                                                                                                                                                                                            )
+            and ps_availqty > (
+                     select
+                          0.5 * sum(l_quantity)
+                     from
+                          lineitem
+                     where
+                          l_partkey = ps_partkey
+                          and l_suppkey = ps_suppkey
+                          and l_shipdate >= date '1994-01-01'
+                          and l_shipdate < date '1994-01-01' + interval '1' year
+             )
+       )
+       and s_nationkey = n_nationkey
+       and n_name = 'CHINA';", debug_query_string="EXPLAIN /*+ Leading( (supplier nation) )
+  */
+select
+    count(*)
+from
+    supplier,
+    nation
+where
+    s_suppkey in (
+            select
+                ps_suppkey
+            from
+                partsupp
+            where
+                ps_partkey in (
+                         select
+                              p_partkey
+                         from
+                              part
+                         where
+                              p_name like 'forest%'
+                                                                                                                                                                                                            )
+            and ps_availqty > (
+                     select
+                          0.5 * sum(l_quantity)
+                     from
+                          lineitem
+                     where
+                          l_partkey = ps_partkey
+                          and l_suppkey = ps_suppkey
+                          and l_shipdate >= date '1994-01-01'
+                          and l_shipdate < date '1994-01-01' + interval '1' year
+             )
+       )
+       and s_nationkey = n_nationkey
+       and n_name = 'CHINA';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1d2138, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1d2138, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d2138, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876976(partsupp), inhparent=0, current_hint=0x55aa7b1d2138, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1d2138, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading((supplier nation))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 39.984 ms
+Timing is on.
+SET
+Time: 0.156 ms
+SET
+Time: 0.043 ms
+SET
+Time: 0.042 ms
+SET
+Time: 0.036 ms
+SET
+Time: 0.034 ms
+SET
+Time: 0.124 ms
+                                                                                                               QUERY PLAN                                                                                                               
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=199793577193.79..199793577193.80 rows=1 width=8)
+   ->  Nested Loop Semi Join  (cost=20000000020.17..199793577193.64 rows=57 width=0)
+         Join Filter: (supplier.s_suppkey = partsupp.ps_suppkey)
+         ->  Hash Join  (cost=20.18..377.68 rows=200 width=4)
+               Hash Cond: (supplier.s_nationkey = nation.n_nationkey)
+               ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=8)
+               ->  Hash  (cost=20.12..20.12 rows=4 width=4)
+                     ->  Seq Scan on nation  (cost=0.00..20.12 rows=4 width=4)
+                           Filter: ((n_name)::text = 'CHINA'::text)
+         ->  Materialize  (cost=10000000000.00..189793568342.04 rows=2827 width=4)
+               ->  Nested Loop Semi Join  (cost=10000000000.00..189793568327.90 rows=2827 width=4)
+                     Join Filter: (partsupp.ps_partkey = part.p_partkey)
+                     ->  Seq Scan on partsupp  (cost=0.00..179785081990.00 rows=266667 width=8)
+                           Filter: ((ps_availqty)::double precision > (SubPlan 1))
+                           SubPlan 1
+                             ->  Aggregate  (cost=224731.30..224731.32 rows=1 width=8)
+                                   ->  Seq Scan on lineitem  (cost=0.00..224731.30 rows=1 width=8)
+                                         Filter: ((l_shipdate >= '1994-01-01'::date) AND (l_shipdate < '1995-01-01 00:00:00'::timestamp without time zone) AND (l_partkey = partsupp.ps_partkey) AND (l_suppkey = partsupp.ps_suppkey))
+                     ->  Materialize  (cost=0.00..6332.60 rows=2120 width=4)
+                           ->  Seq Scan on part  (cost=0.00..6322.00 rows=2120 width=4)
+                                 Filter: ((p_name)::text ~~ 'forest%'::text)
+ JIT:
+   Functions: 37
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(24 rows)
+
+Time: 40.052 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/8W.sql
+LOG:  duration: 0.119 ms
+LOG:  statement: EXPLAIN /*+ Leading( ((((((n1 region) customer) orders) lineitem) part) n2) )
+  */
+select
+    count(*)
+from
+    part,
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2,
+    region
+where p_partkey = l_partkey
+      and s_suppkey = l_suppkey
+      and l_orderkey = o_orderkey
+      and o_custkey = c_custkey
+      and c_nationkey = n1.n_nationkey
+      and n1.n_regionkey = r_regionkey
+      and r_name = 'AMERICA'
+      and s_nationkey = n2.n_nationkey
+      and o_orderdate between date '1995-01-01' and date '1996-12-31'
+      and p_type = 'ECONOMY ANODIZED STEEL';
+LOG:  hints in comment="Leading( ((((((n1 region) customer) orders) lineitem) part) n2) )
+  ", query="EXPLAIN /*+ Leading( ((((((n1 region) customer) orders) lineitem) part) n2) )
+  */
+select
+    count(*)
+from
+    part,
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2,
+    region
+where p_partkey = l_partkey
+      and s_suppkey = l_suppkey
+      and l_orderkey = o_orderkey
+      and o_custkey = c_custkey
+      and c_nationkey = n1.n_nationkey
+      and n1.n_regionkey = r_regionkey
+      and r_name = 'AMERICA'
+      and s_nationkey = n2.n_nationkey
+      and o_orderdate between date '1995-01-01' and date '1996-12-31'
+      and p_type = 'ECONOMY ANODIZED STEEL';", debug_query_string="EXPLAIN /*+ Leading( ((((((n1 region) customer) orders) lineitem) part) n2) )
+  */
+select
+    count(*)
+from
+    part,
+    supplier,
+    lineitem,
+    orders,
+    customer,
+    nation n1,
+    nation n2,
+    region
+where p_partkey = l_partkey
+      and s_suppkey = l_suppkey
+      and l_orderkey = o_orderkey
+      and o_custkey = c_custkey
+      and c_nationkey = n1.n_nationkey
+      and n1.n_regionkey = r_regionkey
+      and r_name = 'AMERICA'
+      and s_nationkey = n2.n_nationkey
+      and o_orderdate between date '1995-01-01' and date '1996-12-31'
+      and p_type = 'ECONOMY ANODIZED STEEL';"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876964(part), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876970(supplier), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876982(customer), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877000(nation), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388877006(region), inhparent=0, current_hint=0x55aa7b1d1f68, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading(((((((n1 region) customer) orders) lineitem) part) n2))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 35.821 ms
+Timing is on.
+SET
+Time: 0.177 ms
+SET
+Time: 0.059 ms
+SET
+Time: 0.055 ms
+SET
+Time: 0.048 ms
+SET
+Time: 0.045 ms
+SET
+Time: 0.193 ms
+                                                               QUERY PLAN                                                                
+-----------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=20000486027.90..20000486027.91 rows=1 width=8)
+   ->  Nested Loop  (cost=20000307287.94..20000486017.02 rows=4354 width=0)
+         Join Filter: (supplier.s_nationkey = n2.n_nationkey)
+         ->  Nested Loop  (cost=10000307287.94..10000472935.64 rows=1075 width=4)
+               Join Filter: (lineitem.l_suppkey = supplier.s_suppkey)
+               ->  Seq Scan on supplier  (cost=0.00..318.00 rows=10000 width=8)
+               ->  Materialize  (cost=307287.94..311370.33 rows=1075 width=4)
+                     ->  Hash Join  (cost=307287.94..311364.95 rows=1075 width=4)
+                           Hash Cond: (lineitem.l_partkey = part.p_partkey)
+                           ->  Hash Join  (cost=300947.80..304458.38 rows=148183 width=8)
+                                 Hash Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                                 ->  Hash Join  (cost=61213.46..62501.46 rows=37038 width=4)
+                                       Hash Cond: (customer.c_custkey = orders.o_custkey)
+                                       ->  Hash Join  (cost=7030.68..7295.23 rows=12150 width=4)
+                                             Hash Cond: (n1.n_nationkey = customer.c_nationkey)
+                                             ->  Hash Join  (cost=20.68..41.97 rows=16 width=4)
+                                                   Hash Cond: (n1.n_regionkey = region.r_regionkey)
+                                                   ->  Seq Scan on nation n1  (cost=0.00..18.10 rows=810 width=8)
+                                                   ->  Hash  (cost=20.62..20.62 rows=4 width=4)
+                                                         ->  Seq Scan on region  (cost=0.00..20.62 rows=4 width=4)
+                                                               Filter: ((r_name)::text = 'AMERICA'::text)
+                                             ->  Hash  (cost=5135.00..5135.00 rows=150000 width=8)
+                                                   ->  Seq Scan on customer  (cost=0.00..5135.00 rows=150000 width=8)
+                                       ->  Hash  (cost=48467.00..48467.00 rows=457263 width=8)
+                                             ->  Seq Scan on orders  (cost=0.00..48467.00 rows=457263 width=8)
+                                                   Filter: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate <= '1996-12-31'::date))
+                                 ->  Hash  (cost=164719.15..164719.15 rows=6001215 width=12)
+                                       ->  Seq Scan on lineitem  (cost=0.00..164719.15 rows=6001215 width=12)
+                           ->  Hash  (cost=6322.00..6322.00 rows=1451 width=4)
+                                 ->  Seq Scan on part  (cost=0.00..6322.00 rows=1451 width=4)
+                                       Filter: ((p_type)::text = 'ECONOMY ANODIZED STEEL'::text)
+         ->  Materialize  (cost=0.00..22.15 rows=810 width=4)
+               ->  Seq Scan on nation n2  (cost=0.00..18.10 rows=810 width=4)
+ JIT:
+   Functions: 59
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(36 rows)
+
+Time: 35.882 ms
+--
+/home/zeyuanhu/projects/treetracker2/third-party/tpc-h-postgres-enforced/18W.sql
+LOG:  duration: 0.087 ms
+LOG:  statement: EXPLAIN /*+ Leading( ((lineitem orders) customer) )
+  */
+select
+   count(*)
+from
+   customer,
+   orders,
+   lineitem
+where
+   o_orderkey in (
+           select
+              l_orderkey
+           from
+              lineitem
+           group by
+              l_orderkey having
+                      sum(l_quantity) > 300
+   )
+   and c_custkey = o_custkey
+   and o_orderkey = l_orderkey;
+LOG:  hints in comment="Leading( ((lineitem orders) customer) )
+  ", query="EXPLAIN /*+ Leading( ((lineitem orders) customer) )
+  */
+select
+   count(*)
+from
+   customer,
+   orders,
+   lineitem
+where
+   o_orderkey in (
+           select
+              l_orderkey
+           from
+              lineitem
+           group by
+              l_orderkey having
+                      sum(l_quantity) > 300
+   )
+   and c_custkey = o_custkey
+   and o_orderkey = l_orderkey;", debug_query_string="EXPLAIN /*+ Leading( ((lineitem orders) customer) )
+  */
+select
+   count(*)
+from
+   customer,
+   orders,
+   lineitem
+where
+   o_orderkey in (
+           select
+              l_orderkey
+           from
+              lineitem
+           group by
+              l_orderkey having
+                      sum(l_quantity) > 300
+   )
+   and c_custkey = o_custkey
+   and o_orderkey = l_orderkey;"
+LOG:  pg_hint_plan[qno=0x7]: planner
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1cf000, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876982(customer), inhparent=0, current_hint=0x55aa7b1cf000, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876988(orders), inhparent=0, current_hint=0x55aa7b1cf000, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: setup_hint_enforcement no hint applied: relation=388876994(lineitem), inhparent=0, current_hint=0x55aa7b1cf000, hint_inhibit_level=0, scanmask=0x1f
+LOG:  pg_hint_plan[qno=0x7]: HintStateDump: {used hints:Leading(((lineitem orders) customer))}, {not used hints:(none)}, {duplicate hints:(none)}, {error hints:(none)}
+LOG:  duration: 34.103 ms
+Timing is on.
+SET
+Time: 0.128 ms
+SET
+Time: 0.045 ms
+SET
+Time: 0.044 ms
+SET
+Time: 0.038 ms
+SET
+Time: 0.035 ms
+SET
+Time: 0.120 ms
+                                              QUERY PLAN                                               
+-------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=51499540541.70..51499540541.71 rows=1 width=8)
+   ->  Nested Loop  (cost=10000261452.23..51499535930.70 rows=1844397 width=0)
+         Join Filter: (orders.o_orderkey = lineitem_1.l_orderkey)
+         ->  Hash Join  (cost=66727.00..403981.08 rows=6001215 width=8)
+               Hash Cond: (orders.o_custkey = customer.c_custkey)
+               ->  Hash Join  (cost=59717.00..314454.38 rows=6001215 width=12)
+                     Hash Cond: (lineitem.l_orderkey = orders.o_orderkey)
+                     ->  Seq Scan on lineitem  (cost=0.00..164719.15 rows=6001215 width=4)
+                     ->  Hash  (cost=40967.00..40967.00 rows=1500000 width=8)
+                           ->  Seq Scan on orders  (cost=0.00..40967.00 rows=1500000 width=8)
+               ->  Hash  (cost=5135.00..5135.00 rows=150000 width=4)
+                     ->  Seq Scan on customer  (cost=0.00..5135.00 rows=150000 width=4)
+         ->  Materialize  (cost=194725.23..218928.03 rows=461006 width=4)
+               ->  HashAggregate  (cost=194725.23..212012.94 rows=461006 width=4)
+                     Group Key: lineitem_1.l_orderkey
+                     Filter: (sum(lineitem_1.l_quantity) > '300'::double precision)
+                     ->  Seq Scan on lineitem lineitem_1  (cost=0.00..164719.15 rows=6001215 width=12)
+ JIT:
+   Functions: 28
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(20 rows)
+
+Time: 34.181 ms
+--

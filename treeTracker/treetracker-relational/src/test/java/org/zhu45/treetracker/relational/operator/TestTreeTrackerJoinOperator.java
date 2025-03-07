@@ -9,9 +9,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinDomain;
+import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treektracker.multiwayJoin.MultiwayJoinOrderedGraph;
 import org.zhu45.treektracker.multiwayJoin.testing.TestingMultiwayJoinDatabaseComplex;
-import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.RelationalValue;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.StringValue;
@@ -19,7 +19,6 @@ import org.zhu45.treetracker.jdbc.JdbcClient;
 import org.zhu45.treetracker.relational.execution.ExecutionNormal;
 import org.zhu45.treetracker.relational.operator.noGoodList.NoGoodList;
 import org.zhu45.treetracker.relational.operator.noGoodList.PlainNoGoodList;
-import org.zhu45.treetracker.relational.operator.noGoodList.RedissonNoGoodList;
 import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.TestingPhysicalPlanBase;
 
@@ -92,7 +91,7 @@ public class TestTreeTrackerJoinOperator
 
     private Stream<NoGoodList> testNoGoodListAndTuplesRemovedFromHashTableDataProvider()
     {
-        return Stream.of(PlainNoGoodList.create(), RedissonNoGoodList.create());
+        return Stream.of(PlainNoGoodList.create());
     }
 
     // NOTE: Further improvement see https://gitlab.com/xxks-kkk/challenge-set/-/issues/152

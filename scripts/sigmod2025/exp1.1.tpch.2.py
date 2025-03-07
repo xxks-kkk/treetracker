@@ -10,12 +10,13 @@ from matplotlib import pyplot as plt, transforms, ticker
 from scipy.stats import gmean
 
 from plot.constants import DATA_SOURCE_CSV, DECIMAL_PRECISION, HJ, PLOT_FUNCTION, FIG_SAVE_LOCATION, \
-    SORT_DESCENDING_BASED_ON_HJ, COLUMN_RIGHT_BOUND, ALGORITHMS_TO_PLOT, TTJ, Yannakakis, YannakakisB, YannakakisV
+    SORT_DESCENDING_BASED_ON_HJ, COLUMN_RIGHT_BOUND, ALGORITHMS_TO_PLOT, TTJ, Yannakakis, YannakakisB, YannakakisV, \
+    Yannakakis1Pass
 from plot.job import extract_data_from_csv, construct_fig_name
 from plot.utility import check_argument, convert_time, TimeUnits
 
 def get_tpch_full_path(csv_name):
-    return Path.home() / "projects" / "treetracker2-local" / "results" / "tpch" / "with_predicates" / csv_name
+    return Path.home() / "projects" / "treetracker2" / "results" / "tpch" / "with_predicates" / csv_name
 
 def speedup_analysis(data_speedup, labels):
     """
@@ -40,14 +41,14 @@ def speedup_analysis(data_speedup, labels):
 
 def tpch_speedup_with_predicates():
     tpch_plot_with_predicates = {
-        DATA_SOURCE_CSV: "2024-01-12T05:55:47.613646Z_perf_report.csv",
-        ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis, YannakakisB],
+        DATA_SOURCE_CSV: "2024-03-06T01:40:14.296333Z_perf_report.csv",
+        ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis, Yannakakis1Pass, YannakakisB],
         COLUMN_RIGHT_BOUND: 14,
     }
 
     def bar_plot(ax, data, colors=None, total_width=0.8, single_width=1, legend=True, fontdict=None):
         # patterns = ["|", "\\", "/", "+", "-", ".", "*", "x", "o", "O"]
-        patterns = ["\\", "-", "/", ""]
+        patterns = ["\\", "-", "/", "", "*"]
 
         # Check if colors where provided, otherwhise use the default color cycle
         if colors is None:
@@ -63,7 +64,7 @@ def tpch_speedup_with_predicates():
         bars = []
 
         # Iterate over all data
-        for i, name in enumerate([TTJ, Yannakakis, YannakakisB]):
+        for i, name in enumerate([TTJ, Yannakakis, Yannakakis1Pass, YannakakisB]):
             values = data[name]
             # The offset in x direction of that bar
             x_offset = (i - n_bars / 2) * bar_width + bar_width / 2
@@ -83,7 +84,7 @@ def tpch_speedup_with_predicates():
 
         # Draw legend if we need
         if legend:
-            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{PT}$'], fontsize=15, ncol=2, frameon=False,
+            ax.legend(bars, [r'$\mathsf{TTJ}$', r'$\mathsf{YA}$', r'$\mathsf{YA}^+$', r'$\mathsf{PT}$'], fontsize=15, ncol=2, frameon=False,
                       loc='best')
 
         x = np.arange(len(labels))
@@ -137,7 +138,7 @@ def tpch_speedup_with_predicates():
     font = {'family': 'Helvetica',
             'weight': 'bold',
             'size': 15}
-    bar_plot(ax, data_speedup, colors=['#00994D', '#FF9933', "#00C3E3"], total_width=.7, single_width=1,
+    bar_plot(ax, data_speedup, colors=['#00994D', '#FF9933', '#EA2283', "#00C3E3"], total_width=.7, single_width=1,
              fontdict=font)
     font2 = {'family': 'Helvetica',
              'weight': 'bold',

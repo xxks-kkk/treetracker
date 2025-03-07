@@ -6,6 +6,7 @@ import de.renebergelt.test.Switches;
 import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -54,6 +55,10 @@ public class AggregateStatisticsInformation
     long totalInputSizeAfterEvaluation;
     // estimated memory consumption used by a query
     long evaluationMemoryCostInBytes;
+    // number of hash table probe
+    long numberOfHashTableProbe;
+    // total domain size of inner relations
+    long innerDomainSize;
 
     @JsonIgnore
     public String[] getHeader()
@@ -82,7 +87,7 @@ public class AggregateStatisticsInformation
             if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
                 traceLogger.debug("operator: " + operator.getOperatorID());
             }
-            if (!operator.isLeftMostOperatorInPlan()) {
+            if (operator.getSide() != Side.OUTER) {
                 if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
                     traceLogger.debug(String.format("Add %s from operator: %s",
                             operator.getStatisticsInformation().getNumberOfR1Assignments(),
@@ -96,6 +101,7 @@ public class AggregateStatisticsInformation
                             operator.getStatisticsInformation().getNumberOfR1Assignments(),
                             operator.getTraceOperatorName()));
                 }
+                innerDomainSize += operator.getStatisticsInformation().getDomainSize();
             }
             else {
                 traceLogger.debug("LeftMostPlanNodeOperator: " + operator.getOperatorID());
@@ -146,6 +152,7 @@ public class AggregateStatisticsInformation
             totalJoinTime += TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getJoinTime());
             hashTableBuildTime += TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getHashTableBuildTime());
             probeHashTableTime += TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getProbeHashTableTime());
+            numberOfHashTableProbe += operator.getStatisticsInformation().getNumberOfHashTableProbe();
             process(operator.r1Operator, context);
             process(operator.r2Operator, context);
         }

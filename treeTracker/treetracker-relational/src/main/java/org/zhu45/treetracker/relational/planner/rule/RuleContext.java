@@ -1,8 +1,11 @@
 package org.zhu45.treetracker.relational.planner.rule;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.zhu45.treetracker.jdbc.JdbcClient;
 import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.operator.Operator;
+import org.zhu45.treetracker.relational.planner.Plan;
 import org.zhu45.treetracker.relational.planner.PlanBuildContext;
 import org.zhu45.treetracker.relational.planner.PlanNodeIdAllocator;
 import org.zhu45.treetracker.relational.planner.plan.PlanStatistics;
@@ -18,6 +21,10 @@ public class RuleContext
     private final PlanNodeIdAllocator idAllocator;
     private final Map<OptType, List<Class<? extends Operator>>> operatorMap;
     private final PlanBuildContext planBuildContext;
+    private final Plan plan;
+    // Sometimes, we just want to reuse part of rule logic without need to actually create a new plan.
+    @Getter @Setter
+    private boolean notGeneratePlan;
 
     private RuleContext(Builder builder)
     {
@@ -27,11 +34,17 @@ public class RuleContext
         this.idAllocator = builder.idAllocator;
         this.operatorMap = builder.operatorMap;
         this.planBuildContext = builder.planBuildContext;
+        this.plan = builder.plan;
     }
 
     public Operator getOperator()
     {
         return operator;
+    }
+
+    public Plan getPlan()
+    {
+        return plan;
     }
 
     public PlanStatistics getPlanStatistics()
@@ -72,6 +85,7 @@ public class RuleContext
         private PlanNodeIdAllocator idAllocator;
         private Map<OptType, List<Class<? extends Operator>>> operatorMap;
         private PlanBuildContext planBuildContext;
+        private Plan plan;
 
         public Builder()
         {
@@ -110,6 +124,12 @@ public class RuleContext
         public Builder setPlanBuildContext(PlanBuildContext planBuildContext)
         {
             this.planBuildContext = planBuildContext;
+            return this;
+        }
+
+        public Builder setPlan(Plan plan)
+        {
+            this.plan = plan;
             return this;
         }
 

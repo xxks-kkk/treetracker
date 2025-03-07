@@ -1,0 +1,188 @@
+Timing is on.
+SET
+Time: 0.175 ms
+SET
+Time: 0.060 ms
+                                                                            QUERY PLAN                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ [                                                                                                                                                               +
+   {                                                                                                                                                             +
+     "Plan": {                                                                                                                                                   +
+       "Node Type": "Aggregate",                                                                                                                                 +
+       "Strategy": "Plain",                                                                                                                                      +
+       "Partial Mode": "Simple",                                                                                                                                 +
+       "Parallel Aware": false,                                                                                                                                  +
+       "Startup Cost": 162858.87,                                                                                                                                +
+       "Total Cost": 162858.88,                                                                                                                                  +
+       "Plan Rows": 1,                                                                                                                                           +
+       "Plan Width": 8,                                                                                                                                          +
+       "Plans": [                                                                                                                                                +
+         {                                                                                                                                                       +
+           "Node Type": "Hash Join",                                                                                                                             +
+           "Parent Relationship": "Outer",                                                                                                                       +
+           "Parallel Aware": false,                                                                                                                              +
+           "Join Type": "Inner",                                                                                                                                 +
+           "Startup Cost": 162502.75,                                                                                                                            +
+           "Total Cost": 162858.75,                                                                                                                              +
+           "Plan Rows": 50,                                                                                                                                      +
+           "Plan Width": 0,                                                                                                                                      +
+           "Inner Unique": false,                                                                                                                                +
+           "Hash Cond": "(supplier.s_suppkey = lineitemrevenue.supplier_no)",                                                                                    +
+           "Plans": [                                                                                                                                            +
+             {                                                                                                                                                   +
+               "Node Type": "Seq Scan",                                                                                                                          +
+               "Parent Relationship": "Outer",                                                                                                                   +
+               "Parallel Aware": false,                                                                                                                          +
+               "Relation Name": "supplier",                                                                                                                      +
+               "Alias": "supplier",                                                                                                                              +
+               "Startup Cost": 0.00,                                                                                                                             +
+               "Total Cost": 318.00,                                                                                                                             +
+               "Plan Rows": 10000,                                                                                                                               +
+               "Plan Width": 4                                                                                                                                   +
+             },                                                                                                                                                  +
+             {                                                                                                                                                   +
+               "Node Type": "Hash",                                                                                                                              +
+               "Parent Relationship": "Inner",                                                                                                                   +
+               "Parallel Aware": false,                                                                                                                          +
+               "Startup Cost": 162502.12,                                                                                                                        +
+               "Total Cost": 162502.12,                                                                                                                          +
+               "Plan Rows": 50,                                                                                                                                  +
+               "Plan Width": 4,                                                                                                                                  +
+               "Plans": [                                                                                                                                        +
+                 {                                                                                                                                               +
+                   "Node Type": "Subquery Scan",                                                                                                                 +
+                   "Parent Relationship": "Outer",                                                                                                               +
+                   "Parallel Aware": false,                                                                                                                      +
+                   "Alias": "lineitemrevenue",                                                                                                                   +
+                   "Startup Cost": 162276.62,                                                                                                                    +
+                   "Total Cost": 162502.12,                                                                                                                      +
+                   "Plan Rows": 50,                                                                                                                              +
+                   "Plan Width": 4,                                                                                                                              +
+                   "Plans": [                                                                                                                                    +
+                     {                                                                                                                                           +
+                       "Node Type": "CTE Scan",                                                                                                                  +
+                       "Parent Relationship": "Subquery",                                                                                                        +
+                       "Parallel Aware": false,                                                                                                                  +
+                       "CTE Name": "a1",                                                                                                                         +
+                       "Alias": "a1",                                                                                                                            +
+                       "Startup Cost": 162276.62,                                                                                                                +
+                       "Total Cost": 162501.62,                                                                                                                  +
+                       "Plan Rows": 50,                                                                                                                          +
+                       "Plan Width": 12,                                                                                                                         +
+                       "Filter": "(total_revenue = $2)",                                                                                                         +
+                       "Plans": [                                                                                                                                +
+                         {                                                                                                                                       +
+                           "Node Type": "Aggregate",                                                                                                             +
+                           "Strategy": "Sorted",                                                                                                                 +
+                           "Partial Mode": "Finalize",                                                                                                           +
+                           "Parent Relationship": "InitPlan",                                                                                                    +
+                           "Subplan Name": "CTE a1",                                                                                                             +
+                           "Parallel Aware": false,                                                                                                              +
+                           "Startup Cost": 160751.61,                                                                                                            +
+                           "Total Cost": 162051.61,                                                                                                              +
+                           "Plan Rows": 10000,                                                                                                                   +
+                           "Plan Width": 12,                                                                                                                     +
+                           "Group Key": ["lineitem.l_suppkey"],                                                                                                  +
+                           "Plans": [                                                                                                                            +
+                             {                                                                                                                                   +
+                               "Node Type": "Gather Merge",                                                                                                      +
+                               "Parent Relationship": "Outer",                                                                                                   +
+                               "Parallel Aware": false,                                                                                                          +
+                               "Startup Cost": 160751.61,                                                                                                        +
+                               "Total Cost": 161901.61,                                                                                                          +
+                               "Plan Rows": 10000,                                                                                                               +
+                               "Plan Width": 12,                                                                                                                 +
+                               "Workers Planned": 1,                                                                                                             +
+                               "Plans": [                                                                                                                        +
+                                 {                                                                                                                               +
+                                   "Node Type": "Sort",                                                                                                          +
+                                   "Parent Relationship": "Outer",                                                                                               +
+                                   "Parallel Aware": false,                                                                                                      +
+                                   "Startup Cost": 159751.60,                                                                                                    +
+                                   "Total Cost": 159776.60,                                                                                                      +
+                                   "Plan Rows": 10000,                                                                                                           +
+                                   "Plan Width": 12,                                                                                                             +
+                                   "Sort Key": ["lineitem.l_suppkey"],                                                                                           +
+                                   "Plans": [                                                                                                                    +
+                                     {                                                                                                                           +
+                                       "Node Type": "Aggregate",                                                                                                 +
+                                       "Strategy": "Hashed",                                                                                                     +
+                                       "Partial Mode": "Partial",                                                                                                +
+                                       "Parent Relationship": "Outer",                                                                                           +
+                                       "Parallel Aware": false,                                                                                                  +
+                                       "Startup Cost": 158987.22,                                                                                                +
+                                       "Total Cost": 159087.22,                                                                                                  +
+                                       "Plan Rows": 10000,                                                                                                       +
+                                       "Plan Width": 12,                                                                                                         +
+                                       "Group Key": ["lineitem.l_suppkey"],                                                                                      +
+                                       "Planned Partitions": 0,                                                                                                  +
+                                       "Plans": [                                                                                                                +
+                                         {                                                                                                                       +
+                                           "Node Type": "Seq Scan",                                                                                              +
+                                           "Parent Relationship": "Outer",                                                                                       +
+                                           "Parallel Aware": true,                                                                                               +
+                                           "Relation Name": "lineitem",                                                                                          +
+                                           "Alias": "lineitem",                                                                                                  +
+                                           "Startup Cost": 0.00,                                                                                                 +
+                                           "Total Cost": 157658.90,                                                                                              +
+                                           "Plan Rows": 132832,                                                                                                  +
+                                           "Plan Width": 20,                                                                                                     +
+                                           "Filter": "((l_shipdate >= '1996-01-01'::date) AND (l_shipdate < '1996-04-01 00:00:00'::timestamp without time zone))"+
+                                         }                                                                                                                       +
+                                       ]                                                                                                                         +
+                                     }                                                                                                                           +
+                                   ]                                                                                                                             +
+                                 }                                                                                                                               +
+                               ]                                                                                                                                 +
+                             }                                                                                                                                   +
+                           ]                                                                                                                                     +
+                         },                                                                                                                                      +
+                         {                                                                                                                                       +
+                           "Node Type": "Aggregate",                                                                                                             +
+                           "Strategy": "Plain",                                                                                                                  +
+                           "Partial Mode": "Simple",                                                                                                             +
+                           "Parent Relationship": "InitPlan",                                                                                                    +
+                           "Subplan Name": "InitPlan 2 (returns $2)",                                                                                            +
+                           "Parallel Aware": false,                                                                                                              +
+                           "Startup Cost": 225.00,                                                                                                               +
+                           "Total Cost": 225.01,                                                                                                                 +
+                           "Plan Rows": 1,                                                                                                                       +
+                           "Plan Width": 8,                                                                                                                      +
+                           "Plans": [                                                                                                                            +
+                             {                                                                                                                                   +
+                               "Node Type": "CTE Scan",                                                                                                          +
+                               "Parent Relationship": "Outer",                                                                                                   +
+                               "Parallel Aware": false,                                                                                                          +
+                               "CTE Name": "a1",                                                                                                                 +
+                               "Alias": "a1_1",                                                                                                                  +
+                               "Startup Cost": 0.00,                                                                                                             +
+                               "Total Cost": 200.00,                                                                                                             +
+                               "Plan Rows": 10000,                                                                                                               +
+                               "Plan Width": 8                                                                                                                   +
+                             }                                                                                                                                   +
+                           ]                                                                                                                                     +
+                         }                                                                                                                                       +
+                       ]                                                                                                                                         +
+                     }                                                                                                                                           +
+                   ]                                                                                                                                             +
+                 }                                                                                                                                               +
+               ]                                                                                                                                                 +
+             }                                                                                                                                                   +
+           ]                                                                                                                                                     +
+         }                                                                                                                                                       +
+       ]                                                                                                                                                         +
+     },                                                                                                                                                          +
+     "JIT": {                                                                                                                                                    +
+       "Functions": 26,                                                                                                                                          +
+       "Options": {                                                                                                                                              +
+         "Inlining": false,                                                                                                                                      +
+         "Optimization": false,                                                                                                                                  +
+         "Expressions": true,                                                                                                                                    +
+         "Deforming": true                                                                                                                                       +
+       }                                                                                                                                                         +
+     }                                                                                                                                                           +
+   }                                                                                                                                                             +
+ ]
+(1 row)
+
+Time: 16.398 ms

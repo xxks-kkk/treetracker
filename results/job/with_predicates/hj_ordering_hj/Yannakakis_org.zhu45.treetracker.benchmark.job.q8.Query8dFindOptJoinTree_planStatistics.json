@@ -1,0 +1,177 @@
+{
+  "optimalJoinOrdering" : {
+    "schemaTableNameList" : [ {
+      "schemaName" : "imdb_int",
+      "tableName" : "cast_info"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "title"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8d_role_type"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "name"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "movie_companies"
+    }, {
+      "schemaName" : "imdb",
+      "tableName" : "q8d_company_name"
+    }, {
+      "schemaName" : "imdb_int",
+      "tableName" : "aka_name"
+    } ]
+  },
+  "searchedJoinTrees" : {
+    "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n||imdb_int.aka_name(person_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q8d_company_name(company_id)" : 3.0,
+    "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q8d_company_name(company_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n|imdb_int.aka_name(person_id)" : 4.0,
+    "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q8d_company_name(company_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n||imdb_int.aka_name(person_id)" : 4.0,
+    "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q8d_company_name(company_id)\n|imdb_int.aka_name(person_id)" : 3.0
+  },
+  "optimalJoinTree" : "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q8d_company_name(company_id)\n|imdb_int.aka_name(person_id)",
+  "cost" : 3.0,
+  "noGoodListMapClazzName" : "org.zhu45.treetracker.relational.operator.noGoodList.SingleValueJavIntRowNoGoodListMap",
+  "rulesApplied" : [ "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree" ],
+  "ruleStatisticsList" : [ {
+    "optimalJoinOrdering" : {
+      "schemaTableNameList" : [ {
+        "schemaName" : "imdb_int",
+        "tableName" : "cast_info"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "title"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8d_role_type"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "name"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "movie_companies"
+      }, {
+        "schemaName" : "imdb",
+        "tableName" : "q8d_company_name"
+      }, {
+        "schemaName" : "imdb_int",
+        "tableName" : "aka_name"
+      } ]
+    },
+    "searchedJoinTrees" : {
+      "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n||imdb_int.aka_name(person_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q8d_company_name(company_id)" : 3.0,
+      "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q8d_company_name(company_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n|imdb_int.aka_name(person_id)" : 4.0,
+      "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n||imdb_int.movie_companies(movie_id,company_id,company_type_id)\n|||imdb.q8d_company_name(company_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n||imdb_int.aka_name(person_id)" : 4.0,
+      "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q8d_company_name(company_id)\n|imdb_int.aka_name(person_id)" : 3.0
+    },
+    "optimalJoinTree" : "imdb_int.cast_info(person_id,movie_id,person_role_id,role_id)\n|imdb_int.title(movie_id,kind_id)\n|imdb.q8d_role_type(role_id)\n|imdb_int.name(person_id)\n|imdb_int.movie_companies(movie_id,company_id,company_type_id)\n||imdb.q8d_company_name(company_id)\n|imdb_int.aka_name(person_id)",
+    "cost" : 3.0,
+    "ruleName" : "org.zhu45.treetracker.relational.planner.rule.FindOptimalJoinTree",
+    "dpTableNumCells" : 0,
+    "semiJoinOrdering" : {
+      "bottomUpPass" : [ {
+        "left" : {
+          "nodeName" : "imdb_int.movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_companies"
+          },
+          "attributes" : [ "company_id", "company_type_id", "movie_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q8d_company_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q8d_company_name"
+          },
+          "attributes" : [ "company_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.title",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "title"
+          },
+          "attributes" : [ "kind_id", "movie_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb.q8d_role_type",
+          "schemaTableName" : {
+            "schemaName" : "imdb",
+            "tableName" : "q8d_role_type"
+          },
+          "attributes" : [ "role_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.name",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "name"
+          },
+          "attributes" : [ "person_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.movie_companies",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "movie_companies"
+          },
+          "attributes" : [ "company_id", "company_type_id", "movie_id" ]
+        }
+      }, {
+        "left" : {
+          "nodeName" : "imdb_int.cast_info",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "cast_info"
+          },
+          "attributes" : [ "person_id", "movie_id", "person_role_id", "role_id" ]
+        },
+        "right" : {
+          "nodeName" : "imdb_int.aka_name",
+          "schemaTableName" : {
+            "schemaName" : "imdb_int",
+            "tableName" : "aka_name"
+          },
+          "attributes" : [ "person_id" ]
+        }
+      } ]
+    }
+  } ]
+}
