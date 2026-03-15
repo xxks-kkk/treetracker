@@ -14,6 +14,8 @@ public interface JoinFragmentType
 
     long evalWithResultSize();
 
+    void evalWithoutOpen();
+
     List<Operator> getOperators();
 
     Operator getRootOperator();

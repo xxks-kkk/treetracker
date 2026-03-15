@@ -41,7 +41,7 @@ public class BenchmarkHvTJOBHJOrderingShallow
     public static class BenchStateTTJOrdering
     {
         @SuppressWarnings("checkstyle:AnnotationUseStyle")
-        @Param({"TTJHP"})
+        @Param({"TTJHP", "TTJHP_NO_NG"})
         public JoinOperator joinOperator;
         @SuppressWarnings("checkstyle:AnnotationUseStyle")
         @Param({"Query10aOptJoinTreeOptOrderingShallowHJOrdering", "Query10bOptJoinTreeOptOrderingShallowHJOrdering", "Query10cOptJoinTreeOptOrderingShallowHJOrdering",

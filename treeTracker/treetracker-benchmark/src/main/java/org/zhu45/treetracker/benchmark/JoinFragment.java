@@ -102,6 +102,11 @@ public abstract class JoinFragment
         return executionNormal.evalForBenchmarkWithResultSize();
     }
 
+    public void evalWithoutOpen()
+    {
+        executionNormal.evalForBenchmarkWithoutOpen();
+    }
+
     public Pair<Plan, List<Operator>> createFixedPhysicalPlanFromQueryGraph(MultiwayJoinOrderedGraph multiwayJoinOrderedGraph)
     {
         requireNonNull(multiwayJoinOrderedGraph, "multiwayJoinOrderedGraph is null");

@@ -403,4 +403,16 @@ public abstract class AbstractStatisticsInformation
     {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void incrementNumberOfDeletionPropagationTriggered()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getNumberOfDeletionPropagationTriggered()
+    {
+        throw new UnsupportedOperationException();
+    }
 }

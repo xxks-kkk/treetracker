@@ -158,6 +158,20 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".r1 = " + r1));
         }
+        if (l != null && l.isEmpty()) {
+            r1 = r1Operator.passContext(context);
+            if (Switches.STATS) {
+                if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+                    traceLogger.trace(formatTraceMessage(String.format("incrementNumberOfR1Assignment from %s to %s",
+                            statisticsInformation.getNumberOfR1Assignments(),
+                            statisticsInformation.getNumberOfR1Assignments() + 1)));
+                    traceLogger.trace(formatTraceMessage("initiate PassContext: " + context));
+                }
+                statisticsInformation.incrementNumberOfR1Assignments();
+                statisticsInformation.incrementNumberOfInitPassContextCalls();
+                statisticsInformation.incrementNumberOfDeletionPropagationTriggered();
+            }
+        }
         if (r1 == null) {
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                 traceLogger.trace(formatTraceMessage("return " + null));

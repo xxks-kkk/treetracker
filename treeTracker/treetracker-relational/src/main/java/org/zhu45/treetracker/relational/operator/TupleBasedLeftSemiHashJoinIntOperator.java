@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.Row;
-import org.zhu45.treetracker.relational.JoinValueContainerIntKey;
 
 import static java.util.Objects.isNull;
 
@@ -70,11 +69,11 @@ public class TupleBasedLeftSemiHashJoinIntOperator
         if (Switches.STATS) {
             statisticsInformation.incrementNumberOfHashTableProbe();
         }
-        JoinValueContainerIntKey jav = extract((IntRow) r1, true);
+        extractR1((IntRow) r1);
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-            traceLogger.trace(formatTraceMessage("jav: " + jav));
+            traceLogger.trace(formatTraceMessage("javR1: " + javR1));
         }
-        l = hashTableH.get(jav);
+        l = hashTableH.get(javR1);
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage("l = " + l));
         }

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 DATA_SOURCE_CSV = "data_source_csv"
 PLOT_FUNCTION = "plot_function"
 FIG_SAVE_LOCATION = "fig_save_location"
@@ -85,9 +87,14 @@ JOB_RELATION_SIZE = {
     "imdb_int.person_info": 2963664
 }
 
-JOB_SQLITE_ORDERING_RESULTS_INTROW_ON="2024-12-22T01:26:27.330740Z_perf_report.csv"
-JOB_POSTGRES_ORDERGING_RESULTS_INTROW_OFF="2024-12-02T00:08:26.123383Z_perf_report.csv"
-SSB_SQLITE_ORDERING_RESULTS_INTROW_ON="benchmarkssb-result-2024-07-15t23:56:26.1061benchmarkssb-result-2024-12-09t17:27:00.748485benchmarkssb-result-2024-12-23t17:19:44.362555_perf_report.csv"
-SSB_POSTGRES_ORDERING_RESULTS_INTROW_OFF = "benchmarkssbpostgresplansshallow-result-2025-02-14t22:33:39.163677_perf_report.csv"
-TPCH_SQLITE_ORDERING_RESULTS_INTROW_ON="2024-12-06T00:39:22.882486Z_perf_report.csv"
-TPCH_POSTGRES_ORDERING_RESULTS_INTROW_OFF = "benchmarktpchpostgresplansshallow-result-2025-02-16t22:28:11.550059_perf_report.csv"
+JOB_TTJ_ORDERING_RESULTS_INTROW_ON = "2025-03-13T23:58:20.610989Z_perf_report.csv"
+JOB_SQLITE_ORDERING_RESULTS_INTROW_ON = "2025-02-23T02:27:39.886971Z_perf_report.csv"
+JOB_POSTGRES_ORDERGING_RESULTS_INTROW_OFF = "2025-02-24T17:55:50.733040Z_perf_report.csv"
+SSB_SQLITE_ORDERING_RESULTS_INTROW_ON = "benchmarkssb-result-2024-07-15t23:56:26.1061benchmarkssb-result-2024-12-09t17:27:00.748485benchmarkssb-result-2024-12-23t17:19:44.362555benchmarkssb-result-2025-02-24t15:06:20.728865_perf_report.csv"
+SSB_POSTGRES_ORDERING_RESULTS_INTROW_OFF = "benchmarkssbpostgresplansshallow-result-2025-02-14t22:33:39.163677benchmarkssbpostgresplansshallow-result-2025-02-25t12:09:19.513511_perf_report.csv"
+TPCH_SQLITE_ORDERING_RESULTS_INTROW_ON = "2025-02-24T22:31:49.878671Z_perf_report.csv"
+TPCH_POSTGRES_ORDERING_RESULTS_INTROW_OFF = "benchmarktpchpostgresplansshallow-result-2025-02-16t22:28:11.550059benchmarktpchpostgresplansshallow-result-2025-02-25t13:59:56.168763_perf_report.csv"
+
+TTJHP_JOB_SQLITE_ORDERING_STATS_CSV = Path.home() / "projects" / "treetracker2" / "results" / "others" / "simple-cost-model-with-predicates" / "hj_ordering_hj" / "job" / "TTJHP_JOB_aggregagateStatistics.csv"
+TTJHP_SSB_SQLITE_ORDERING_STATS_CSV = Path.home() / "projects" / "treetracker2" / "results" / "others" / "simple-cost-model-with-predicates" / "hj_ordering_hj" / "ssb" / "TTJHP_SSB_aggregagateStatistics.csv"
+TTJHP_TPCH_SQLITE_ORDERING_STATS_CSV = Path.home() / "projects" / "treetracker2" / "results" / "others" / "simple-cost-model-with-predicates" / "hj_ordering_hj" / "tpch" / "TTJHP_TPCH_aggregagateStatistics.csv"

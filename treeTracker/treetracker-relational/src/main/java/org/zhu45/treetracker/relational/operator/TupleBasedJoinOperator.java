@@ -21,6 +21,7 @@ import org.zhu45.treetracker.relational.JoinValueContainerKey;
 import org.zhu45.treetracker.relational.OptType;
 import org.zhu45.treetracker.relational.planner.plan.Side;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,15 +56,21 @@ public abstract class TupleBasedJoinOperator
     protected Row r2;
     // record which columns (attributes) of R2 we know that are join attributes
     protected Set<Integer> processedRelationR2Column;
+    // record which columns (attributes) of R2 we know that are non-join attributes
+    protected int[] uniqueRelationR2Column;
     // <index of column in R1, index of column in R2> are potentially joinable
     protected ImmutableMap<Integer, Integer> joinIdx;
     // join result relation column handle containing name, type information
     protected List<JoinResultColumnHandle> resultColumnHandles;
+    protected List<String> attributesList;
     protected JoinType joinType;
     protected int[] joinIdxForR1Operator;
     protected int[] joinIdxForR2Operator;
 
     protected StopWatch stopWatch;
+
+    protected IntRow joinResult;
+    protected JoinValueContainerIntKey javR1 = new JoinValueContainerIntKey(new int[0]);
 
     @Override
     public void open()
@@ -181,38 +188,22 @@ public abstract class TupleBasedJoinOperator
         return new ObjectRow(attributesList, types, res);
     }
 
-    protected IntRow join(IntRow r1, IntRow r2)
+    protected void join(IntRow r1, IntRow r2)
     {
-        requireNonNull(joinType, "joinType is not set; need to call construct(joinType) first");
-        checkArgument(r1 != null && r2 != null, "r1 or r2 is null");
-
+        if (Switches.DEBUG) {
+            requireNonNull(joinType, "joinType is not set; need to call construct(joinType) first");
+            checkArgument(r1 != null && r2 != null, "r1 or r2 is null");
+            checkArgument(joinType == JoinType.NaturalJoin, "joinType is not JoinType.NaturalJoin");
+        }
         int[] r1Vals = r1.getIntVals();
         int[] r2Vals = r2.getIntVals();
-        for (int idx : joinIdxForR1Operator) {
-            // We don't need to call entryEqual because when building joinIdx,
-            // attributes and types are already checked.
-            if (r1Vals[idx] != r2Vals[joinIdx.get(idx)]) {
-                return null;
-            }
-        }
-        int numResultColumns = resultColumnHandles.size();
-        int[] res = Arrays.copyOf(r1Vals, numResultColumns);
+        int[] res = Arrays.copyOf(r1Vals, resultColumnHandles.size());
         int counter = r1Vals.length;
-        if (joinType == JoinType.NaturalJoin) {
-            for (int i = 0; i < r2.size(); ++i) {
-                if (!processedRelationR2Column.contains(i)) {
-                    res[counter] = r2Vals[i];
-                    counter++;
-                }
-            }
+        for (int j : uniqueRelationR2Column) {
+            res[counter] = r2Vals[j];
+            counter++;
         }
-        List<String> attributesList = FastList.newList(numResultColumns);
-        List<Type> types = FastList.newList(numResultColumns);
-        for (JoinResultColumnHandle columnHandle : resultColumnHandles) {
-            attributesList.add(columnHandle.getColumnName());
-            types.add(columnHandle.getColumnType());
-        }
-        return new IntRow(attributesList, res);
+        joinResult.vals = res;
     }
 
     public void construct(JoinType joinType)
@@ -271,19 +262,27 @@ public abstract class TupleBasedJoinOperator
                 }
             }
         }
+        List<Integer> temp = new ArrayList<>();
         if (joinType == JoinType.NaturalJoin) {
             for (int i = 0; i < r2Handles.size(); ++i) {
                 if (!processedRelationR2Column.contains(i)) {
                     resultColumnHandles.add(new JoinResultColumnHandle(r2Handles.get(i).getColumnName(), r2Handles.get(i).getColumnType()));
+                    temp.add(i);
                 }
             }
         }
+        uniqueRelationR2Column = temp.stream().mapToInt(Integer::intValue).toArray();
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage("resultColumnHandles: " + Utils.properPrintList(resultColumnHandles)));
         }
         joinIdx = ImmutableMap.<Integer, Integer>builder().putAll(joinIdxTmp).build();
         joinIdxForR1Operator = Ints.toArray(joinIdx.keySet());
         joinIdxForR2Operator = Ints.toArray(joinIdx.values());
+        attributesList = FastList.newList(resultColumnHandles.size());
+        for (JoinResultColumnHandle columnHandle : resultColumnHandles) {
+            attributesList.add(columnHandle.getColumnName());
+        }
+        joinResult = new IntRow(attributesList, null);
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             decrementTraceDepth();
         }
@@ -303,19 +302,35 @@ public abstract class TupleBasedJoinOperator
         return new JoinValueContainerKey(vals);
     }
 
-    protected JoinValueContainerIntKey extract(IntRow row, boolean isRowFromR1Operator)
+    protected void extractR1(IntRow row)
     {
         if (Switches.DEBUG) {
             requireNonNull(row, "input row is null");
         }
-        int[] joinAttributeIndex = isRowFromR1Operator ? joinIdxForR1Operator : joinIdxForR2Operator;
-        int[] vals = new int[joinAttributeIndex.length];
+        int[] vals = new int[joinIdxForR1Operator.length];
         int[] rowVals = row.getIntVals();
         int counter = 0;
-        for (int idx : joinAttributeIndex) {
+        for (int idx : joinIdxForR1Operator) {
             vals[counter] = rowVals[idx];
             counter++;
         }
+        javR1.setVals(vals);
+    }
+
+    protected JoinValueContainerIntKey extractR2(IntRow row)
+    {
+        if (Switches.DEBUG) {
+            requireNonNull(row, "input row is null");
+        }
+        int[] vals = new int[joinIdxForR2Operator.length];
+        int[] rowVals = row.getIntVals();
+        int counter = 0;
+        for (int idx : joinIdxForR2Operator) {
+            vals[counter] = rowVals[idx];
+            counter++;
+        }
+        // Because R2 jav is used as hash keys to create a hash table, we need to create
+        // a new instance; otherwise, all the hash keys will point to the same object.
         return new JoinValueContainerIntKey(vals);
     }
 

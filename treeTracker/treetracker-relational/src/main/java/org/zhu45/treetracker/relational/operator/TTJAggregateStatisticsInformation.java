@@ -28,6 +28,7 @@ public class TTJAggregateStatisticsInformation
     private Logger traceLogger = LogManager.getLogger(TTJAggregateStatisticsInformation.class.getName());
 
     private boolean ttjhpNoNGPlan;
+    private Class<?> joinOperatorClazz;
 
     // the estimation cost of TTJ
     // TODO: need to refactor this logic into cost model 3
@@ -69,6 +70,7 @@ public class TTJAggregateStatisticsInformation
     // Number of tuples removed at inner relations
     @Getter
     long totalTuplesRemovedInnerRelations;
+    @Getter long numberOfDeletionPropagationTriggered;
 
     @VisibleForTesting
     @Data
@@ -137,6 +139,9 @@ public class TTJAggregateStatisticsInformation
             @Override
             public void visitTupleBasedTreeTrackerOneBetaHashTableOperator(TupleBaseTreeTrackerOneBetaHashTableOperator operator, CostEstimationContext context)
             {
+                if (joinOperatorClazz == null) {
+                    joinOperatorClazz = operator.getClass();
+                }
                 if (context.multiwayJoinOrderedGraph == null) {
                     context.multiwayJoinOrderedGraph = operator.getPlanBuildContext().getOrderedGraph();
                 }
@@ -156,6 +161,7 @@ public class TTJAggregateStatisticsInformation
                 numberOfPassContextCallsInnerRelations += operator.getStatisticsInformation().getNumberOfPassContextCalls();
                 numberOfInitPassContextCalls += operator.getStatisticsInformation().getNumberOfInitPassContextCalls();
                 numberOfHashTableProbe += operator.getStatisticsInformation().getNumberOfHashTableProbe();
+                numberOfDeletionPropagationTriggered += operator.getStatisticsInformation().getNumberOfDeletionPropagationTriggered();
                 if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
                     traceLogger.debug(String.format("numberOfR1Assignments increased to %s by %s due to %s",
                             numberOfR1Assignments,
@@ -175,6 +181,7 @@ public class TTJAggregateStatisticsInformation
                 if (operator.getSide() != Side.OUTER) {
                     numberOfR1Assignments += operator.getStatisticsInformation().getNumberOfR1Assignments();
                     innerRelationSize += operator.getStatisticsInformation().getNumberOfTuples();
+                    relationSizes.put(operator.getSchemaTableName().toString(), operator.getStatisticsInformation().getNumberOfTuples());
                     if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
                         traceLogger.debug(String.format("numberOfR1Assignments increased to %s by %s due to %s",
                                 numberOfR1Assignments,
@@ -190,10 +197,12 @@ public class TTJAggregateStatisticsInformation
                     numberOfDanglingTuples += ttjStatisticsInformation.getNumberOfDanglingTuples();
                     tupleFetchingTime = TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getFetchingTuplesTime());
                     rkRelationSize = ttjStatisticsInformation.getNumberOfTuples();
+                    relationSizes.put(operator.getSchemaTableName().toString(), operator.getStatisticsInformation().getNumberOfTuples());
                     context.numberOfTuplesForRk = ttjStatisticsInformation.getNumberOfTuples();
 
                     if (operator.getNoGoodListMap() != null) {
-                        TupleBasedTableScanStatisticsInformation noGoodListMapStatisticsInformation = (TupleBasedTableScanStatisticsInformation) operator.getNoGoodListMap().getStatisticsInformation();
+                        TupleBasedTableScanStatisticsInformation noGoodListMapStatisticsInformation = (TupleBasedTableScanStatisticsInformation) operator.getNoGoodListMap()
+                                .getStatisticsInformation();
                         HashMap<MultiwayJoinNode, Integer> prev = context.aggregateNodeToNoGoodTuples.put(operator.getMultiwayJoinNode(),
                                 noGoodListMapStatisticsInformation.getNodeToNoGoodTuples());
                         checkArgument(prev == null, String.format("%s already presents in aggregateNodeToNoGoodTuples", operator.getMultiwayJoinNode()));
@@ -283,5 +292,15 @@ public class TTJAggregateStatisticsInformation
                 String.format("noGoodListSize (%s) should = totalTuplesRemovedRk (%s)",
                         noGoodListSize,
                         totalTuplesRemovedRk));
+        if (joinOperatorClazz == TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.class ||
+                joinOperatorClazz == TupleBasedLeftSemiHashJoinOperator.class ||
+                joinOperatorClazz == TupleBasedHashJoinOperator.class
+                || joinOperatorClazz == TupleBasedIntHashJoinOperator.class
+                || joinOperatorClazz == TupleBasedLeftSemiHashJoinIntOperator.class) {
+            checkState(totalIntermediateResultsProducedWithoutNULL ==
+                    numberOfHashTableProbe, String.format("totalIntermediateResultsProducedWithoutNULL(%s) should = numberOfHashTableProbe (%s)",
+                    totalIntermediateResultsProducedWithoutNULL,
+                    numberOfHashTableProbe));
+        }
     }
 }

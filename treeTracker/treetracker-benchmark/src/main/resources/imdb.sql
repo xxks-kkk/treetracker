@@ -73,7 +73,7 @@ CREATE UNLOGGED TABLE imdb.company_type (
 
 CREATE UNLOGGED TABLE imdb.complete_cast (
                                         id integer NOT NULL,
-                                        movie_id integer,
+                                        movie_id integer NOT NULL,
                                         subject_id integer NOT NULL,
                                         status_id integer NOT NULL
 );

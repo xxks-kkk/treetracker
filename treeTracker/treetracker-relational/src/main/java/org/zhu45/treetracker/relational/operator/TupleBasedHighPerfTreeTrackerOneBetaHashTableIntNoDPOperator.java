@@ -33,12 +33,12 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntNoDPOperator
                 }
                 if (iL.hasNext()) {
                     currRowPointedbyIL = iL.next();
-                    IntRow ret = join((IntRow) r1, currRowPointedbyIL);
+                    join((IntRow) r1, currRowPointedbyIL);
                     if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                        traceLogger.trace(formatTraceMessage("return " + ret));
+                        traceLogger.trace(formatTraceMessage("return " + joinResult));
                         decrementTraceDepth();
                     }
-                    return ret;
+                    return joinResult;
                 }
             }
             r1 = r1Operator.getNext();

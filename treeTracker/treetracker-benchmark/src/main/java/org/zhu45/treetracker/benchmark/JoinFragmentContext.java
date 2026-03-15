@@ -16,6 +16,7 @@ import org.zhu45.treetracker.relational.operator.TupleBasedHashJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTableScanOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableIntNoDPOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator;
+import org.zhu45.treetracker.relational.operator.TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedIntHashJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiBloomJoinOperator;
 import org.zhu45.treetracker.relational.operator.TupleBasedLeftSemiHashJoinOperator;
@@ -91,7 +92,7 @@ public class JoinFragmentContext
             .setAlgorithm(JoinOperator.PTO);
     public static Builder ttjHPContextBuilder = JoinFragmentContext.builder()
             .setOperatorMap(createMap(Optional.of(TupleBasedHighPerfTableScanOperator.class),
-                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator.class)))
+                    Optional.of(TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.class)))
             .setNoGoodList(PlainNoGoodList.create())
             .setAlgorithm(JoinOperator.TTJHP);
     public static Builder ttjHPNONGContextBuilder = JoinFragmentContext.builder()

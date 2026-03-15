@@ -8,8 +8,8 @@ import java.util.Arrays;
 public class JoinValueContainerIntKey
         implements Value, Serializable
 {
-    private final int key;
-    private final int[] vals;
+    private int key;
+    private int[] vals;
 
     public JoinValueContainerIntKey(int[] vals)
     {
@@ -31,6 +31,12 @@ public class JoinValueContainerIntKey
             return false;
         }
         return Arrays.equals(o.vals, this.vals);
+    }
+
+    public void setVals(int[] vals)
+    {
+        this.vals = vals;
+        this.key = Arrays.hashCode(this.vals);
     }
 
     @Override

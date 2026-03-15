@@ -10,7 +10,7 @@ from icde2025.postgres_perf import process_job_enforced_raw_data, process_tpch_e
     process_ssb_enforced_raw_data
 from plot.constants import DATA_SOURCE_CSV, TTJ, COLUMN_RIGHT_BOUND, TTJ_NO_NG, TTJ_NO_DP, \
     JOB_SQLITE_ORDERING_RESULTS_INTROW_ON, POSTGRES, HJ, TTJ_VANILLA, SSB_SQLITE_ORDERING_RESULTS_INTROW_ON, JOB_COLOR, \
-    TPC_COLOR, SSB_COLOR
+    TPC_COLOR, SSB_COLOR, TPCH_SQLITE_ORDERING_RESULTS_INTROW_ON
 from plot.cost_model4 import extract_data_from_csv
 from plot.job import extract_data_from_csv as extract_data_from_csv2
 
@@ -45,7 +45,7 @@ def plot_job2(algorithm_pair: AlgorithmPair):
     job_data[POSTGRES] = process_job_enforced_raw_data()
 
     tpch_plot_with_predicates = {
-        DATA_SOURCE_CSV: "2024-12-06T00:39:22.882486Z_perf_report.csv",
+        DATA_SOURCE_CSV: TPCH_SQLITE_ORDERING_RESULTS_INTROW_ON,
         COLUMN_RIGHT_BOUND: 14,
     }
     tpch_data, _ = extract_data_from_csv2(get_tpch_full_path(tpch_plot_with_predicates[DATA_SOURCE_CSV]),

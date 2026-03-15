@@ -71,7 +71,8 @@ public class InstantiateTestCases
                     testcases -> this.testCaseClazz = testcases,
                     () -> this.testCaseClazz = List.of(
                             TestTupleBaseTreeTrackerOneBetaHashTableOperatorCases.class,
-                            TestTupleBasedTreeTrackerTwoOperatorCases.class));
+                            TestTupleBasedTreeTrackerTwoOperatorCases.class)
+            );
         }
 
         private List<List<Object>> instantiateTestCases()

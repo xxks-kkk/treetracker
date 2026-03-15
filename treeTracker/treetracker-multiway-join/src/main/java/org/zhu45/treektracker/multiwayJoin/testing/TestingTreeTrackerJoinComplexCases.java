@@ -558,4 +558,66 @@ public class TestingTreeTrackerJoinComplexCases
         MultiwayJoinGraph g = new MultiwayJoinGraph(edgeLists);
         return Pair.of(g, nodeB);
     }
+
+    /**
+     * Use the same test case as testTreeTrackerJoinCaseSix but here we demonstrate that
+     * switching the join tree as a chain while not trigger the bug (e.g., described in
+     * the comment of testTreeTrackerJoinCaseSix; comment out Line 112 (l = null;) in
+     * TupleBasedHighPerfTreeTrackerOneBetaHashTableOperator.
+     */
+    public Pair<MultiwayJoinGraph, MultiwayJoinNode> testTreeTrackerJoinCaseSeven()
+    {
+        String relationB = "case7_b";
+        SchemaTableName schemaTableNameB = new SchemaTableName(schemaName, relationB);
+        if (jdbcClient.getTableHandle(schemaTableNameB) == null) {
+            List<List<RelationalValue>> relationValB = new ArrayList<>(Arrays.asList(
+                    List.of(IntegerValue.of(13)),
+                    List.of(IntegerValue.of(14))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationB,
+                    new ArrayList<>(List.of("age")),
+                    new ArrayList<>(List.of(INTEGER)),
+                    relationValB);
+        }
+        MultiwayJoinDomain domainB = new MultiwayJoinDomain();
+        MultiwayJoinNode nodeB = new MultiwayJoinNode(schemaTableNameB, domainB);
+
+        String relationA = "case7_a";
+        SchemaTableName schemaTableNameA = new SchemaTableName(schemaName, relationA);
+        if (jdbcClient.getTableHandle(schemaTableNameA) == null) {
+            List<List<RelationalValue>> relationValA = new ArrayList<>(List.of(
+                    List.of(IntegerValue.of(13)),
+                    List.of(IntegerValue.of(14))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationA,
+                    new ArrayList<>(List.of("age")),
+                    new ArrayList<>(List.of(INTEGER)),
+                    relationValA);
+        }
+        MultiwayJoinDomain domainA = new MultiwayJoinDomain();
+        MultiwayJoinNode nodeA = new MultiwayJoinNode(schemaTableNameA, domainA);
+
+        String relationS = "case7_s";
+        SchemaTableName schemaTableNameS = new SchemaTableName(schemaName, relationS);
+        if (jdbcClient.getTableHandle(schemaTableNameS) == null) {
+            List<List<RelationalValue>> relationValS = new ArrayList<>(List.of(
+                    List.of(IntegerValue.of(14))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    relationS,
+                    new ArrayList<>(List.of("age")),
+                    new ArrayList<>(List.of(INTEGER)),
+                    relationValS);
+        }
+        MultiwayJoinDomain domainS = new MultiwayJoinDomain();
+        MultiwayJoinNode nodeS = new MultiwayJoinNode(schemaTableNameS, domainS);
+
+        List<QueryGraphEdge> edgeLists = new ArrayList<>(Arrays.asList(
+                asQueryGraphEdge(nodeB, nodeA),
+                asQueryGraphEdge(nodeA, nodeS)));
+        MultiwayJoinGraph g = new MultiwayJoinGraph(edgeLists);
+        return Pair.of(g, nodeB);
+    }
 }

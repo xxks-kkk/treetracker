@@ -37,7 +37,7 @@ public class BenchmarkHvTSSB
     public static class BenchState
     {
         @SuppressWarnings("checkstyle:AnnotationUseStyle")
-        @Param({"Yannakakis1Pass", "TTJHP", "HASH_JOIN"})
+        @Param({"Yannakakis1Pass", "TTJHP", "HASH_JOIN", "TTJHP_NO_NG"})
         public JoinOperator joinOperator;
         @Param({"Q1P1", "Q1P2", "Q1P3", "Q2P1", "Q2P2", "Q2P3", "Q3P1", "Q3P2", "Q3P3", "Q3P4", "Q4P1", "Q4P2", "Q4P3"})
         public SSBQueries ssbQueries;

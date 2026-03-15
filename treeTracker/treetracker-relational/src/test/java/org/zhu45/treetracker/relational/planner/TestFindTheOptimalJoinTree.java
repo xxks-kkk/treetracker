@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -250,6 +251,62 @@ public class TestFindTheOptimalJoinTree
         JoinOrdering joinOrdering = new JoinOrdering(List.of(schemaTableNameMovieCompanies, schemaTableNameMovieInfo, schemaTableNameInfoType));
         Pair<Plan, List<Operator>> plan = base.createPhysicalPlanFromJoinOrdering(joinOrdering);
         base.testPhysicalPlanExecution(plan);
+    }
+
+    /**
+     * We cannot reverse engineer a join tree from certain plan.
+     */
+    @Test
+    public void testFindOptimalJoinTree4()
+    {
+        String schemaName = base.getDatabase().getSchemaName();
+        JdbcClient jdbcClient = base.getDatabase().getJdbcClient();
+
+        String movieCompanies = "movie_companies";
+        SchemaTableName schemaTableNameMovieCompanies = new SchemaTableName(schemaName, movieCompanies);
+        if (jdbcClient.getTableHandle(schemaTableNameMovieCompanies) == null) {
+            List<List<RelationalValue>> relationValMovieCompanies = new ArrayList<>(Arrays.asList(
+                    List.of(new IntegerValue(1), new IntegerValue(2))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    movieCompanies,
+                    new ArrayList<>(List.of("a", "b")),
+                    new ArrayList<>(List.of(INTEGER, INTEGER)),
+                    relationValMovieCompanies);
+        }
+
+        String movieInfo = "movie_info";
+        SchemaTableName schemaTableNameMovieInfo = new SchemaTableName(schemaName, movieInfo);
+        if (jdbcClient.getTableHandle(schemaTableNameMovieInfo) == null) {
+            List<List<RelationalValue>> relationValMovieInfo = new ArrayList<>(Arrays.asList(
+                    List.of(new IntegerValue(1),
+                            new IntegerValue(2))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    movieInfo,
+                    new ArrayList<>(Arrays.asList("b", "c")),
+                    new ArrayList<>(Arrays.asList(INTEGER, INTEGER)),
+                    relationValMovieInfo);
+        }
+
+        String infoType = "info_type";
+        SchemaTableName schemaTableNameInfoType = new SchemaTableName(schemaName, infoType);
+        if (jdbcClient.getTableHandle(schemaTableNameInfoType) == null) {
+            List<List<RelationalValue>> relationValInfoType = new ArrayList<>(Arrays.asList(
+                    List.of(new IntegerValue(1), new IntegerValue(2), new IntegerValue(3))));
+            jdbcClient.ingestRelation(
+                    schemaName,
+                    infoType,
+                    new ArrayList<>(Arrays.asList("a", "b", "c")),
+                    new ArrayList<>(Arrays.asList(INTEGER, INTEGER, INTEGER)),
+                    relationValInfoType);
+        }
+
+        JoinOrdering joinOrdering = new JoinOrdering(List.of(schemaTableNameMovieCompanies, schemaTableNameMovieInfo, schemaTableNameInfoType));
+        IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
+            base.createPhysicalPlanFromJoinOrdering(joinOrdering);
+        });
+        assertTrue(exception.getMessage().contains("the given ordering violates assumption; maye the input query is cyclic"));
     }
 
     private void save(PlanStatistics planStatistics)

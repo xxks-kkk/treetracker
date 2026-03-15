@@ -12,7 +12,7 @@ from scipy.stats import gmean
 
 from icde2025.postgres_perf import process_tpch_enforced_raw_data
 from plot.constants import DATA_SOURCE_CSV, HJ, COLUMN_RIGHT_BOUND, ALGORITHMS_TO_PLOT, TTJ, Yannakakis1Pass, TTJ_COLOR, \
-    Yannakakis1Pass_COLOR, HJ_COLOR, POSTGRES
+    Yannakakis1Pass_COLOR, HJ_COLOR, POSTGRES, TPCH_SQLITE_ORDERING_RESULTS_INTROW_ON
 from plot.job import extract_data_from_csv
 from plot.utility import check_argument
 
@@ -161,7 +161,7 @@ def ttj_perf_analysis(grouped_data, labels):
 
 def tpch_speedup_with_predicates():
     tpch_plot_with_predicates = {
-        DATA_SOURCE_CSV: "2024-12-06T00:39:22.882486Z_perf_report.csv",
+        DATA_SOURCE_CSV: TPCH_SQLITE_ORDERING_RESULTS_INTROW_ON,
         ALGORITHMS_TO_PLOT: [HJ, TTJ, Yannakakis1Pass, POSTGRES],
         COLUMN_RIGHT_BOUND: 14,
     }

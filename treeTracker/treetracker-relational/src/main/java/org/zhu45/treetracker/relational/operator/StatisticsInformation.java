@@ -147,4 +147,8 @@ public interface StatisticsInformation
     void updateHashTableSizeAfterEvaluation(long hashTableSize);
 
     long getHashTableSizeAfterEvaluation();
+
+    void incrementNumberOfDeletionPropagationTriggered();
+
+    long getNumberOfDeletionPropagationTriggered();
 }

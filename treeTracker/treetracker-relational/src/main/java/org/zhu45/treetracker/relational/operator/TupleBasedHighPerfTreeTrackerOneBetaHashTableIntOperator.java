@@ -7,7 +7,6 @@ import org.zhu45.treektracker.multiwayJoin.MultiwayJoinNode;
 import org.zhu45.treetracker.common.SchemaTableName;
 import org.zhu45.treetracker.common.row.IntRow;
 import org.zhu45.treetracker.common.row.Row;
-import org.zhu45.treetracker.relational.JoinValueContainerIntKey;
 
 import java.util.List;
 
@@ -71,14 +70,14 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                 traceLogger.trace(formatTraceMessage(String.format("%s is the parent of %s in G", r2NodeId, parentNodeId)));
             }
-            JoinValueContainerIntKey jav = extract(currRowPointedbyIL, false);
+            extract(currRowPointedbyIL, false);
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                 traceLogger.trace(formatTraceMessage("to be removed from H: " + currRowPointedbyIL));
             }
             iL.remove();
-            List<IntRow> l = hashTableH.get(jav);
+            List<IntRow> l = hashTableH.get(javR1);
             if (l.isEmpty()) {
-                hashTableH.remove(jav);
+                hashTableH.remove(javR1);
             }
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                 traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".H = " + hashTableH));
@@ -122,12 +121,12 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
                 }
                 if (iL.hasNext()) {
                     currRowPointedbyIL = iL.next();
-                    IntRow ret = join((IntRow) r1, currRowPointedbyIL);
+                    join((IntRow) r1, currRowPointedbyIL);
                     if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                        traceLogger.trace(formatTraceMessage("return " + ret));
+                        traceLogger.trace(formatTraceMessage("return " + joinResult));
                         decrementTraceDepth();
                     }
-                    return ret;
+                    return joinResult;
                 }
             }
             r1 = r1Operator.getNext();
@@ -138,6 +137,17 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + ".r1 = " + r1));
+        }
+        if (l != null && l.isEmpty()) {
+            r1 = r1Operator.passContext(this.parentNodeId, this.r2NodeId);
+            if (Switches.STATS) {
+                if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
+                    traceLogger.trace(formatTraceMessage(String.format("incrementNumberOfR1Assignment from %s to %s",
+                            statisticsInformation.getNumberOfR1Assignments(),
+                            statisticsInformation.getNumberOfR1Assignments() + 1)));
+                }
+                statisticsInformation.incrementNumberOfR1Assignments();
+            }
         }
         if (r1 == null) {
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
@@ -200,11 +210,11 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
             incrementTraceDepth();
         }
         if (l == null || l.isEmpty()) {
-            JoinValueContainerIntKey jav = extract((IntRow) r1, true);
+            extractR1((IntRow) r1);
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                traceLogger.trace(formatTraceMessage("jav: " + jav));
+                traceLogger.trace(formatTraceMessage("javR1: " + javR1));
             }
-            l = hashTableH.get(jav);
+            l = hashTableH.get(javR1);
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
                 traceLogger.trace(formatTraceMessage("l = " + l));
             }
@@ -212,12 +222,12 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
                 iL = l.iterator();
                 if (iL.hasNext()) {
                     currRowPointedbyIL = iL.next();
-                    IntRow ret = join((IntRow) r1, currRowPointedbyIL);
+                    join((IntRow) r1, currRowPointedbyIL);
                     if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                        traceLogger.trace(formatTraceMessage(String.format("return (%s, %s)", ret, false)));
+                        traceLogger.trace(formatTraceMessage(String.format("return (%s, %s)", joinResult, false)));
                         decrementTraceDepth();
                     }
-                    lookUpHResult.row = ret;
+                    lookUpHResult.row = joinResult;
                     lookUpHResult.initiateNoGoodMarking = false;
                     return;
                 }
@@ -237,12 +247,12 @@ public class TupleBasedHighPerfTreeTrackerOneBetaHashTableIntOperator
                 traceLogger.trace(formatTraceMessage("iL.hasNext() = true"));
             }
             currRowPointedbyIL = iL.next();
-            IntRow ret = join((IntRow) r1, currRowPointedbyIL);
+            join((IntRow) r1, currRowPointedbyIL);
             if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                traceLogger.trace(formatTraceMessage(String.format("return (%s, %s)", ret, false)));
+                traceLogger.trace(formatTraceMessage(String.format("return (%s, %s)", joinResult, false)));
                 decrementTraceDepth();
             }
-            lookUpHResult.row = ret;
+            lookUpHResult.row = joinResult;
             lookUpHResult.initiateNoGoodMarking = false;
         }
         else {

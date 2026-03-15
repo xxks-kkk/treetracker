@@ -56,6 +56,7 @@ import static org.zhu45.treetracker.common.TestConstants.TREETRACKER_DEBUG;
 import static org.zhu45.treetracker.common.TestConstants.checkEnvVariableSet;
 import static org.zhu45.treetracker.relational.operator.JoinOperator.HASH_JOIN;
 import static org.zhu45.treetracker.relational.operator.JoinOperator.TTJHP;
+import static org.zhu45.treetracker.relational.operator.JoinOperator.TTJHP_NO_NG;
 import static org.zhu45.treetracker.relational.operator.JoinOperator.Yannakakis1Pass;
 
 /**
@@ -599,6 +600,7 @@ public class GenerateBenchmarkStatisticsReport
         long noGoodListSize;
         long numberOfHashTableProbe;
         long numberOfHashTableProbeWithinFullReducer;
+        long numberOfDeletionPropagationTriggered;
 
         final String queryName;
 
@@ -642,6 +644,7 @@ public class GenerateBenchmarkStatisticsReport
                     }
                     numberOfHashTableProbe = (long) (aggStats).get("numberOfHashTableProbe");
                     totalIntermediateResultsProducedWithoutNULL = (long) (aggStats).get("totalIntermediateResultsProducedWithoutNULL");
+                    numberOfDeletionPropagationTriggered = (long) (aggStats).get("numberOfDeletionPropagationTriggered");
                     break;
                 case LIP:
                     bloomFiltersProbingTime = (long) (aggStats).get("bloomFiltersProbingTime (ms)");
@@ -1002,7 +1005,7 @@ public class GenerateBenchmarkStatisticsReport
     private static void generateReportJOBSQLiteOrdering()
             throws IOException, ParseException
     {
-        List<JoinOperator> jobJoinOperators = List.of(HASH_JOIN, TTJHP, Yannakakis1Pass);
+        List<JoinOperator> jobJoinOperators = List.of(HASH_JOIN, TTJHP, TTJHP_NO_NG, Yannakakis1Pass);
         TargetStatsConstraints constraints = TargetStatsConstraints.builder()
                 .setSameOrdering(false)
                 .setUseTrueCard(false)
@@ -1058,7 +1061,10 @@ public class GenerateBenchmarkStatisticsReport
                         // TTJHP, HJ, Yannakakis, YannakakisB (HJPhysicalHeuristics is enabled)
                         "benchmarkjobwithpredicatesdifferentordering-result-2023-12-30t16:43:27.406285.json",
                         // Yannakakis1Pass results
-                        "benchmarkjobwithpredicatesdifferentordering-result-2024-03-08t12:03:13.986671.json"), Benchmarks.JOB),
+                        "benchmarkjobwithpredicatesdifferentordering-result-2024-03-08t12:03:13.986671.json",
+                        // TTJHP re-run based on the latest TTJHP implementation specified in JoinFragmentContext. This re-run is part of the effort to see if TTJHP use its own
+                        // optimization can lead to better performance than the same TTJHP implementation under SQLite ordering.
+                        "benchmarkjobwithpredicatesdifferentordering-result-2025-03-06t00:54:53.757078.json"), Benchmarks.JOB),
                 Benchmarks.JOB, true, false);
         // We need to run a separate generatePerformanceReport() for fixed HJ ordering because fixed HJ ordering has
         // TTJHP, which will override TTJHP on different ordering results when building joinOperator2Perf if fixed HJ ordering
@@ -1103,7 +1109,15 @@ public class GenerateBenchmarkStatisticsReport
                         // TTJHP_NO_DP and TTJHP_VANILLA
                         Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-11-22t20:29:07.918444.json").toString(),
                         // TTJHP, HASH_JOIN, Yannakakis1Pass
-                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-12-17t17:05:02.410515.json").toString()), Benchmarks.JOB),
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-12-17t17:05:02.410515.json").toString(),
+                        // TTJHP, TTJHP_NO_NG with an extra hash table removed from implementing deletion propaagtion. IntRow optimization on.
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2025-02-21t00:48:46.201299.json").toString()), Benchmarks.JOB),
+                Benchmarks.JOB, true, false);
+        generatePerformanceReport(constructPaths(List.of(
+                        // DUMMY HJ Performance to make processing statistics work
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2024-07-07t17:19:27.127911.json").toString(),
+                        // TTHP (without measuring hash table build time) on fixed HJ ordering from SQLite and share the same join tree
+                        Paths.get("hj_ordering_hj", "benchmarkjobwithpredicatesfixedhjorderingshallow-result-2025-06-22t18:18:33.669077.json").toString()), Benchmarks.JOB),
                 Benchmarks.JOB, true, false);
         generatePerformanceReport(constructPaths(List.of(
                         // HJ based on Postgres plans (preliminary run: 5 forks and 2 warmups)
@@ -1117,7 +1131,9 @@ public class GenerateBenchmarkStatisticsReport
                         // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, and TTJHP_NO_DP
                         Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-24t19:29:37.720742.json").toString(),
                         // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, and TTJHP_NO_DP without IntRow Optimization (disable this line if we want to see IntRow Optimization results)
-                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-27t21:18:56.67516.json").toString()), Benchmarks.JOB),
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2024-11-27t21:18:56.67516.json").toString(),
+                        // TTJHP, TTJHP_NO_NG after removing an extra hash table probe in deletion propagation. Without IntRow optimization.
+                        Paths.get("perf_on_postgres_plans", "benchmarkjobwithpredicatespostgresplansshallow-result-2025-02-22t18:49:29.819976.json").toString()), Benchmarks.JOB),
                 Benchmarks.JOB, true, false);
         generatePerformanceReport(constructPaths(List.of("benchmarktpchwithpredicatesdifferentordering-result-2023-07-06t17:42:23.652904.json",
                         // Fixed 15 implementation result
@@ -1161,14 +1177,18 @@ public class GenerateBenchmarkStatisticsReport
                         // Add TTJHP and TTJHP_NO_DP on 9W due to use DefaultIntRowNoGoodListMap
                         Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-05t14:30:33.533514.json").toString(),
                         // Re-run 18W on TTJHP_NO_DP because it has -7% slowdown, which I believe due to measurement variants (re-run indeed eliminates the variant)
-                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-05t16:29:24.190913.json").toString()), Benchmarks.TPCH),
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2024-12-05t16:29:24.190913.json").toString(),
+                        // TTJHP and TTHP_NO_NG after removing an extra hash table probe from deletion propagation.
+                        Paths.get("hj_ordering_hj", "benchmarktpchwithpredicateshjorderingshallow-result-2025-02-24t10:10:55.014625.json").toString()), Benchmarks.TPCH),
                 Benchmarks.TPCH, true, false);
         generatePerformanceReport(constructPaths(List.of(
                         // TTHP and HJ on the native Postgres plans
-                        Paths.get("perf_on_postgres_plans", "benchmarktpchpostgresplansshallow-result-2025-02-16t22:28:11.550059.json").toString()
+                        Paths.get("perf_on_postgres_plans", "benchmarktpchpostgresplansshallow-result-2025-02-16t22:28:11.550059.json").toString(),
+                        // TTJHP after removing an extra hash table probe from deletion propagation (intRow optimization disabled)
+                        Paths.get("perf_on_postgres_plans", "benchmarktpchpostgresplansshallow-result-2025-02-25t13:59:56.168763.json").toString()
                 ), Benchmarks.TPCH),
                 Benchmarks.TPCH, true, false);
-        generateStatsReport(Benchmarks.TPCH, TargetStatsConstraints.builder().setSqliteOrdering(true).build(), List.of(HASH_JOIN, TTJHP, Yannakakis1Pass));
+        generateStatsReport(Benchmarks.TPCH, TargetStatsConstraints.builder().setSqliteOrdering(true).build(), List.of(HASH_JOIN, TTJHP, TTJHP_NO_NG, Yannakakis1Pass));
         generatePerformanceReport(constructPaths(List.of("benchmarkssb-result-2023-10-26t12:14:04.768421.json",
                         // Benchmark result use SSB-specific LIP implementation
                         "benchmarkssb-result-2023-12-08t23:44:40.399941.json",
@@ -1191,17 +1211,21 @@ public class GenerateBenchmarkStatisticsReport
                         // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, TTJHP_NO_DP, and Yannakakis1Pass (SF=1)
                         Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-09t17:27:00.748485.json").toString(),
                         // Yannakakis1Pass with disablePTOptimizationTrick to true (same across other benchmarks) (SF=1)
-                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-23t17:19:44.362555.json").toString()
+                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-23t17:19:44.362555.json").toString(),
                         // Run HJ, TTJHP, TTJHP_VANILLA, TTJHP_NO_NG, TTJHP_NO_DP, and Yannakakis1Pass (disabling IntRow optimization). Uncomment this
                         // line if we want to use IntRow optimization enabled results. (SF=1) Note Yannakakis1Pass has disablePTOptimizationTrick false.
 //                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2024-12-11t01:07:14.181061.json").toString()
+                        // TTJHP, TTJHP_NO_NG with extra hash table probe removed from deletion propagation
+                        Paths.get("hj_ordering_hj", "benchmarkssb-result-2025-02-24t15:06:20.728865.json").toString()
                 ), Benchmarks.SSB),
                 Benchmarks.SSB, true, false);
         generatePerformanceReport(constructPaths(List.of(
                         // TTHP and HJ on the native Postgres plans
-                        Paths.get("perf_on_postgres_plans", "benchmarkssbpostgresplansshallow-result-2025-02-14t22:33:39.163677.json").toString()
+                        Paths.get("perf_on_postgres_plans", "benchmarkssbpostgresplansshallow-result-2025-02-14t22:33:39.163677.json").toString(),
+                        // TTJHP after removing an extra hash table probe from deletion propagation (Without IntRow optimization.)
+                        Paths.get("perf_on_postgres_plans", "benchmarkssbpostgresplansshallow-result-2025-02-25t12:09:19.513511.json").toString()
                 ), Benchmarks.SSB),
                 Benchmarks.SSB, true, false);
-        generateStatsReport(Benchmarks.SSB, TargetStatsConstraints.builder().setSqliteOrdering(true).build(), List.of(HASH_JOIN, TTJHP, Yannakakis1Pass));
+        generateStatsReport(Benchmarks.SSB, TargetStatsConstraints.builder().setSqliteOrdering(true).build(), List.of(HASH_JOIN, TTJHP, Yannakakis1Pass, TTJHP_NO_NG));
     }
 }

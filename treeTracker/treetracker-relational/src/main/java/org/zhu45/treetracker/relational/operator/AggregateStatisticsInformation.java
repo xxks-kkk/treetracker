@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.zhu45.treetracker.relational.planner.plan.Side;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -59,6 +60,8 @@ public class AggregateStatisticsInformation
     long numberOfHashTableProbe;
     // total domain size of inner relations
     long innerDomainSize;
+    // relation sizes
+    HashMap<String, Long> relationSizes = new HashMap<>();
 
     @JsonIgnore
     public String[] getHeader()
@@ -95,6 +98,7 @@ public class AggregateStatisticsInformation
                 }
                 numberOfR1Assignments += operator.getStatisticsInformation().getNumberOfR1Assignments();
                 innerRelationSize += operator.getStatisticsInformation().getNumberOfTuples();
+                relationSizes.put(operator.getSchemaTableName().toString(), operator.getStatisticsInformation().getNumberOfTuples());
                 if (Switches.DEBUG && traceLogger.isDebugEnabled()) {
                     traceLogger.debug(String.format("numberOfR1Assignments increased to %s by %s due to %s",
                             numberOfR1Assignments,
@@ -107,6 +111,7 @@ public class AggregateStatisticsInformation
                 traceLogger.debug("LeftMostPlanNodeOperator: " + operator.getOperatorID());
                 tupleFetchingTime += TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getFetchingTuplesTime());
                 rkRelationSize = operator.getStatisticsInformation().getNumberOfTuples();
+                relationSizes.put(operator.getSchemaTableName().toString(), operator.getStatisticsInformation().getNumberOfTuples());
             }
             totalTupleFetchingTime += TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getFetchingTuplesTime());
             predicateEvaluationTime += TimeUnit.NANOSECONDS.toMillis(operator.getStatisticsInformation().getPredicateEvaluationTime());

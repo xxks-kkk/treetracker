@@ -30,18 +30,23 @@ public class TestTPCHQueriesImpl
 {
     private Stream<Arguments> testTestTPCHQueriesImplDataProvider()
     {
-        return Stream.of(Arguments.of(JoinOperator.TTJHP, TPCHQueriesAutoGen.Query16WOptJoinTreeOptOrdering, 118274),
-                Arguments.of(JoinOperator.Yannakakis, TPCHQueriesYannakakis.Query16WOptJoinTreeOptOrderingY, 118274),
-                Arguments.of(JoinOperator.YannakakisB, TPCHQueriesYannakakisB.Query16WOptJoinTreeOptOrderingYB, 118274),
-                Arguments.of(JoinOperator.TTJHP, TPCHQueriesAutoGen.Query19aWOptJoinTreeOptOrdering, 25),
-                Arguments.of(JoinOperator.TTJHP, TPCHQueriesAutoGen.Query19bWOptJoinTreeOptOrdering, 40),
-                Arguments.of(JoinOperator.TTJHP, TPCHQueriesAutoGen.Query19cWOptJoinTreeOptOrdering, 56),
-                Arguments.of(JoinOperator.Yannakakis, TPCHQueriesYannakakis.Query19aWOptJoinTreeOptOrderingY, 25),
-                Arguments.of(JoinOperator.Yannakakis, TPCHQueriesYannakakis.Query19bWOptJoinTreeOptOrderingY, 40),
-                Arguments.of(JoinOperator.Yannakakis, TPCHQueriesYannakakis.Query19cWOptJoinTreeOptOrderingY, 56),
-                Arguments.of(JoinOperator.YannakakisB, TPCHQueriesYannakakisB.Query19aWOptJoinTreeOptOrderingYB, 25),
-                Arguments.of(JoinOperator.YannakakisB, TPCHQueriesYannakakisB.Query19bWOptJoinTreeOptOrderingYB, 40),
-                Arguments.of(JoinOperator.YannakakisB, TPCHQueriesYannakakisB.Query19cWOptJoinTreeOptOrderingYB, 56));
+        return Stream.of(
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query3WOptJoinTreeOptOrdering, 30519),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query7aWOptJoinTreeOptOrdering, 3014),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query7bWOptJoinTreeOptOrdering, 2910),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query8WOptJoinTreeOptOrdering, 2603),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query9WOptJoinTreeOptOrdering, 319404),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query10WOptJoinTreeOptOrdering, 114705),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query11WOptJoinTreeOptOrdering, 31680),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query12WOptJoinTreeOptOrdering, 30988),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query14WOptJoinTreeOptOrdering, 75983),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query15WOptJoinTreeOptOrdering, 1),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query16WOptJoinTreeOptOrdering, 118274),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query18WOptJoinTreeOptOrdering, 399),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query19aWOptJoinTreeOptOrdering, 25),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query19bWOptJoinTreeOptOrdering, 40),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query19cWOptJoinTreeOptOrdering, 56),
+                Arguments.of(JoinOperator.TTJV2, TPCHQueriesAutoGen.Query20WOptJoinTreeOptOrdering, 198));
     }
 
     @ParameterizedTest

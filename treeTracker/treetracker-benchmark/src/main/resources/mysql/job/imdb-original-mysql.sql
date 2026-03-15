@@ -133,7 +133,7 @@ CREATE TABLE company_type (
 
 CREATE TABLE complete_cast (
                                              id integer NOT NULL,
-                                             movie_id integer,
+                                             movie_id integer NOT NULL,
                                              subject_id integer NOT NULL,
                                              status_id integer NOT NULL
 --                                              FOREIGN KEY (subject_id) REFERENCES comp_cast_type(id),

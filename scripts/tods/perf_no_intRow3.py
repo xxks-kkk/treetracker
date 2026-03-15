@@ -67,7 +67,7 @@ def ttj_perf_analysis(ttj_speedup, ttj_linear_speedup, labels):
         if ttj_speedup[idx] > ttj_linear_speedup[idx]:
             count_ttj_fastest += 1
 
-    print(f"total queries: {total_queries}, number of queries that TTJ is the fastest: {count_ttj_fastest}")
+    print(f"total queries: {total_queries}, number of queries that TTJ is faster than TTJ_LINEAR: {count_ttj_fastest}")
 
 
 def speedup_analysis(data_speedup, labels):

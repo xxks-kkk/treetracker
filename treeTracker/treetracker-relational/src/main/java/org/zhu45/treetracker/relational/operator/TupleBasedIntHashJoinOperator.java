@@ -77,7 +77,7 @@ public class TupleBasedIntHashJoinOperator
                 r2Operator.close();
                 break;
             }
-            JoinValueContainerIntKey jav = extract((IntRow) r2, false);
+            JoinValueContainerIntKey jav = extractR2((IntRow) r2);
             if (!hashTableH.containsKey(jav)) {
                 hashTableH.put(jav, new LinkedList<>());
             }
@@ -140,16 +140,16 @@ public class TupleBasedIntHashJoinOperator
                     stopWatch.reset();
                     stopWatch.start();
                 }
-                IntRow ret = join((IntRow) r1, currRowPointedbyIL);
+                join((IntRow) r1, currRowPointedbyIL);
                 if (Switches.STATS) {
                     stopWatch.stop();
                     statisticsInformation.updateJoinTime(stopWatch.getNanoTime());
                 }
                 if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                    traceLogger.trace(formatTraceMessage("return " + ret));
+                    traceLogger.trace(formatTraceMessage("return " + joinResult));
                     decrementTraceDepth();
                 }
-                return ret;
+                return joinResult;
             }
         }
 
@@ -200,11 +200,11 @@ public class TupleBasedIntHashJoinOperator
             traceLogger.trace(formatTraceMessage(getTraceOperatorName() + " is l null? " + isNull(l)));
             incrementTraceDepth();
         }
-        JoinValueContainerIntKey jav = extract((IntRow) r1, true);
+        extractR1((IntRow) r1);
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-            traceLogger.trace(formatTraceMessage("jav: " + jav));
+            traceLogger.trace(formatTraceMessage("javR1: " + javR1));
         }
-        l = hashTableH.get(jav);
+        l = hashTableH.get(javR1);
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
             traceLogger.trace(formatTraceMessage("l = " + l));
         }
@@ -215,12 +215,12 @@ public class TupleBasedIntHashJoinOperator
             iL = l.iterator();
             if (iL.hasNext()) {
                 currRowPointedbyIL = iL.next();
-                IntRow ret = join((IntRow) r1, currRowPointedbyIL);
+                join((IntRow) r1, currRowPointedbyIL);
                 if (Switches.DEBUG && traceLogger.isTraceEnabled()) {
-                    traceLogger.trace(formatTraceMessage("return " + ret));
+                    traceLogger.trace(formatTraceMessage("return " + joinResult));
                     decrementTraceDepth();
                 }
-                return ret;
+                return joinResult;
             }
         }
         if (Switches.DEBUG && traceLogger.isTraceEnabled()) {

@@ -19,7 +19,7 @@ public class IntRow
 {
     private static final RowType rowType = RowType.INTROW;
 
-    int[] vals;
+    public int[] vals;
 
     public IntRow(List<String> attributes, int[] vals)
     {

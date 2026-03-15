@@ -95,6 +95,20 @@ public class ExecutionNormal
     }
 
     /**
+     * Assume open() has been called before calling this.
+     */
+    public void evalForBenchmarkWithoutOpen()
+    {
+        while (true) {
+            Row row = getNext();
+            if (row == null) {
+                close();
+                break;
+            }
+        }
+    }
+
+    /**
      * Similar to evalForBenchmark but the function also returns the result set size.
      */
     public long evalForBenchmarkWithResultSize()

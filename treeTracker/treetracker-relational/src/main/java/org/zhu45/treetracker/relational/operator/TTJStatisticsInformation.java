@@ -41,6 +41,7 @@ public class TTJStatisticsInformation
     // number of times PassContext() is called, i.e., initiated due to probing failure from hash table
     @Getter
     private long numberOfInitPassContextCalls;
+    @Getter private long numberOfDeletionPropagationTriggered;
 
     public void setNumberOfNoGoodTuples(int numberOfNoGoodTuples)
     {
@@ -104,5 +105,11 @@ public class TTJStatisticsInformation
     public void incrementNumberOfInitPassContextCalls()
     {
         numberOfInitPassContextCalls++;
+    }
+
+    @Override
+    public void incrementNumberOfDeletionPropagationTriggered()
+    {
+        numberOfDeletionPropagationTriggered++;
     }
 }

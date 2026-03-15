@@ -89,6 +89,12 @@ public class BenchmarkJOBWithPredicatesFixedHJOrderingShallow
                     duckDBJdbcClientSupplier.get());
         }
 
+        @Setup(Level.Invocation)
+        public void setUpOpen()
+        {
+            query.open();
+        }
+
         @TearDown(Level.Trial)
         public void tearDown()
         {
@@ -163,14 +169,14 @@ public class BenchmarkJOBWithPredicatesFixedHJOrderingShallow
     @Benchmark
     public void benchTTJ(BenchStateTTJ state)
     {
-        state.query.eval();
+        state.query.evalWithoutOpen();
     }
 
-    @Benchmark
-    public void benchYannakakis1Pass(BenchStateYannakakis1Pass state)
-    {
-        state.query.eval();
-    }
+//    @Benchmark
+//    public void benchYannakakis1Pass(BenchStateYannakakis1Pass state)
+//    {
+//        state.query.eval();
+//    }
 
     @State(Scope.Benchmark)
     public static class BenchStateHJ
@@ -217,11 +223,11 @@ public class BenchmarkJOBWithPredicatesFixedHJOrderingShallow
         }
     }
 
-    @Benchmark
-    public void benchHJ(BenchStateHJ state)
-    {
-        state.query.eval();
-    }
+//    @Benchmark
+//    public void benchHJ(BenchStateHJ state)
+//    {
+//        state.query.eval();
+//    }
 
     public static void main(String[] args)
             throws RunnerException
